@@ -5,7 +5,7 @@ languages:
 products:
 - dotnet
 description: "Add 150 character max description"
-urlFragment: "update-this-to-unique-url-stub"
+urlFragment: "https://github.com/Azure/Azure-Network-Security"
 ---
 
 # Official Microsoft Sample
