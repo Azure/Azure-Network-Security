@@ -1,0 +1,571 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "ab7d6c51-d7df-436c-96a2-429163aa50ec",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 7776000000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "resourceType": "microsoft.insights/components"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Azure Firewall - overview"
+      },
+      "name": "Main title"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AzureDiagnostics \r\n| where ResourceType == \"AZUREFIREWALLS\" \r\n| summarize Volume=count() by bin(TimeGenerated, {TimeRange:grain})",
+        "size": 0,
+        "title": "Events, by time",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "customWidth": "25",
+      "name": "query - 16"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| summarize amount = count() by Resource, ResourceGroup",
+        "size": 0,
+        "title": "Firewall count per resource group, filterable by Resource and Resource Group",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "exportParameterName": "TopEvent",
+        "exportDefaultValue": "{\"Resource\":\"*\",\"ResourceGroup\":\"*\"}",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "tiles",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "Resource",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "amount",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "25",
+      "name": "Firewall per Resource Group"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where ResourceType == \"AZUREFIREWALLS\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\"  \r\n| summarize Volume=count() by Category",
+        "size": 0,
+        "title": "Events, by category",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "exportFieldName": "Category",
+        "exportParameterName": "SelectedCategory",
+        "exportDefaultValue": "*",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "piechart",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "Category",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "Volume",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "25",
+      "name": "Events by category"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where ResourceType == \"AZUREFIREWALLS\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\" \r\n| summarize Volume=count() by Category, bin(TimeGenerated, {TimeRange:grain})",
+        "size": 0,
+        "title": "Events categories, by time",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "customWidth": "25",
+      "name": "Events categories by time"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\r\n# Azure Firewall - Application rule log statitics"
+      },
+      "name": "text - 14"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nlet ActivityData = AzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\" \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" \" TempDetails\r\n| parse TempDetails with \"was \" Action1 \". Reason: \" Rule1\r\n| parse TempDetails with \"to \" FQDN \":\" TargetPortInt:int \". Action: \" Action2 \".\" *\r\n| parse TempDetails with * \". Rule Collection: \" RuleCollection2a \". Rule:\" Rule2a\r\n| parse TempDetails with * \"Deny.\" RuleCollection2b \". Proceeding with\" Rule2b\r\n| extend SourcePort = tostring(SourcePortInt)\r\n| extend TargetPort = tostring(TargetPortInt)\r\n| extend Action1 = case(Action1 == \"denied\",\"Deny\",\"Unknown Action\")\r\n| extend Action = case(Action2 == \"\",Action1,Action2),Rule = case(Rule2a == \"\", case(Rule1 == \"\",case(Rule2b == \"\",\"N/A\", Rule2b),Rule1),Rule2a),  RuleCollection = case(RuleCollection2b == \"\",case(RuleCollection2a == \"\",\"No rule matched\",RuleCollection2a), RuleCollection2b),FQDN = case(FQDN == \"\", \"N/A\", FQDN),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort)\r\n| where Action == \"Deny\";\r\nActivityData\r\n| summarize Amount=count() by SourceIP\r\n| join kind = inner\r\n(\r\n    ActivityData\r\n    | make-series Trend = count() default = 0 on bin(TimeGenerated, 1d) from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by SourceIP) on SourceIP\r\n    | project-away SourceIP1, TimeGenerated\r\n    | top 10 by Amount\r\n    | sort by Amount",
+        "size": 4,
+        "title": "Unique Source IP addresses, filterable by SelectedSourceIP",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "exportFieldName": "SourceIP",
+        "exportParameterName": "SelectedSourceIP",
+        "exportDefaultValue": "*",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "tiles",
+        "tileSettings": {
+          "titleContent": {
+            "columnMatch": "Amount",
+            "formatter": 12,
+            "formatOptions": {
+              "showIcon": true
+            }
+          },
+          "subtitleContent": {
+            "columnMatch": "SourceIP",
+            "formatter": 1,
+            "formatOptions": {
+              "showIcon": true
+            }
+          },
+          "secondaryContent": {
+            "columnMatch": "Trend",
+            "formatter": 9,
+            "formatOptions": {
+              "showIcon": true
+            }
+          },
+          "showBorder": false
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 4"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\nAzureDiagnostics \n| where Category == \"AzureFirewallApplicationRule\"\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\" \n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" \" TempDetails \n| parse TempDetails with \"was \" Action1 \". Reason: \" Rule1 \n| parse TempDetails with \"to \" FQDN \":\" TargetPortInt:int \". Action: \" Action2 \".\" *\n| parse TempDetails with * \". Rule Collection: \" RuleCollection2a \". Rule:\" Rule2a \n| parse TempDetails with * \"Deny.\" RuleCollection2b \". Proceeding with\" Rule2b \n| extend SourcePort = tostring(SourcePortInt) \n| where '{SelectedSourceIP}' == SourceIP or '{SelectedSourceIP}' == \"*\" \n| extend TargetPort = tostring(TargetPortInt) \n| extend Action1 = case(Action1 == \"denied\",\"Deny\",\"Unknown Action\") \n| extend Action = case(Action2 == \"\",Action1,Action2),Rule = case(Rule2a == \"\", case(Rule1 == \"\",case(Rule2b == \"\",\"N/A\", Rule2b),Rule1),Rule2a),  RuleCollection = case(RuleCollection2b == \"\",case(RuleCollection2a == \"\",\"No rule matched\",RuleCollection2a), RuleCollection2b),FQDN = case(FQDN == \"\", \"N/A\", FQDN),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort) \n| where Action == \"Deny\" \n|  summarize Amount=dcount(SourceIP) by SourceIP, Protocol, URL = FQDN, TargetPortInt, Action\n| sort by Amount desc\n",
+        "size": 1,
+        "title": "Unique source IP addresses",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "Count",
+              "formatter": 3,
+              "formatOptions": {
+                "palette": "lightBlue",
+                "showIcon": true,
+                "aggregation": "Count"
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal"
+                }
+              }
+            }
+          ],
+          "filter": true
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics | where Category == \"AzureFirewallApplicationRule\" \r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\" \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" \" TempDetails | parse TempDetails with \"was \" Action1 \". Reason: \" Rule1 | parse TempDetails with \"to \" FQDN \":\" TargetPortInt:int \". Action: \" Action2 \".\" * | parse TempDetails with * \". Rule Collection: \" RuleCollection2a \". Rule:\" Rule2a | parse TempDetails with * \"Deny.\" RuleCollection2b \". Proceeding with\" Rule2b | extend SourcePort = tostring(SourcePortInt) | extend TargetPort = tostring(TargetPortInt) | extend Action1 = case(Action1 == \"denied\",\"Deny\",\"Unknown Action\") | extend Action = case(Action2 == \"\",Action1,Action2),Rule = case(Rule2a == \"\", case(Rule1 == \"\",case(Rule2b == \"\",\"N/A\", Rule2b),Rule1),Rule2a),  RuleCollection = case(RuleCollection2b == \"\",case(RuleCollection2a == \"\",\"No rule matched\",RuleCollection2a), RuleCollection2b),FQDN = case(FQDN == \"\", \"N/A\", FQDN),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort)| where Action == \"Deny\"\r\n| where '{SelectedSourceIP}' == SourceIP or '{SelectedSourceIP}' == \"*\"  \r\n| summarize count() by URL=FQDN, bin(TimeGenerated,{TimeRange:grain})",
+        "size": 0,
+        "title": "Denied URLs over time",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart",
+        "tileSettings": {
+          "showBorder": false
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\" \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" \" TempDetails \r\n| parse TempDetails with \"was \" Action1 \". Reason: \" Rule1 \r\n| parse TempDetails with \"to \" FQDN \":\" TargetPortInt:int \". Action: \" Action2 \".\" * \r\n| parse TempDetails with * \". Rule Collection: \" RuleCollection2a \". Rule:\" Rule2a \r\n| parse TempDetails with * \"Deny.\" RuleCollection2b \". Proceeding with\" Rule2b \r\n| extend SourcePort = tostring(SourcePortInt) \r\n| extend TargetPort = tostring(TargetPortInt) \r\n| extend Action1 = case(Action1 == \"denied\",\"Deny\",\"Unknown Action\") \r\n| extend Action = case(Action2 == \"\",Action1,Action2),Rule = case(Rule2a == \"\", case(Rule1 == \"\",case(Rule2b == \"\",\"N/A\", Rule2b),Rule1),Rule2a),  RuleCollection = case(RuleCollection2b == \"\",case(RuleCollection2a == \"\",\"No rule matched\",RuleCollection2a), RuleCollection2b),FQDN = case(FQDN == \"\", \"N/A\", FQDN),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort)\r\n| where Action == \"Deny\"\r\n| where '{SelectedSourceIP}' == SourceIP or '{SelectedSourceIP}' == \"*\"  \r\n| summarize count() by URL=FQDN\r\n| sort by count_ desc\r\n",
+        "size": 0,
+        "showAnalytics": true,
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "customWidth": "50",
+      "name": "query - 7"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\"  \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" \" TempDetails \r\n| parse TempDetails with \"was \" Action1 \". Reason: \" Rule1 \r\n| parse TempDetails with \"to \" FQDN \":\" TargetPortInt:int \". Action: \" Action2 \".\" * \r\n| parse TempDetails with * \". Rule Collection: \" RuleCollection2a \". Rule:\" Rule2a \r\n| parse TempDetails with * \"Deny.\" RuleCollection2b \". Proceeding with\" Rule2b \r\n| extend SourcePort = tostring(SourcePortInt)\r\n| where '{SelectedSourceIP}' == SourceIP or '{SelectedSourceIP}' == \"*\"   \r\n| extend TargetPort = tostring(TargetPortInt)\r\n| extend Action1 = case(Action1 == \"denied\",\"Deny\",\"Unknown Action\") \r\n| extend Action = case(Action2 == \"\",Action1,Action2),Rule = case(Rule2a == \"\", case(Rule1 == \"\",case(Rule2b == \"\",\"N/A\", Rule2b),Rule1),Rule2a),  RuleCollection = case(RuleCollection2b == \"\",case(RuleCollection2a == \"\",\"No rule matched\",RuleCollection2a), RuleCollection2b),FQDN = case(FQDN == \"\", \"N/A\", FQDN),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort) \r\n| where Action == \"Allow\"\r\n| summarize count() by URL=FQDN, bin(TimeGenerated,{TimeRange:grain})\r\n",
+        "size": 0,
+        "title": "Allowed URLs over time",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "customWidth": "50",
+      "name": "query - 5"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics | where Category == \"AzureFirewallApplicationRule\" \r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\" \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" \" TempDetails | parse TempDetails with \"was \" Action1 \". Reason: \" Rule1 | parse TempDetails with \"to \" FQDN \":\" TargetPortInt:int \". Action: \" Action2 \".\" * | parse TempDetails with * \". Rule Collection: \" RuleCollection2a \". Rule:\" Rule2a | parse TempDetails with * \"Deny.\" RuleCollection2b \". Proceeding with\" Rule2b | extend SourcePort = tostring(SourcePortInt) | extend TargetPort = tostring(TargetPortInt) | extend Action1 = case(Action1 == \"denied\",\"Deny\",\"Unknown Action\") | extend Action = case(Action2 == \"\",Action1,Action2),Rule = case(Rule2a == \"\", case(Rule1 == \"\",case(Rule2b == \"\",\"N/A\", Rule2b),Rule1),Rule2a),  RuleCollection = case(RuleCollection2b == \"\",case(RuleCollection2a == \"\",\"No rule matched\",RuleCollection2a), RuleCollection2b),FQDN = case(FQDN == \"\", \"N/A\", FQDN),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort) | where Action == \"Allow\"\r\n| where '{SelectedSourceIP}' == SourceIP or '{SelectedSourceIP}' == \"*\"   \r\n| summarize count() by URL=FQDN",
+        "size": 0,
+        "showAnalytics": true,
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table"
+      },
+      "customWidth": "50",
+      "name": "query - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\"  \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" \" TempDetails \r\n| parse TempDetails with \"was \" Action1 \". Reason: \" Rule1 \r\n| parse TempDetails with \"to \" FQDN \":\" TargetPortInt:int \". Action: \" Action2 \".\" * \r\n| parse TempDetails with * \". Rule Collection: \" RuleCollection2a \". Rule:\" Rule2a \r\n| parse TempDetails with * \"Deny.\" RuleCollection2b \". Proceeding with\" Rule2b\r\n| parse msg_s with Protocol_s 'request from ' SourceHost_s ':' SourcePort_s 'to ' DestinationHost_s ':' DestinationPort_s 'was' Action_s 'to' DNATDestination\r\n| parse msg_s with Protocol_S 'request from ' SourceHost_S ':' SourcePort_S 'to ' DestinationHost_S ':' DestinationPort_S '. Action:' Action_S\r\n| extend Protocol = strcat(Protocol_s, Protocol_S), SourceHost = strcat(SourceHost_s, SourceHost_S),SourcePort = strcat(SourcePort_s, SourcePort_S), DestinationHost = strcat(DestinationHost_s, DestinationHost_S), DestinationPort = strcat(DestinationPort_s, DestinationPort_S), Action = strcat(Action_s, Action_S)\r\n| extend SourcePort = tostring(SourcePortInt) \r\n| extend TargetPort = tostring(TargetPortInt)\r\n| extend Action1 = case(Action1 == \"denied\",\"Deny\",\"Unknown Action\") \r\n| extend Action = case(Action2 == \"\",Action1,Action2),Rule = case(Rule2a == \"\", case(Rule1 == \"\",case(Rule2b == \"\",\"N/A\", Rule2b),Rule1),Rule2a),  RuleCollection = case(RuleCollection2b == \"\",case(RuleCollection2a == \"\",\"No rule matched\",RuleCollection2a), RuleCollection2b),FQDN = case(FQDN == \"\", \"N/A\", FQDN),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort)\r\n| where '{SelectedSourceIP}' == SourceIP or '{SelectedSourceIP}' == \"*\"  \r\n| summarize by TimeGenerated, URL=FQDN, Protocol, Action, SourcePort, TargetPort, SourceHost , DestinationHost , DestinationPort , ResourceId , ResourceGroup , SubscriptionId\r\n",
+        "size": 0,
+        "showAnalytics": true,
+        "title": "All IP addresses events",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "filter": true
+        }
+      },
+      "name": "query - 9"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\r\n# Azure Firewall - Network rule log statistics"
+      },
+      "name": "text - 14"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\"  \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" to \" TargetIP \":\" TargetPortInt:int * \r\n| parse msg_s with * \". Action: \" Action1a \r\n| parse msg_s with * \"was \" Action1b \" to \" NatDestination \r\n| parse msg_s with Protocol2 \" request from \" SourceIP2 \" to \" TargetIP2 \". Action:\" Action2 \r\n| extend SourcePort = tostring(SourcePortInt),TargetPort = tostring(TargetPortInt) \r\n| extend Action = case(Action1a == \"\", case(Action1b == \"\",Action2,Action1b), Action1a),Protocol = case(Protocol == \"\", Protocol2, Protocol),SourceIP = case(SourceIP == \"\", SourceIP2, SourceIP),TargetIP = case(TargetIP == \"\", TargetIP2, TargetIP),SourcePort = case(SourcePort == \"\", \"N/A\", SourcePort),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort),NatDestination = case(NatDestination == \"\", \"N/A\", NatDestination)  \r\n| summarize count() by Action",
+        "size": 3,
+        "title": "Rule actions, filterable by RuleAction",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "exportFieldName": "series",
+        "exportParameterName": "RuleAction",
+        "exportDefaultValue": "*",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "piechart"
+      },
+      "customWidth": "33",
+      "name": "query - 7"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\"  \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" to \" TargetIP \":\" TargetPortInt:int * \r\n| parse msg_s with * \". Action: \" Action1a \r\n| parse msg_s with * \"was \" Action1b \" to \" NatDestination \r\n| parse msg_s with Protocol2 \" request from \" SourceIP2 \" to \" TargetIP2 \". Action: \" Action2 \r\n| extend SourcePort = tostring(SourcePortInt),TargetPort = tostring(TargetPortInt) \r\n| extend Action = case(Action1a == \"\", case(Action1b == \"\",Action2,Action1b), Action1a),Protocol = case(Protocol == \"\", Protocol2, Protocol),SourceIP = case(SourceIP == \"\", SourceIP2, SourceIP),TargetIP = case(TargetIP == \"\", TargetIP2, TargetIP),SourcePort = case(SourcePort == \"\", \"N/A\", SourcePort),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort), NatDestination = case(NatDestination == \"\", \"N/A\", NatDestination)  \r\n| summarize Count=count() by TargetPort",
+        "size": 3,
+        "title": "Target ports, filterable by TargetPort",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "exportFieldName": "series",
+        "exportParameterName": "TargetPort",
+        "exportDefaultValue": "*",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "piechart"
+      },
+      "customWidth": "33",
+      "name": "query - 10"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\"  \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" to \" TargetIP \":\" TargetPortInt:int * \r\n| parse msg_s with * \". Action: \" Action1a \r\n| parse msg_s with * \"was \" Action1b \" to \" NatDestination\r\n| parse msg_s with Protocol2 \" request from \" SourceIP2 \" to \" TargetIP2 \". Action:\" Action2 \r\n| extend SourcePort = tostring(SourcePortInt),TargetPort = tostring(TargetPortInt) \r\n| extend Action = case(Action1a == \"\", \r\ncase(Action1b == \"\",Action2,Action1b), Action1a),\r\nProtocol = case(Protocol == \"\", Protocol2, Protocol),\r\nSourceIP = case(SourceIP == \"\", SourceIP2, SourceIP),\r\nTargetIP = case(TargetIP == \"\", TargetIP2, TargetIP),\r\nSourcePort = case(SourcePort == \"\", \"N/A\", SourcePort),\r\nTargetPort = case(TargetPort == \"\", \"N/A\", TargetPort),\r\nNatDestination = case(NatDestination == \"\", \"N/A\", NatDestination)  \r\n| where Action == \"DNAT'ed\"\r\n| summarize Amount=count() by NatDestination\r\n",
+        "size": 3,
+        "title": "DNAT actions, filterable by NatDestination",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "exportFieldName": "series",
+        "exportParameterName": "NatDestination",
+        "exportDefaultValue": "*",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "piechart"
+      },
+      "customWidth": "33",
+      "name": "query - 12"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\" \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" to \" TargetIP \":\" TargetPortInt:int * \r\n| parse msg_s with * \". Action: \" Action1a \r\n| parse msg_s with * \"was \" Action1b \" to \" NatDestination\r\n| parse msg_s with Protocol2 \" request from \" SourceIP2 \" to \" TargetIP2 \". Action:\" Action2 \r\n| extend SourcePort = tostring(SourcePortInt),TargetPort = tostring(TargetPortInt) \r\n| extend Action = case(Action1a == \"\", \r\ncase(Action1b == \"\",Action2,Action1b), Action1a),\r\nProtocol = case(Protocol == \"\", Protocol2, Protocol),\r\nSourceIP = case(SourceIP == \"\", SourceIP2, SourceIP),\r\nTargetIP = case(TargetIP == \"\", TargetIP2, TargetIP),\r\nSourcePort = case(SourcePort == \"\", \"N/A\", SourcePort),\r\nTargetPort = case(TargetPort == \"\", \"N/A\", TargetPort),\r\nNatDestination = case(NatDestination == \"\", \"N/A\", NatDestination)\r\n//| extend Action = iif(Action contains \"DNAT'ed\", Action=\"Nah\", Action)\r\n| where '{TargetPort}' == TargetPort or '{TargetPort}' == \"*\"\r\n| where '{RuleAction}' == Action or '{RuleAction}' == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\" \r\n| summarize amount = count() by Action , SourceIP\r\n| sort by amount desc",
+        "size": 0,
+        "title": "Rule actions, by IP addresses",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "eventCount",
+              "formatter": 3,
+              "formatOptions": {
+                "min": 0,
+                "palette": "blue",
+                "showIcon": true
+              }
+            }
+          ],
+          "filter": true
+        }
+      },
+      "customWidth": "33",
+      "name": "query - 8"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\"  \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" to \" TargetIP \":\" TargetPortInt:int * \r\n| parse msg_s with * \". Action: \" Action1a \r\n| parse msg_s with * \"was \" Action1b \" to \" NatDestination \r\n| parse msg_s with Protocol2 \" request from \" SourceIP2 \" to \" TargetIP2 \". Action: \" Action2 \r\n| extend SourcePort = tostring(SourcePortInt),TargetPort = tostring(TargetPortInt) \r\n| extend Action = case(Action1a == \"\", \r\ncase(Action1b == \"\",Action2,Action1b), Action1a),Protocol = case(Protocol == \"\", \r\nProtocol2, Protocol),SourceIP = case(SourceIP == \"\", SourceIP2, SourceIP),\r\nTargetIP = case(TargetIP == \"\", TargetIP2, TargetIP),\r\nSourcePort = case(SourcePort == \"\", \"N/A\", SourcePort),\r\nTargetPort = case(TargetPort == \"\", \"N/A\", TargetPort), \r\nNatDestination = case(NatDestination == \"\", \r\n\"N/A\", NatDestination)\r\n| where '{TargetPort}' == TargetPort or '{TargetPort}' == \"*\"\r\n| where '{RuleAction}' == Action or '{RuleAction}' == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"   \r\n| summarize AMOUNT=count() by TargetPort, SourceIP\r\n| sort by AMOUNT desc",
+        "size": 0,
+        "title": "Target ports, by Source IP",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "filter": true
+        }
+      },
+      "customWidth": "33",
+      "name": "query - 11"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics \r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\"  \r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePortInt:int \" to \" TargetIP \":\" TargetPortInt:int * \r\n| parse msg_s with * \". Action: \" Action1a \r\n| parse msg_s with * \"was \" Action1b \" to \" NatDestination\r\n| parse msg_s with Protocol2 \" request from \" SourceIP2 \" to \" TargetIP2 \". Action:\" Action2 \r\n| extend SourcePort = tostring(SourcePortInt),TargetPort = tostring(TargetPortInt) \r\n| extend Action = case(Action1a == \"\", \r\ncase(Action1b == \"\",Action2,Action1b), Action1a),\r\nProtocol = case(Protocol == \"\", Protocol2, Protocol),\r\nSourceIP = case(SourceIP == \"\", SourceIP2, SourceIP),\r\nTargetIP = case(TargetIP == \"\", TargetIP2, TargetIP),\r\nSourcePort = case(SourcePort == \"\", \"N/A\", SourcePort),\r\nTargetPort = case(TargetPort == \"\", \"N/A\", TargetPort),\r\nNatDestination = case(NatDestination == \"\", \"N/A\", NatDestination)  \r\n| where Action == \"DNAT'ed\"\r\n| where '{TargetPort}' == TargetPort or '{TargetPort}' == \"*\"\r\n| where '{RuleAction}' == Action or '{RuleAction}' == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"\r\n| summarize Amount=count() by NatDestination, TimeGenerated\r\n",
+        "size": 0,
+        "title": "DNAT'ed over time",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "customWidth": "33",
+      "name": "query - 13"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\" \r\n| parse msg_s with Protocol \" request from\" SourceIP \":\" SourcePortInt:int \" to\" TargetIP \":\" TargetPortInt:int *\r\n| parse msg_s with * \". Action: \" Action1a\r\n| parse msg_s with * \" was \" Action1b \" to \" NatDestination\r\n| parse msg_s with Protocol2 \" request from\" SourceIP2 \" to\" TargetIP2 \". Action:\" Action2\r\n| extend SourcePort = tostring(SourcePortInt),TargetPort = tostring(TargetPortInt)\r\n| extend Action = case(Action1a == \"\", case(Action1b == \"\",Action2,Action1b), Action1a),Protocol = case(Protocol == \"\", Protocol2, Protocol),SourceIP = case(SourceIP == \"\", SourceIP2, SourceIP),TargetIP = case(TargetIP == \"\", TargetIP2, TargetIP),SourcePort = case(SourcePort == \"\", \"N/A\", SourcePort),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort),NatDestination = case(NatDestination == \"\", \"N/A\", NatDestination)\r\n| where '{TargetPort}' == TargetPort or '{TargetPort}' == \"*\"\r\n| where '{RuleAction}' == Action or '{RuleAction}' == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"\r\n| summarize count() by Action, bin(TimeGenerated, {TimeRange:grain})\r\n",
+        "size": 0,
+        "title": "Actions, by time",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "name": "query - 15"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let SelectedTopEvent = dynamic({TopEvent});\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where SelectedTopEvent.Resource == Resource or SelectedTopEvent.Resource == \"*\" \r\n| where SelectedTopEvent.ResourceGroup == ResourceGroup or SelectedTopEvent.ResourceGroup == \"*\" \r\n| parse msg_s with Protocol \" request from\" SourceIP \":\" SourcePortInt:int \" to\" TargetIP \":\" TargetPortInt:int *\r\n| parse msg_s with * \". Action: \" Action1a\r\n| parse msg_s with * \" was \" Action1b \" to \" NatDestination\r\n| parse msg_s with Protocol2 \" request from\" SourceIP2 \" to\" TargetIP2 \". Action:\" Action2\r\n| parse msg_s with Protocol_s 'request from ' SourceHost_s ':' SourcePort_s 'to ' DestinationHost_s ':' DestinationPort_s 'was' Action_s 'to' DNATDestination\r\n| parse msg_s with Protocol_S 'request from ' SourceHost_S ':' SourcePort_S 'to ' DestinationHost_S ':' DestinationPort_S '. Action:' Action_S\r\n| extend Protocol = strcat(Protocol_s, Protocol_S), SourceHost = strcat(SourceHost_s, SourceHost_S),SourcePort = strcat(SourcePort_s, SourcePort_S), DestinationHost = strcat(DestinationHost_s, DestinationHost_S), DestinationPort = strcat(DestinationPort_s, DestinationPort_S), Action = strcat(Action_s, Action_S)\r\n| extend SourcePort = tostring(SourcePortInt),TargetPort = tostring(TargetPortInt)\r\n| extend Action = case(Action1a == \"\", case(Action1b == \"\",Action2,Action1b), Action1a),Protocol = case(Protocol == \"\", Protocol2, Protocol),SourceIP = case(SourceIP == \"\", SourceIP2, SourceIP),TargetIP = case(TargetIP == \"\", TargetIP2, TargetIP),SourcePort = case(SourcePort == \"\", \"N/A\", SourcePort),TargetPort = case(TargetPort == \"\", \"N/A\", TargetPort),NatDestination = case(NatDestination == \"\", \"N/A\", NatDestination)\r\n| where '{TargetPort}' == TargetPort or '{TargetPort}' == \"*\"\r\n| where '{RuleAction}' == Action or '{RuleAction}' == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"\r\n| summarize by TimeGenerated,Protocol, Action, SourcePort, TargetPort, SourceHost , DestinationHost , DestinationPort , ResourceId , ResourceGroup , SubscriptionId",
+        "size": 0,
+        "showAnalytics": true,
+        "title": "All IP addresses events",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "filter": true
+        }
+      },
+      "name": "query - 22"
+    }
+  ],
+  "fromTemplateId": "sentinel-AzureFirewall",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
