@@ -1,8 +1,14 @@
-# Azure Monitor Workbook for WAF
+# Azure Monitor Workbook for Azure Firewall 
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Firewall/Azure%20Monitor%20Workbook/Azure%20Firewall_ARM.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%20Firewall%2FAzure%20Monitor%20Workbook%2FAzure%20Firewall_ARM.json)
 
-This workbook visualizes security-relevant WAF events across several filterable panels. It works with all WAF types, including Application Gateway, Front Door, and CDN, and can be filtered based on WAF type or a specific WAF instance. Import via ARM Template or Gallery Template.
+Gain insights into Azure Firewall events. You can learn about your application and network rules, see statistics for firewall activities across URLs, ports, and addresses. This workbook allows you to filter your Firewalls and Resource Groups, dynamically filter per category with easy to read data sets when investigating an issue in your logs. Import via ARM Template or Gallery Template.
+
+When deploying via ARM Template, please make sure you know what Resource ID (Log Analytics Workgroup) you're wanting to use.
+
+>Example of a value: "/subscriptions/<GUID>/resourcegroups/<RG Name>/providers/microsoft.operationalinsights/workspaces/<Workspace Name>"
+
+This workbook visualizes security-relevant Azure Firewall events across several filterable panels. It works with all WAF types, including Application Gateway, Front Door, and CDN, and can be filtered based on WAF type or a specific WAF instance. Import via ARM Template or Gallery Template.
 
 ## Contributing
 
