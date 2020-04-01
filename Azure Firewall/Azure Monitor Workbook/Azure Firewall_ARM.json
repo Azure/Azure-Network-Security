@@ -10,14 +10,14 @@
     },
     "workbookType": {
       "type": "string",
-      "defaultValue": "sentinel",
+      "defaultValue": "workbook",
       "metadata": {
         "description": "The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
       }
     },
     "workbookSourceId": {
       "type": "string",
-      "defaultValue": "[parameters('appInsightsResourceId')]",
+      "defaultValue": "<Insert Full Resource ID>",
       "metadata": {
         "description": "The id of resource instance to which the workbook will be associated"
       }
