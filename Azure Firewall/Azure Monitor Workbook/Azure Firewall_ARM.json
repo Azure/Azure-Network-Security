@@ -17,7 +17,7 @@
     },
     "workbookSourceId": {
       "type": "string",
-      "defaultValue": "/subscriptions/6b1ceacd-5731-4780-8f96-2078dd96fd96/resourcegroups/cxe-ash-ns-demo/providers/microsoft.operationalinsights/workspaces/cxe-ash-demo-law",
+      "defaultValue": "<insert-your-resource-id-here>",
       "metadata": {
         "description": "The id of resource instance to which the workbook will be associated"
       }
