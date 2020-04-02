@@ -17,7 +17,7 @@
       },
       "workbookSourceId": {
         "type": "string",
-        "defaultValue": "/subscriptions/6b1ceacd-5731-4780-8f96-2078dd96fd96/resourcegroups/soc-ns/providers/microsoft.operationalinsights/workspaces/soc-ns-logs",
+        "defaultValue": "<Insert Full Resource ID>",
         "metadata": {
           "description": "The id of resource instance to which the workbook will be associated"
         }

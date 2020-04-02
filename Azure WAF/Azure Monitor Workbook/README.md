@@ -4,6 +4,10 @@
 
 This workbook visualizes security-relevant WAF events across several filterable panels. It works with all WAF types, including Application Gateway, Front Door, and CDN, and can be filtered based on WAF type or a specific WAF instance. Import via ARM Template or Gallery Template.
 
+When deploying via ARM Template, please make sure you know what Resource ID (Log Analytics Workgroup) you're wanting to use.
+
+>Example of a value: /subscriptions/'GUID'/resourcegroups/'RG Name'/providers/microsoft.operationalinsights/workspaces/'Workspace Name'
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
