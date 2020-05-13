@@ -1,0 +1,66 @@
+{
+  "properties": {
+    "displayName": "Mandatory WAF for AFD/AG/CDN",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "Requires WAF on any AFD/AG/CDN resource both at deployment and enabled state. ",
+    "metadata": {
+      "category": "Network",
+      "createdBy": "ac0e5bed-d9d9-49cc-9fee-cde6eb44f73f",
+      "createdOn": "2020-05-11T22:06:08.9003774Z",
+      "updatedBy": "ac0e5bed-d9d9-49cc-9fee-cde6eb44f73f",
+      "updatedOn": "2020-05-12T19:12:04.8244889Z"
+    },
+    "parameters": {
+      "effectType": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Action taken when WAF is not deployed with a given resource"
+        },
+        "allowedValues": [
+          "Audit",
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Deny"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "anyOf": [
+          {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Network/frontdoors"
+              },
+              {
+                "field": "Microsoft.Network/frontdoors/frontendEndpoints[*].webApplicationFirewallPolicyLink.id",
+                "exists": "false"
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Network/applicationGateways"
+              },
+              {
+                "field": "Microsoft.Network/applicationGateways/webApplicationFirewallConfiguration",
+                "exists": "false"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effectType')]"
+      }
+    }
+  },
+  "id": "/subscriptions/a74b0a2f-4412-46fc-bdf8-95707474ece2/providers/Microsoft.Authorization/policyDefinitions/be7ed5c8-2660-4136-8216-e6f3412ba909",
+  "type": "Microsoft.Authorization/policyDefinitions",
+  "name": "be7ed5c8-2660-4136-8216-e6f3412ba909"
+}
