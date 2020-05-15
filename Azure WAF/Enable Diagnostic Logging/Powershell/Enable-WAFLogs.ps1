@@ -56,7 +56,7 @@ Login-AzAccount
 # Get All Subs
 $Subscriptions = Get-AzSubscription
 
-# Create Diag Settings
+# Create Diagnostic Settings
 
 $wsid = (Get-AzOperationalInsightsWorkspace -Name $workspace -ResourceGroupName $workspaceRG).ResourceId
 
