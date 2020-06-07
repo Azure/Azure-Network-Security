@@ -19,7 +19,7 @@
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
             "metadata": {
-            "description": "Location must match the location of the workspace."
+            "description": "Location must match the location of the workspace - Do not edit this parameter."
             }
 		}
     },
@@ -34,7 +34,7 @@
             "Type":"ResultCount"
         },
         "alertSchedule":{
-            "Frequency": 1,
+            "Frequency": 5,
             "Time": 60
         },
         "alertActions":{
