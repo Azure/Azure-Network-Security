@@ -25,7 +25,7 @@
     },
     "variables": {
         "alertLocation": "[parameters('location')]",
-        "alertName": "Abnormal port to protocol",
+        "alertName": "Uncommon port to IP",
         "alertDescription": "This alert search for abnormal port used for this ip based on learing period activity.\nConfigurable Parameters:\n\tLearning period time - learning period for protocol learning in days. Default set to 7.",
         "alertStatus": "true",
         "alertSource":{
