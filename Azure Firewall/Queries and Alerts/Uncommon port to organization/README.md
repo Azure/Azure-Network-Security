@@ -7,25 +7,23 @@ Configurable Parameters:
 - Learning period time - learning period for threashold calculation in days. Default set to 7.
 
 ```
-let LearningPeriod = 7d;
-let RunTime = 1d;
+let LearningPeriod = 5d;
+let RunTime = 1h;
 let StartLearningPeriod = LearningPeriod + RunTime;
 let EndRunTime = RunTime - 1d;
-let LearningPortToProtocol = (AzureDiagnostics
-| where OperationName == "AzureFirewallApplicationRuleLog"
-| parse msg_s with protocol " request from " srcip ":" srcport " to " dsturl ":" dstport "." *
-| where isnotempty(dstport)
-| where TimeGenerated between (ago(StartLearningPeriod) .. ago(RunTime))
-| summarize LearningTimeCount = count() by LearningTimeDstPort = dstport, LearningTimeProtocol = protocol);
-let AlertTimePortToProtocol = (AzureDiagnostics
-| where OperationName == "AzureFirewallApplicationRuleLog"
-| parse msg_s with protocol " request from " srcip ":" srcport " to " dsturl ":" dstport "." *
-| where isnotempty(dstport)
-| where TimeGenerated between (ago(RunTime) .. ago(EndRunTime))
-| summarize AlertTimeCount = count() by AlertTimeDstPort = dstport, AlertTimeProtocol = protocol);
-AlertTimePortToProtocol 
-| join kind=leftouter (LearningPortToProtocol) on $left.AlertTimeDstPort == $right.LearningTimeDstPort
-| where LearningTimeProtocol != AlertTimeProtocol
+let AllowedCommonPorts = dynamic([80, 443]);
+let TrafficLogs = (AzureFirewallLogs
+| where isnotempty(srcip)
+| where operationName == "AzureFirewallApplicationRuleLog" or operationName == "AzureFirewallNetworkRuleLog");
+let LearningSrcIp = (TrafficLogs
+| where PreciseTimeStamp between (ago(StartLearningPeriod) .. ago(RunTime))
+| distinct dstport);
+let AlertTimeSrcIpToPort = (TrafficLogs
+| where PreciseTimeStamp between (ago(RunTime) .. ago(EndRunTime))
+| distinct srcip ,dstport);
+AlertTimeSrcIpToPort
+| join kind=leftantisemi (LearningSrcIp) on dstport
+| where dstport !in (AllowedCommonPorts)
 ```
 
 ## Contributing
