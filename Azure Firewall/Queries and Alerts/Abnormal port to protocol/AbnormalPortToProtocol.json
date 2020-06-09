@@ -38,7 +38,7 @@
             "Time": 60
         },
         "alertActions":{
-            "SeverityLevel": "5"
+            "SeverityLevel": "2"
         },
         "alertTrigger":{
             "Operator":"GreaterThan",
