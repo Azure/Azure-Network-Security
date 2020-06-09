@@ -1,0 +1,75 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"workspaceName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Name of the Log Analytics workspace"
+            }
+		},
+		"LearningPeriod": {
+            "type": "string",
+			"defaultValue": "7",
+            "metadata": {
+                "Description": "Learning period for protocol learning in days"
+            }
+		},
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+            "description": "Location must match the location of the workspace - Do not edit this parameter."
+            }
+        }
+    },
+    "variables": {
+        "alertLocation":"[parameters('location')]",
+        "alertName": "First time source ip to destination with port",
+        "alertDescription": "This alert search for first time source ip to destination with specific port based on learing period activity.\nConfigurable Parameters:\n\tLearning period time - learning period for protocol learning in days. Default set to 7.",
+        "alertStatus": "true",
+        "alertSource":{
+            "Query": "[concat('let LearningPeriod = ', parameters('LearningPeriod'), 'd; let RunTime = 1h; let StartLearningPeriod = LearningPeriod + RunTime; let EndRunTime = RunTime - 1d; let TrafficLogs = (AzureDiagnostics | where OperationName == \"AzureFirewallApplicationRuleLog\" or OperationName == \"AzureFirewallNetworkRuleLog\" | parse msg_s with * \"from \" srcip \":\" srcport \" to \" dsturl \":\" dstport \".\" * | where isnotempty(dsturl) and isnotempty(srcip)); let LearningSrcIpToDstIpPort = (TrafficLogs | where TimeGenerated between (ago(StartLearningPeriod) .. ago(RunTime)) | summarize LearningSrcToDsts = make_set(dsturl,10000) by srcip, dstport); let AlertTimeSrcIpToDstIpPort = (TrafficLogs | where TimeGenerated between (ago(RunTime) .. ago(EndRunTime)) | extend AlertTimeDst = dsturl | distinct AlertTimeDst ,srcip, dstport); AlertTimeSrcIpToDstIpPort | join kind=leftouter (LearningSrcIpToDstIpPort) on srcip, dstport | mv-expand LearningSrcToDsts | where AlertTimeDst != LearningSrcToDsts | summarize LearningSrcToDsts = make_set(LearningSrcToDsts,10000) by srcip, AlertTimeDst')]",
+			"SourceId": "[resourceId('Microsoft.OperationalInsights/workspaces',parameters('workspaceName'))]",
+            "Type":"ResultCount"
+        },
+        "alertSchedule":{
+            "Frequency": 5,
+            "Time": 60
+        },
+        "alertActions":{
+            "SeverityLevel": "3"
+        },
+        "alertTrigger":{
+            "Operator":"GreaterThan",
+            "Threshold":"1"
+        }
+    },
+    "resources":[ {
+        "name":"[variables('alertName')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[variables('alertLocation')]",
+        "properties":{
+            "description": "[variables('alertDescription')]",
+            "enabled": "[variables('alertStatus')]",
+            "source": {
+                "query": "[variables('alertSource').Query]",
+                "dataSourceId": "[variables('alertSource').SourceId]",
+                "queryType":"[variables('alertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "[variables('alertSchedule').Frequency]",
+                "timeWindowInMinutes": "[variables('alertSchedule').Time]"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"[variables('alertActions').SeverityLevel]",
+                "trigger":{
+                    "thresholdOperator":"[variables('alertTrigger').Operator]",
+                    "threshold":"[variables('alertTrigger').Threshold]"
+                }
+            }
+        }
+    } ]
+}

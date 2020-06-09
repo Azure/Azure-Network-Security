@@ -1,32 +1,31 @@
-## First Time Source IP to Destination
+## Abnormal port to protocol
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FFirst%2520time%2520source%2520ip%2520to%2520destination%2FFirstTimeSrcIpToDst.json)
 
-This alert searches for the first time a source IP communicates with a destination based on a configurable learing period.
+This alert searches for abnormal protocol on port based on learning period activity
 Configurable Parameters:
-- Learning period time - learning period for threashold calculation in days. Default set to 7.
+- Learning period time - learning period for protocol learning in days. Default set to 7.
 
 ```
 let LearningPeriod = 7d;
-let RunTime = 1h;
+let RunTime = 1d;
 let StartLearningPeriod = LearningPeriod + RunTime;
 let EndRunTime = RunTime - 1d;
-let TrafficLogs = (AzureDiagnostics
-| where OperationName == "AzureFirewallApplicationRuleLog" or OperationName == "AzureFirewallNetworkRuleLog"
-| parse msg_s with * "from " srcip ":" srcport " to " dsturl ":" dstport "." *
-| where isnotempty(dsturl) and isnotempty(srcip));
-let LearningSrcIpToDstIpPort = (TrafficLogs
+let LearningPortToProtocol = (AzureDiagnostics
+| where OperationName == "AzureFirewallApplicationRuleLog"
+| parse msg_s with protocol " request from " srcip ":" srcport " to " dsturl ":" dstport "." *
+| where isnotempty(dstport)
 | where TimeGenerated between (ago(StartLearningPeriod) .. ago(RunTime))
-| summarize LearningSrcToDsts = make_set(dsturl,10000) by srcip);
-let AlertTimeSrcIpToDstIpPort = (TrafficLogs
+| summarize LearningTimeCount = count() by LearningTimeDstPort = dstport, LearningTimeProtocol = protocol);
+let AlertTimePortToProtocol = (AzureDiagnostics
+| where OperationName == "AzureFirewallApplicationRuleLog"
+| parse msg_s with protocol " request from " srcip ":" srcport " to " dsturl ":" dstport "." *
+| where isnotempty(dstport)
 | where TimeGenerated between (ago(RunTime) .. ago(EndRunTime))
-| extend AlertTimeDst = dsturl
-| distinct AlertTimeDst ,srcip);
-AlertTimeSrcIpToDstIpPort
-| join kind=leftouter (LearningSrcIpToDstIpPort) on srcip
-| mv-expand LearningSrcToDsts
-| where AlertTimeDst != LearningSrcToDsts
-| summarize LearningSrcToDsts = make_set(LearningSrcToDsts,10000) by srcip, AlertTimeDst
+| summarize AlertTimeCount = count() by AlertTimeDstPort = dstport, AlertTimeProtocol = protocol);
+AlertTimePortToProtocol 
+| join kind=leftouter (LearningPortToProtocol) on $left.AlertTimeDstPort == $right.LearningTimeDstPort
+| where LearningTimeProtocol != AlertTimeProtocol
 ```
 
 ## Contributing

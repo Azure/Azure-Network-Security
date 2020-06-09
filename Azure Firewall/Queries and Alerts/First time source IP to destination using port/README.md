@@ -1,8 +1,8 @@
-## First Time Source IP to Destination
+## First time source IP to destination using port
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FFirst%2520time%2520source%2520ip%2520to%2520destination%2FFirstTimeSrcIpToDst.json)
 
-This alert searches for the first time a source IP communicates with a destination based on a configurable learing period.
+This alert searches for the first time a source IP communicates with a destination using a specific port based on learing period activity.
 Configurable Parameters:
 - Learning period time - learning period for threashold calculation in days. Default set to 7.
 
@@ -17,13 +17,13 @@ let TrafficLogs = (AzureDiagnostics
 | where isnotempty(dsturl) and isnotempty(srcip));
 let LearningSrcIpToDstIpPort = (TrafficLogs
 | where TimeGenerated between (ago(StartLearningPeriod) .. ago(RunTime))
-| summarize LearningSrcToDsts = make_set(dsturl,10000) by srcip);
+| summarize LearningSrcToDsts = make_set(dsturl,10000) by srcip, dstport);
 let AlertTimeSrcIpToDstIpPort = (TrafficLogs
 | where TimeGenerated between (ago(RunTime) .. ago(EndRunTime))
 | extend AlertTimeDst = dsturl
-| distinct AlertTimeDst ,srcip);
+| distinct AlertTimeDst ,srcip, dstport);
 AlertTimeSrcIpToDstIpPort
-| join kind=leftouter (LearningSrcIpToDstIpPort) on srcip
+| join kind=leftouter (LearningSrcIpToDstIpPort) on srcip, dstport
 | mv-expand LearningSrcToDsts
 | where AlertTimeDst != LearningSrcToDsts
 | summarize LearningSrcToDsts = make_set(LearningSrcToDsts,10000) by srcip, AlertTimeDst

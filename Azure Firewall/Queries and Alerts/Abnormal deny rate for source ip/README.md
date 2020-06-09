@@ -1,13 +1,13 @@
-## Source IP abnormally connects to multiple destinations
+## Abnormal deny rate for source ip
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FSource%2520IP%2520abnormally%2520connects%2520to%2520multiple%2520destinations%2FSourceAbnormallyConnectsToMultipleDsts.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FFirst%2520time%2520source%2520ip%2520to%2520destination%2FFirstTimeSrcIpToDst.json)
 
-This alert searches for a source IP that abnormally connects to multiple destinations according to learning period activity.
+This alert searches for an abnormal deny rate for source IP to destination IP based on the normal average and standard deviation learned during a configured period.
 Configurable Parameters:
 - Minimum of stds threashold - the number of stds to use in the threashold calculation. Default set to 3.
 - Learning period time - learning period for threashold calculation in days. Default set to 5.
 - Bin time - learning buckets time in hours. Default set to 1 hour.
-- Minimum threashold - minimum threashold for alert. Default set to 10.
+- Minimum threashold - minimum threashold for alert. Default set to 5.
 - Minimum bucket threashold - minimum learning buckets threashold for alert. Default set to 5.
 
 ```
@@ -17,25 +17,27 @@ let StartLearningPeriod = LearningPeriod + RunTime;
 let EndRunTime = RunTime - 1d;
 let BinTime = 1h;
 let NumOfStdsThreshold = 3;
-let MinThreshold = 10.0;
+let MinThreshold = 5.0;
 let MinLearningBuckets = 5;
 let TrafficLogs = (AzureDiagnostics
+| where TimeGenerated  between (ago(StartLearningPeriod) .. ago(EndRunTime))
 | where OperationName == "AzureFirewallApplicationRuleLog" or OperationName == "AzureFirewallNetworkRuleLog"
-| parse msg_s with * "from " srcip ":" srcport " to " dsturl ":" dstport "." *
+| parse msg_s with * "from " srcip ":" srcport " to " dsturl ":" dstport ". Action: " action "." *
+| where action == "Deny"
 | where isnotempty(dsturl) and isnotempty(srcip));
-let LearningSrcIp = (TrafficLogs
+let LearningSrcIpDenyRate = (TrafficLogs
 | where TimeGenerated between (ago(StartLearningPeriod) .. ago(RunTime))
-| summarize dcount(dsturl) by srcip, bin(TimeGenerated, BinTime)
-| summarize LearningTimeSrcAvg = avg(dcount_dsturl), LearningTimeSrcStd = stdev(dcount_dsturl), LearningTimeBuckets = count() by srcip
+| summarize count() by srcip, bin(TimeGenerated, BinTime)
+| summarize LearningTimeSrcIpDenyRateAvg = avg(count_), LearningTimeSrcIpDenyRateStd = stdev(count_), LearningTimeBuckets = count() by srcip
 | where LearningTimeBuckets > MinLearningBuckets);
-let AlertTimeSrcIp = (TrafficLogs
+let AlertTimeSrcIpDenyRate = (TrafficLogs
 | where TimeGenerated between (ago(RunTime) .. ago(EndRunTime))
-| summarize AlertTimeSrcIpdCount = dcount(dsturl) by srcip);
-AlertTimeSrcIp
-| join kind=leftouter (LearningSrcIp) on srcip
-| extend LreaningThreshold = max_of(LearningTimeSrcAvg + NumOfStdsThreshold * LearningTimeSrcStd, MinThreshold)
-| where AlertTimeSrcIpdCount > LreaningThreshold
-| project-away srcip1, LearningTimeSrcAvg, LearningTimeSrcStd
+| summarize AlertTimeSrcIpDenyRateCount = count() by srcip);
+AlertTimeSrcIpDenyRate
+| join kind=leftouter (LearningSrcIpDenyRate) on srcip
+| extend LreaningThreshold = max_of(LearningTimeSrcIpDenyRateAvg + NumOfStdsThreshold * LearningTimeSrcIpDenyRateStd, MinThreshold)
+| where AlertTimeSrcIpDenyRateCount > LreaningThreshold
+| project-away srcip1, LearningTimeSrcIpDenyRateAvg, LearningTimeSrcIpDenyRateStd
 ```
 
 ## Contributing
