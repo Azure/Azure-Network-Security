@@ -1,0 +1,96 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"workspaceName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Name of the Log Analytics workspace"
+            }
+		},
+		"NumOfStdsThreshold": {
+            "type": "string",
+			"defaultValue": "3",
+            "metadata": {
+                "Description": "Number of stds to use in the threashold calculation"
+            }
+		},
+		"LearningPeriod": {
+            "type": "string",
+			"defaultValue": "5",
+            "metadata": {
+                "Description": "Learning period for threashold calculation in days"
+            }
+		},
+		"BinTime": {
+            "type": "string",
+			"defaultValue": "1",
+            "metadata": {
+                "Description": "Learning buckets time in hours"
+            }
+		},
+		"MinThreshold": {
+            "type": "string",
+			"defaultValue": "10",
+            "metadata": {
+                "Description": "Minimum threashold for alert"
+            }
+		},
+		"MinLearningBuckets": {
+            "type": "string",
+			"defaultValue": "5",
+            "metadata": {
+                "Description": "Minimum learning buckets threashold for alert"
+            }
+		}
+    },
+    "variables": {
+        "alertLocation": "eastus",
+        "alertName": "Source ip abnormally connectes to multiple hosts",
+        "alertDescription": "This alert search for source ip that abnormally connects to multiple destinations according to learning period activity.\nConfigurable Parameters:\n\tMinimum of stds threashold - the number of stds to use in the threashold calculation. Default set to 3.\n\tLearning period time - learning period for threashold calculation in days. Default set to 5.\n\tBin time - learning buckets time in hours. Default set to 1 hour.\n\tMinimum threashold - minimum threashold for alert. Default set to 10.\n\tMinimum bucket threashold - minimum learning buckets threashold for alert. Default set to 5.",
+        "alertStatus": "true",
+        "alertSource":{
+            "Query": "[concat('let LearningPeriod = ', parameters('LearningPeriod'), 'd; let RunTime = 1h; let StartLearningPeriod = LearningPeriod + RunTime; let EndRunTime = RunTime - 1d; let BinTime = ', parameters('BinTime'), 'h; let NumOfStdsThreshold = ', parameters('NumOfStdsThreshold'), '; let MinThreshold = ', parameters('MinThreshold'), '.0; let MinLearningBuckets = ', parameters('MinLearningBuckets'), '; let TrafficLogs = (AzureDiagnostics | where OperationName == \"AzureFirewallApplicationRuleLog\" or OperationName == \"AzureFirewallNetworkRuleLog\" | parse msg_s with * \"from \" srcip \":\" srcport \" to \" dsturl \":\" dstport \".\" * | where isnotempty(dsturl) and isnotempty(srcip)); let LearningSrcIp = (TrafficLogs | where TimeGenerated between (ago(StartLearningPeriod) .. ago(RunTime)) | summarize dcount(dsturl) by srcip, bin(TimeGenerated, BinTime) | summarize LearningTimeSrcAvg = avg(dcount_dsturl), LearningTimeSrcStd = stdev(dcount_dsturl), LearningTimeBuckets = count() by srcip | where LearningTimeBuckets > MinLearningBuckets); let AlertTimeSrcIp = (TrafficLogs | where TimeGenerated between (ago(RunTime) .. ago(EndRunTime)) | summarize AlertTimeSrcIpdCount = dcount(dsturl) by srcip); AlertTimeSrcIp | join kind=leftouter (LearningSrcIp) on srcip | extend LreaningThreshold = max_of(LearningTimeSrcAvg + NumOfStdsThreshold * LearningTimeSrcStd, MinThreshold) | where AlertTimeSrcIpdCount > LreaningThreshold | project-away srcip1, LearningTimeSrcAvg, LearningTimeSrcStd')]",
+			"SourceId": "[resourceId('Microsoft.OperationalInsights/workspaces',parameters('workspaceName'))]",
+            "Type":"ResultCount"
+        },
+        "alertSchedule":{
+            "Frequency": 5,
+            "Time": 60
+        },
+        "alertActions":{
+            "SeverityLevel": "4"
+        },
+        "alertTrigger":{
+            "Operator":"GreaterThan",
+            "Threshold":"1"
+        }
+    },
+    "resources":[ {
+        "name":"[variables('alertName')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[variables('alertLocation')]",
+        "properties":{
+            "description": "[variables('alertDescription')]",
+            "enabled": "[variables('alertStatus')]",
+            "source": {
+                "query": "[variables('alertSource').Query]",
+                "dataSourceId": "[variables('alertSource').SourceId]",
+                "queryType":"[variables('alertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "[variables('alertSchedule').Frequency]",
+                "timeWindowInMinutes": "[variables('alertSchedule').Time]"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"[variables('alertActions').SeverityLevel]",
+                "trigger":{
+                    "thresholdOperator":"[variables('alertTrigger').Operator]",
+                    "threshold":"[variables('alertTrigger').Threshold]"
+                }
+            }
+        }
+    } ]
+}
