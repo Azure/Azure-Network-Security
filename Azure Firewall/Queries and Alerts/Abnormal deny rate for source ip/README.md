@@ -1,6 +1,6 @@
 ## Abnormal deny rate for source ip
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FFirst%2520time%2520source%2520ip%2520to%2520destination%2FFirstTimeSrcIpToDst.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FAbnormal%2520deny%2520rate%2520for%2520source%2520ip%2FAbnormalDenyRate.json)
 
 This alert searches for an abnormal deny rate for source IP to destination IP based on the normal average and standard deviation learned during a configured period.
 Configurable Parameters:

@@ -1,6 +1,6 @@
 ## Uncommon port to organization
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FSource%2520IP%2520abnormally%2520connects%2520to%2520multiple%2520destinations%2FSourceAbnormallyConnectsToMultipleDsts.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FUncommon%2520port%2520to%2520organization%2FUncommonPortToOrganization.json)
 
 This alert searches for abnormal ports used in the organization based on learing period activity.
 Configurable Parameters:

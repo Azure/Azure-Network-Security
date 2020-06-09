@@ -1,6 +1,6 @@
 ## Abnormal port to protocol
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FFirst%2520time%2520source%2520ip%2520to%2520destination%2FFirstTimeSrcIpToDst.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FAbnormal%2520port%2520to%2520protocol%2FAbnormalPortToProtocol.json)
 
 This alert searches for abnormal protocol on port based on learning period activity
 Configurable Parameters:

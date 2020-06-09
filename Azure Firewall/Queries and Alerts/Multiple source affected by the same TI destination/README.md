@@ -1,6 +1,6 @@
 ## Multiple source affected by the same TI destination
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FSource%2520IP%2520abnormally%2520connects%2520to%2520multiple%2520destinations%2FSourceAbnormallyConnectsToMultipleDsts.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FMultiple%2520source%2520affected%2520by%2520the%2520same%2520TI%2520destination%2FMultipleSourceSameTI.json)
 
 This alert searches for multiple hosts affected by the same TI indicator.
 Configurable Parameters:
