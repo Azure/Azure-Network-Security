@@ -2,9 +2,14 @@
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FAbnormal%2520port%2520to%2520protocol%2FAbnormalPortToProtocol.json)
 
-This alert searches for abnormal protocol on port based on learning period activity
+### Scope
+This alert can indicate malicious communication (C2) or exfiltration by attackers trying to communicate over known ports (22:SSH, 80:HTTP) but don’t use the known protocol headers to match the port number.
+
+### How it works
+The alert searches for abnormal protocol on port based on learning period activity
+
 Configurable Parameters:
-- Learning period time - learning period for protocol learning in days. Default set to 7.
+- Learning period time - learning period for protocol learning in days. Default is set to 7.
 
 ```
 let LearningPeriod = 7d;

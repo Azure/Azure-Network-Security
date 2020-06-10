@@ -1,4 +1,4 @@
-## Abnormal deny rate for source ip
+## Abnormal deny rate for source IP
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FAbnormal%2520deny%2520rate%2520for%2520source%2520ip%2FAbnormalDenyRate.json)
 
@@ -9,11 +9,11 @@ This alert can provide indication of potential exfiltration, initial access or C
 The alert searches for an abnormal deny rate for source IP to destination IP based on the normal average and standard deviation learned during a configured period.
 
 Configurable Parameters:
-- Minimum of stds threashold - the number of stds to use in the threashold calculation. Default set to 3.
-- Learning period time - learning period for threashold calculation in days. Default set to 5.
-- Bin time - learning buckets time in hours. Default set to 1 hour.
-- Minimum threashold - minimum threashold for alert. Default set to 5.
-- Minimum bucket threashold - minimum learning buckets threashold for alert. Default set to 5.
+- Minimum of stds threshold - the number of stds to use in the threshold calculation. Default is set to 3.
+- Learning period time - learning period for threshold calculation in days. Default is set to 5.
+- Bin time - learning buckets time in hours. Default is set to 1 hour.
+- Minimum threshold - minimum threshold for alert. Default is set to 5.
+- Minimum bucket threshold - minimum learning buckets threshold for alert. Default is set to 5.
 
 ```
 let LearningPeriod = 5d;

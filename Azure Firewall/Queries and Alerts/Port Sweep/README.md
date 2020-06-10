@@ -1,11 +1,16 @@
-## Port Sweep
+## Port sweep
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FPort%2520Sweep%2FPortSweep.json)
 
-This alert searches for source IP scanning the same port on multiple hosts.
+### Scope
+This alert can indicate malicious scanning of port by an attacker, trying to reveal machines with specific ports open in the organization. The ports can be compromised by attackers for initial access, most often by exploiting vulnerability.
+
+### How it works
+The alert searches for source IP scanning the same port on multiple hosts.
+
 Configurable Parameters:
-- Port sweep time - the time range to look for multiple hosts scanned. Default set to 30 seconds.
-- Minimum different hosts threashold - alert only if more than this number of hosts scanned. Default set to 200.
+- Port sweep time - the time range to look for multiple hosts scanned. Default is set to 30 seconds.
+- Minimum different hosts threshold - alert only if more than this number of hosts scanned. Default is set to 200.
 
 ```
 let RunTime = 1h;

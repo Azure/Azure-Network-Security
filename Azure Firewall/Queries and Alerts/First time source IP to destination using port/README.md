@@ -2,9 +2,14 @@
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FFirst%2520time%2520source%2520IP%2520to%2520destination%2520using%2520port%2FFirstTimeSrcIpToDstWithPort.json)
 
-This alert searches for the first time a source IP communicates with a destination using a specific port based on learing period activity.
+### Scope
+This alert can indicate malicious communication (C2) from machines that never accessed the destination before, using a specific port. This alert can also be used for hunting destinations that were never accessed before in the organization, and correlating it with different alerts for higher confidence.
+
+### How it works
+The alert searches for the first time a source IP communicates with a destination using a specific port based on learning period activity.
+
 Configurable Parameters:
-- Learning period time - learning period for threashold calculation in days. Default set to 7.
+- Learning period time - learning period for threshold calculation in days. Default is set to 7.
 
 ```
 let LearningPeriod = 7d;

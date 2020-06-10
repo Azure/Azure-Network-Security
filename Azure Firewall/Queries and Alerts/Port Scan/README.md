@@ -1,11 +1,16 @@
-## Port Scan
+## Port scan
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FPort%2520Scan%2FPortScan.json)
 
-This alert searches for a source IP scanning multiple ports on one host.
+### Scope
+This alert can indicate malicious scanning of ports by an attacker, trying to reveal open ports in the organization that can be compromised for initial access.
+
+### How it works
+The alert searches for a source IP scanning multiple ports on one host.
+
 Configurable Parameters:
-- Port scan time - the time range to look for multiple ports scanned. Default set to 30 seconds.
-- Minimum different ports threashold - alert only if more than this number of ports scanned. Default set to 100.
+- Port scan time - the time range to look for multiple ports scanned. Default is set to 30 seconds.
+- Minimum different ports threshold - alert only if more than this number of ports scanned. Default is set to 100.
 
 ```
 let RunTime = 1h;

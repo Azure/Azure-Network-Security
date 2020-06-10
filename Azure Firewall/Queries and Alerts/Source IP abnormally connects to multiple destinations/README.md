@@ -2,13 +2,18 @@
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FSource%2520IP%2520abnormally%2520connects%2520to%2520multiple%2520destinations%2FSourceAbnormallyConnectsToMultipleDsts.json)
 
-This alert searches for a source IP that abnormally connects to multiple destinations according to learning period activity.
+### Scope
+This alert can indicate initial access attempts by attackers, trying to jump between different machines in the organization, exploiting lateral movement path or the same vulnerability on different machines in order to find vulnerable machines to access.
+
+### How it works
+The alert searches for a source IP that abnormally connects to multiple destinations according to learning period activity.
+
 Configurable Parameters:
-- Minimum of stds threashold - the number of stds to use in the threashold calculation. Default set to 3.
-- Learning period time - learning period for threashold calculation in days. Default set to 5.
-- Bin time - learning buckets time in hours. Default set to 1 hour.
-- Minimum threashold - minimum threashold for alert. Default set to 10.
-- Minimum bucket threashold - minimum learning buckets threashold for alert. Default set to 5.
+- Minimum of stds threshold - the number of stds to use in the threshold calculation. Default is set to 3.
+- Learning period time - learning period for threshold calculation in days. Default is set to 5.
+- Bin time - learning buckets time in hours. Default is set to 1 hour.
+- Minimum threshold - minimum threshold for alert. Default is set to 10.
+- Minimum bucket threshold - minimum learning buckets threshold for alert. Default is set to 5.
 
 ```
 let LearningPeriod = 5d;

@@ -1,10 +1,15 @@
-## First Time Source IP to Destination
+## First time source IP to destination
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FFirst%2520time%2520source%2520ip%2520to%2520destination%2FFirstTimeSrcIpToDst.json)
 
-This alert searches for the first time a source IP communicates with a destination based on a configurable learing period.
+### Scope
+This alert can indicate malicious communication (C2) from machines that never accessed the destination before. This alert can also be used for hunting destinations that were never accessed before in the organization, and correlating it with different alerts for higher confidence.
+
+### How it works
+The alert searches for the first time a source IP communicates with a destination based on a configurable learning period.
+
 Configurable Parameters:
-- Learning period time - learning period for threashold calculation in days. Default set to 7.
+- Learning period time - learning period for threshold calculation in days. Default is set to 7.
 
 ```
 let LearningPeriod = 7d;
