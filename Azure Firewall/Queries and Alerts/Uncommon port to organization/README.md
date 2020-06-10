@@ -2,9 +2,14 @@
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FUncommon%2520port%2520to%2520organization%2FUncommonPortToOrganization.json)
 
-This alert searches for abnormal ports used in the organization based on learing period activity.
+### Scope
+This alert can indicate exfiltration attack or C2 control from machines in the organization by using new a port that has never been used on any machine in the organization.
+
+### How it works
+The alert searches for abnormal ports used in the organization based on learning period activity.
+
 Configurable Parameters:
-- Learning period time - learning period for threashold calculation in days. Default set to 7.
+- Learning period time - learning period for threshold calculation in days. Default is set to 7.
 
 ```
 let LearningPeriod = 5d;
