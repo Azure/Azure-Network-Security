@@ -2,10 +2,10 @@
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FAbnormal%2520deny%2520rate%2520for%2520source%2520ip%2FAbnormalDenyRate.json)
 
-# Scope
+### Scope
 This alert can provide indication of potential exfiltration, initial access or C2, where attacker tries to exploit the same vulnerability on machines in the organization, but is being blocked by firewall rules.
 
-# How it works
+### How it works
 The alert searches for an abnormal deny rate for source IP to destination IP based on the normal average and standard deviation learned during a configured period.
 
 Configurable Parameters:
