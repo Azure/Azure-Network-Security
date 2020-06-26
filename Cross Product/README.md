@@ -1,5 +1,5 @@
 # Azure Network Security Cross-Product deployment
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FAzure%2520Monitor%2520Workbook%2FWAFWorkbook_ARM.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/AzNetSecdeploy.json)
 
 ## What is included with the AzNetSec Deployment Template
 
