@@ -1058,7 +1058,7 @@
             "name": "healthProbeSettings1",
             "properties": {
               "path": "/",
-              "protocol": "Https",
+              "protocol": "Http",
               "intervalInSeconds": 30
             }
           }
@@ -1129,7 +1129,7 @@
               "enabledState": "Enabled",
               "routeConfiguration": {
                 "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
-                "forwardingProtocol": "HttpsOnly",
+                "forwardingProtocol": "HttpOnly",
                 "backendPool": {
                   "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', variables('FrontDoorName'), 'OWASP')]"
                 }
@@ -1597,7 +1597,5 @@
       }
     }
   ],
-
-
     "outputs": {}
   }
