@@ -25,7 +25,7 @@
     },
     "DiagnosticsWorkspaceSubscription": {
       "type": "string",
-      "defaultValue": "<subscriptionID>",
+      "defaultValue": "<Workspacesubscription>",
       "metadata": {
         "description": "Provide the workspace name for your Network Diagnostic logs"
       }
@@ -106,8 +106,8 @@
       "NIC-Name1": "Nic1",
       "NIC-Name2": "Nic2",
       "NIC-Name3": "Nic3",
-      "NIC-Name1Ipaddress": "10.0.27.68",
-      "NIC-Name2Ipaddress": "10.0.27.4",
+      "NIC-Name1Ipaddress": "10.0.27.4",
+      "NIC-Name2Ipaddress": "10.0.27.68",
       "NIC-Name3Ipaddress": "10.0.28.4",
       "DDoSPlanName": "SOCNSDDOSPLAN",
       "VM-Name1": "VM-Win10",
@@ -947,7 +947,7 @@
             "name": "Public-HTTP",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[concat(variables('applicationGatewayId'), '/frontendIPConfigurations/appGwPrivateFrontendIp')]"
+                "id": "[concat(variables('applicationGatewayId'), '/frontendIPConfigurations/appGwPublicFrontendIp')]"
               },
               "frontendPort": {
                 "id": "[concat(variables('applicationGatewayId'), '/frontendPorts/port_80')]"
@@ -1408,7 +1408,7 @@
             "properties": {
               "privateIPAddress": "[variables('NIC-Name1Ipaddress')]",
               "subnet": {
-                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2')), '/subnets/',variables('VN-Name2Subnet2Name'))]"
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2')), '/subnets/',variables('VN-Name2Subnet1Name'))]"
               },
               "privateIPAllocationMethod": "Static"
             }
@@ -1429,7 +1429,7 @@
             "properties": {
               "privateIPAddress": "[variables('NIC-Name2Ipaddress')]",
               "subnet": {
-                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2')), '/subnets/',variables('VN-Name2Subnet1Name'))]"
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2')), '/subnets/',variables('VN-Name2Subnet2Name'))]"
               },
               "privateIPAllocationMethod": "Static"
             }
