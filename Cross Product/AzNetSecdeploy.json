@@ -25,7 +25,7 @@
     },
     "DiagnosticsWorkspaceSubscription": {
       "type": "string",
-      "defaultValue": "<Workspacesubscription>",
+      "defaultValue": "<WorkspaceSubscriptionID>",
       "metadata": {
         "description": "Provide the workspace name for your Network Diagnostic logs"
       }
@@ -48,73 +48,73 @@
         "description": "Allowing the ability to enable or disable DDoS on deployment, false is disable, true is enable"
       }
     }
-    },
-    "variables": {
-      "VN-Name1": "VN-HUB",
-      "VN-Name2": "VN-SPOKE1",
-      "VN-Name3": "VN-SPOKE2",
-      "VN-Name1Prefix": "10.0.25.0/24",
-      "VN-Name1Subnet1Name": "AGWAFSubnet",
-      "VN-Name1Subnet1Prefix": "10.0.25.64/26",
-      "VN-Name1Subnet2Name": "AzureFirewallSubnet",
-      "VN-Name1Subnet2Prefix": "10.0.25.0/26",
-      "VN-Name2Prefix": "10.0.27.0/24",
-      "VN-Name2Subnet1Name": "SPOKE1-SUBNET1",
-      "VN-Name2Subnet1Prefix": "10.0.27.0/26",
-      "VN-Name2Subnet2Name": "SPOKE1-SUBNET2",
-      "VN-Name2Subnet2Prefix": "10.0.27.64/26",
-      "VN-Name3Prefix": "10.0.28.0/24",
-      "VN-Name3Subnet1Name": "SPOKE2-SUBNET1",
-      "VN-Name3Subnet1Prefix": "10.0.28.0/26",
-      "VN-Name3Subnet2Name": "SPOKE2-SUBNET2",
-      "VN-Name3Subnet2Prefix": "10.0.28.64/26",
-      "Subnet_serviceEndpoints": [
-        {
-          "service": "Microsoft.Web"
-        },
-        {
-          "service": "Microsoft.Storage"
-        },
-        {
-          "service": "Microsoft.Sql"
-        },
-        {
-          "service": "Microsoft.ServiceBus"
-        },
-        {
-          "service": "Microsoft.KeyVault"
-        },
-        {
-          "service": "Microsoft.AzureActiveDirectory"
-        }
-      ],
-      "publicIpAddressName1": "SOCNSFWPIP",
-      "publicIpAddressName2": "SOCNSAGPIP",
-      "FW-name": "SOC-NS-FW",
-      "firewallPolicyName": "SOC-NS-FWPolicy",
-      "AppGatewayPolicyName": "SOC-NS-AGPolicy",
-      "FrontdoorPolicyName": "SOCNSFDPolicy",
-      "AG-Name": "SOC-NS-AG-WAFv2",
-      "AppGateway_IPAddress": "10.0.25.70",
-      "applicationGatewayId": "[resourceId('Microsoft.Network/applicationGateways', variables('AG-Name'))]",
-      "FrontDoorName": "Demowasp",
-      "RT-Name1": "SOC-NS-DEFAULT-ROUTE",
-      "NSG-Name1": "SOC-NS-NSG-SPOKE1",
-      "NSG-Name2": "SOC-NS-NSG-SPOKE2",
-      "Site-Name1": "owaspdirect",
-      "Site-HPN": "OWASP-ASP",
-      "NIC-Name1": "Nic1",
-      "NIC-Name2": "Nic2",
-      "NIC-Name3": "Nic3",
-      "NIC-Name1Ipaddress": "10.0.27.4",
-      "NIC-Name2Ipaddress": "10.0.27.68",
-      "NIC-Name3Ipaddress": "10.0.28.4",
-      "DDoSPlanName": "SOCNSDDOSPLAN",
-      "VM-Name1": "VM-Win10",
-      "VM-Name2": "VM-Kali",
-      "VM-Name3": "VM-Win2019",
-      "workspaceid": "[concat('/subscriptions/',parameters('DiagnosticsWorkspaceSubscription'),'/resourcegroups/', parameters('DiagnosticsWorkspaceResourceGroup'), '/providers/Microsoft.OperationalInsights/workspaces/',parameters('DiagnosticsWorkspaceName'))]"
-    },
+  },
+  "variables": {
+    "VN-Name1": "VN-HUB",
+    "VN-Name2": "VN-SPOKE1",
+    "VN-Name3": "VN-SPOKE2",
+    "VN-Name1Prefix": "10.0.25.0/24",
+    "VN-Name1Subnet1Name": "AGWAFSubnet",
+    "VN-Name1Subnet1Prefix": "10.0.25.64/26",
+    "VN-Name1Subnet2Name": "AzureFirewallSubnet",
+    "VN-Name1Subnet2Prefix": "10.0.25.0/26",
+    "VN-Name2Prefix": "10.0.27.0/24",
+    "VN-Name2Subnet1Name": "SPOKE1-SUBNET1",
+    "VN-Name2Subnet1Prefix": "10.0.27.0/26",
+    "VN-Name2Subnet2Name": "SPOKE1-SUBNET2",
+    "VN-Name2Subnet2Prefix": "10.0.27.64/26",
+    "VN-Name3Prefix": "10.0.28.0/24",
+    "VN-Name3Subnet1Name": "SPOKE2-SUBNET1",
+    "VN-Name3Subnet1Prefix": "10.0.28.0/26",
+    "VN-Name3Subnet2Name": "SPOKE2-SUBNET2",
+    "VN-Name3Subnet2Prefix": "10.0.28.64/26",
+    "Subnet_serviceEndpoints": [
+      {
+        "service": "Microsoft.Web"
+      },
+      {
+        "service": "Microsoft.Storage"
+      },
+      {
+        "service": "Microsoft.Sql"
+      },
+      {
+        "service": "Microsoft.ServiceBus"
+      },
+      {
+        "service": "Microsoft.KeyVault"
+      },
+      {
+        "service": "Microsoft.AzureActiveDirectory"
+      }
+    ],
+    "publicIpAddressName1": "SOCNSFWPIP",
+    "publicIpAddressName2": "SOCNSAGPIP",
+    "FW-name": "SOC-NS-FW",
+    "firewallPolicyName": "SOC-NS-FWPolicy",
+    "AppGatewayPolicyName": "SOC-NS-AGPolicy",
+    "FrontdoorPolicyName": "SOCNSFDPolicy",
+    "AG-Name": "SOC-NS-AG-WAFv2",
+    "AppGateway_IPAddress": "10.0.25.70",
+    "applicationGatewayId": "[resourceId('Microsoft.Network/applicationGateways', variables('AG-Name'))]",
+    "FrontDoorName": "[concat('Demowasp','-', uniqueString(resourceGroup().id))]",
+    "RT-Name1": "SOC-NS-DEFAULT-ROUTE",
+    "NSG-Name1": "SOC-NS-NSG-SPOKE1",
+    "NSG-Name2": "SOC-NS-NSG-SPOKE2",
+    "Site-Name1": "[concat('owaspdirect','-', uniqueString(resourceGroup().id))]",
+    "Site-HPN": "OWASP-ASP",
+    "NIC-Name1": "Nic1",
+    "NIC-Name2": "Nic2",
+    "NIC-Name3": "Nic3",
+    "NIC-Name1Ipaddress": "10.0.27.4",
+    "NIC-Name2Ipaddress": "10.0.27.68",
+    "NIC-Name3Ipaddress": "10.0.28.4",
+    "DDoSPlanName": "SOCNSDDOSPLAN",
+    "VM-Name1": "VM-Win10",
+    "VM-Name2": "VM-Kali",
+    "VM-Name3": "VM-Win2019",
+    "workspaceid": "[concat('/subscriptions/',parameters('DiagnosticsWorkspaceSubscription'),'/resourcegroups/', parameters('DiagnosticsWorkspaceResourceGroup'), '/providers/Microsoft.OperationalInsights/workspaces/',parameters('DiagnosticsWorkspaceName'))]"
+  },
   "resources": [
     {
       "name": "[variables('VN-Name1')]",
@@ -922,7 +922,7 @@
             "properties": {
               "backendAddresses": [
                 {
-                  "fqdn": "owaspdirect.azurewebsites.net"
+                  "fqdn": "[concat(variables('Site-Name1'),'.azurewebsites.net')]"
                 }
               ]
             }
@@ -935,7 +935,7 @@
               "port": 443,
               "protocol": "Https",
               "cookieBasedAffinity": "Disabled",
-              "hostName": "owaspdirect.azurewebsites.net",
+              "hostName": "[concat(variables('Site-Name1'),'.azurewebsites.net')]",
               "pickHostNameFromBackendAddress": false,
               "affinityCookieName": "ApplicationGatewayAffinity",
               "requestTimeout": 20
@@ -1074,9 +1074,10 @@
         ],
         "frontendEndpoints": [
           {
-            "name": "Demowasp-azurefd-net",
+            "id": "[concat(resourceId('Microsoft.Network/frontdoors', variables('FrontDoorName')), concat('/FrontendEndpoints/', variables('FrontDoorName'), '-azurefd-net'))]",
+            "name": "[concat(variables('FrontDoorName'), '-azurefd-net')]",
             "properties": {
-              "hostName": "Demowasp.azurefd.net",
+              "hostName": "[concat(variables('FrontDoorName'), '.azurefd.net')]",
               "sessionAffinityEnabledState": "Disabled",
               "sessionAffinityTtlSeconds": 0,
               "webApplicationFirewallPolicyLink": {
@@ -1116,7 +1117,7 @@
             "properties": {
               "frontendEndpoints": [
                 {
-                  "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', variables('FrontDoorName'), 'Demowasp-azurefd-net')]"
+                  "id": "[concat(resourceId('Microsoft.Network/frontdoors', variables('frontdoorname')), concat('/frontendEndpoints/', variables('frontdoorname'), '-azurefd-net'))]"
                 }
               ],
               "acceptedProtocols": [
@@ -1597,5 +1598,7 @@
       }
     }
   ],
+
+
     "outputs": {}
   }
