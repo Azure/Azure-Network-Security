@@ -1,5 +1,5 @@
 # Azure Network Security Lab Environment Deployment Template
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FCross%2520Product%2FAllAzNetSec%2FAzNetSecdeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FCross%2520Product%2FNetwork%2520Security%2520Lab%2520Template%2FAzNetSecdeploy.json)
 
 This ARM deployment includes everything needed to test Azure Network Security components.
 
