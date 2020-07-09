@@ -48,7 +48,7 @@
         "description": "Allowing the ability to enable or disable DDoS on deployment, false is disable, true is enable"
       }
     }
-  },
+  },  
   "variables": {
     "VN-Name1": "VN-HUB",
     "VN-Name2": "VN-SPOKE1",
@@ -973,17 +973,6 @@
             }
           }
         ],
-        "webApplicationFirewallConfiguration": {
-          "enabled": true,
-          "firewallMode": "Prevention",
-          "ruleSetType": "OWASP",
-          "ruleSetVersion": "3.0",
-          "disabledRuleGroups": [],
-          "exclusions": [],
-          "requestBodyCheck": true,
-          "maxRequestBodySizeInKb": 128,
-          "fileUploadLimitInMb": 100
-        },
         "enableHttp2": false,
         "firewallPolicy": {
           "id": "[resourceId('Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies', variables('AppGatewayPolicyName'))]"
@@ -1024,6 +1013,72 @@
       "location": "[resourceGroup().location]",
       "tags": {},
       "properties": {
+        "customRules": [
+          {
+            "name": "SentinelBlockIP",
+            "priority": 10,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RemoteAddr"
+                  }
+                ],
+                "operator": "IPMatch",
+                "negationConditon": false,
+                "matchValues": [
+                  "104.210.223.108"
+                ],
+                "transforms": []
+              }
+            ]
+          },
+          {
+            "name": "BlockGeoLocationChina",
+            "priority": 20,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RemoteAddr"
+                  }
+                ],
+                "operator": "GeoMatch",
+                "negationConditon": false,
+                "matchValues": [
+                  "CN"
+                ],
+                "transforms": []
+              }
+            ]
+          },
+          {
+            "name": "BlockInternetExplorer11",
+            "priority": 30,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RequestHeaders",
+                    "selector": "User-Agent"
+                  }
+                ],
+                "operator": "Contains",
+                "negationConditon": false,
+                "matchValues": [
+                  "rv:11.0"
+                ],
+                "transforms": []
+              }
+            ]
+          }
+        ],
         "policySettings": {
           "fileUploadLimitInMb": 100,
           "maxRequestBodySizeInKb": 128,
@@ -1036,8 +1091,22 @@
           "managedRuleSets": [
             {
               "ruleSetType": "OWASP",
-              "ruleSetVersion": "3.0",
-              "ruleGroupOverrides": []
+              "ruleSetVersion": "3.1",
+              "ruleGroupOverrides": [
+                {
+                  "ruleGroupName": "REQUEST-920-PROTOCOL-ENFORCEMENT",
+                  "rules": [
+                    {
+                      "ruleId": "920350",
+                      "state": "Disabled"
+                    },
+                    {
+                      "ruleId": "920320",
+                      "state": "Disabled"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -1147,9 +1216,76 @@
       "location": "Global",
       "properties": {
         "policySettings": {
-          "enabledState": "Enabled",
-          "mode": "Prevention",
-          "customBlockResponseStatusCode": 403
+                    "enabledState": "Enabled",
+                    "mode": "Prevention",
+                    "redirectUrl": "https://www.microsoft.com/en-us/edge",
+                    "customBlockResponseStatusCode": 403,
+                    "customBlockResponseBody": "QmxvY2tlZCBieSBmcm9udCBkb29yIFdBRg=="
+        },
+        "customRules": {
+          "rules": [
+            {
+              "name": "BlockGeoLocationChina",
+              "enabledState": "Enabled",
+              "priority": 10,
+              "ruleType": "MatchRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 100,
+              "matchConditions": [
+                {
+                  "matchVariable": "RemoteAddr",
+                  "operator": "GeoMatch",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "CN"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Block"
+            },
+            {
+              "name": "RedirectInternetExplorerUserAgent",
+              "enabledState": "Enabled",
+              "priority": 20,
+              "ruleType": "MatchRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 100,
+              "matchConditions": [
+                {
+                  "matchVariable": "RequestHeader",
+                  "selector": "User-Agent",
+                  "operator": "Contains",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "rv:11.0"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Redirect"
+            },
+            {
+              "name": "RateLimitRequest",
+              "enabledState": "Enabled",
+              "priority": 30,
+              "ruleType": "RateLimitRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 1,
+              "matchConditions": [
+                {
+                  "matchVariable": "RequestUri",
+                  "operator": "Contains",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "search"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Block"
+            }
+          ]
         },
         "managedRules": {
           "managedRuleSets": [
