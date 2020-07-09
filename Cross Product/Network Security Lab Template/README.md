@@ -3,6 +3,27 @@
 
 This ARM deployment includes everything needed to test Azure Network Security components.
 
+## PowerShell Deployment Example:
+
+Please use this location as a reference how this powershell commandlet works: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-powershell#deploy-remote-template
+
+There are 6 parameters with defaults
+* DefaultUserName
+* DefaultPassword
+* DiagnosticsWorkspaceName
+* DiagnosticsWorkspaceSubscription
+* DiagnosticsWorkspaceResourceGroup
+* DDOSProtectionConfiguration (bool) - true by default
+
+Adding some `samples` to give context
+- SubscriptionID : "12345678-1234-1234-1234-b826eef6c592"
+- Log Analyitcs Workspace name: "TestWorkspace"
+- Resource Group Log Analytics workspace is in: "TestResourceGroup"
+
+**Example Powershell command with some parameters configured:**
+>New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Network%20Security%20Lab%20Template/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
+
+
 ## What is included with the AzNetSec Deployment Template
 
 | Resource |  Purpose |
