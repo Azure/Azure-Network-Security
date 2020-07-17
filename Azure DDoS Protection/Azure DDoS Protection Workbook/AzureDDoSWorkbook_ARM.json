@@ -31,14 +31,14 @@
       "type": "string",
       "defaultValue": "<WorkspaceSubscriptionID>",
       "metadata": {
-        "description": "Provide the workspace name for your Network Diagnostic logs"
+        "description": "Provide the workspace subscription GUID for your Network Diagnostic logs"
       }
     },
     "DiagnosticsWorkspaceResourceGroup": {
       "type": "string",
       "defaultValue": "<ResourceGroupName>",
       "metadata": {
-        "description": "Provide the workspace name for your Network Diagnostic logs"
+        "description": "Provide the workspace resourcegroupname for your Network Diagnostic logs"
       }
     },
     "workbookId": {
