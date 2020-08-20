@@ -1,5 +1,8 @@
 # Sentinel Playbook - Block IP
 
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/.json)
+
+This Logic App Playbook for Sentinel will add the source IP address passed from the Sentinel Incident to a custom WAF rule blocking the IP.
 
 ## Contributing
 

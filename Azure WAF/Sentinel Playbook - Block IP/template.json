@@ -1,0 +1,2330 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_WAF_BlockIP_name": {
+            "defaultValue": "AzureWAF-BlockIP",
+            "type": "String"
+        },
+        "connections_azuresentinel_externalid": {
+            "defaultValue": "",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_WAF_BlockIP_name')]",
+            "location": "northcentralus",
+            "identity": {
+                "principalId": "",
+                "tenantId": "",
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "When_a_response_to_an_Azure_Sentinel_alert_is_triggered": {
+                            "type": "ApiConnectionWebhook",
+                            "inputs": {
+                                "body": {
+                                    "callback_url": "@{listCallbackUrl()}"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azuresentinel']['connectionId']"
+                                    }
+                                },
+                                "path": "/subscribe"
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Check_WAF_Type": {
+                            "actions": {
+                                "For_each_5": {
+                                    "foreach": "@body('Parse_Front_Door')?['properties']?['frontendEndpoints']",
+                                    "actions": {
+                                        "Add_Custom_Rules_to_Variable": {
+                                            "foreach": "@body('Parse_WAF_Policy')?['properties']?['customRules']?['rules']",
+                                            "actions": {
+                                                "Check_for_Existing_SentinelBlockIP_Rule": {
+                                                    "actions": {
+                                                        "Loop_Match_Conditions": {
+                                                            "foreach": "@items('Add_Custom_Rules_to_Variable')['matchConditions']",
+                                                            "actions": {
+                                                                "Add_AttackerIP_to_MatchValue": {
+                                                                    "runAfter": {
+                                                                        "Set_MatchValue": [
+                                                                            "Succeeded"
+                                                                        ]
+                                                                    },
+                                                                    "type": "AppendToArrayVariable",
+                                                                    "inputs": {
+                                                                        "name": "MatchValue",
+                                                                        "value": "@variables('AttackerIP')"
+                                                                    }
+                                                                },
+                                                                "Add_Modified_Rule_to_Array": {
+                                                                    "runAfter": {
+                                                                        "Add_AttackerIP_to_MatchValue": [
+                                                                            "Succeeded"
+                                                                        ]
+                                                                    },
+                                                                    "type": "AppendToArrayVariable",
+                                                                    "inputs": {
+                                                                        "name": "Rules",
+                                                                        "value": {
+                                                                            "action": "@{items('Add_Custom_Rules_to_Variable')?['action']}",
+                                                                            "enabledState": "@{items('Add_Custom_Rules_to_Variable')?['enabledState']}",
+                                                                            "matchConditions": [
+                                                                                {
+                                                                                    "matchValue": "@variables('MatchValue')",
+                                                                                    "matchVariable": "@{items('Loop_Match_Conditions')?['matchVariable']}",
+                                                                                    "negateCondition": "@items('Loop_Match_Conditions')?['negateCondition']",
+                                                                                    "operator": "@{items('Loop_Match_Conditions')?['operator']}",
+                                                                                    "transforms": "@items('Loop_Match_Conditions')?['transforms']"
+                                                                                }
+                                                                            ],
+                                                                            "name": "@{items('Add_Custom_Rules_to_Variable')?['name']}",
+                                                                            "priority": "@items('Add_Custom_Rules_to_Variable')?['priority']",
+                                                                            "rateLimitDurationInMinutes": "@items('Add_Custom_Rules_to_Variable')?['rateLimitDurationInMinutes']",
+                                                                            "rateLimitThreshold": "@items('Add_Custom_Rules_to_Variable')?['rateLimitThreshold']",
+                                                                            "ruleType": "@{items('Add_Custom_Rules_to_Variable')?['ruleType']}"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "Set_MatchValue": {
+                                                                    "runAfter": {},
+                                                                    "type": "SetVariable",
+                                                                    "inputs": {
+                                                                        "name": "MatchValue",
+                                                                        "value": "@items('Loop_Match_Conditions')?['matchValue']"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "runAfter": {},
+                                                            "type": "Foreach"
+                                                        }
+                                                    },
+                                                    "runAfter": {},
+                                                    "else": {
+                                                        "actions": {
+                                                            "Append_Rules_to_Array": {
+                                                                "runAfter": {},
+                                                                "type": "AppendToArrayVariable",
+                                                                "inputs": {
+                                                                    "name": "Rules",
+                                                                    "value": {
+                                                                        "action": "@{items('Add_Custom_Rules_to_Variable')?['action']}",
+                                                                        "enabledState": "@{items('Add_Custom_Rules_to_Variable')?['enabledState']}",
+                                                                        "matchConditions": "@items('Add_Custom_Rules_to_Variable')?['matchConditions']",
+                                                                        "name": "@{items('Add_Custom_Rules_to_Variable')?['name']}",
+                                                                        "priority": "@items('Add_Custom_Rules_to_Variable')?['priority']",
+                                                                        "rateLimitDurationInMinutes": "@items('Add_Custom_Rules_to_Variable')?['rateLimitDurationInMinutes']",
+                                                                        "rateLimitThreshold": "@items('Add_Custom_Rules_to_Variable')?['rateLimitThreshold']",
+                                                                        "ruleType": "@{items('Add_Custom_Rules_to_Variable')?['ruleType']}"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "expression": {
+                                                        "and": [
+                                                            {
+                                                                "equals": [
+                                                                    "@items('Add_Custom_Rules_to_Variable')?['name']",
+                                                                    "SentinelBlockIP"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "type": "If"
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Parse_WAF_Policy": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Foreach",
+                                            "runtimeConfiguration": {
+                                                "concurrency": {
+                                                    "repetitions": 1
+                                                }
+                                            }
+                                        },
+                                        "Check_for_SentinelBlockIP_Rule": {
+                                            "actions": {},
+                                            "runAfter": {
+                                                "Add_Custom_Rules_to_Variable": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "else": {
+                                                "actions": {
+                                                    "Add_Custom_Rule_to_Rules_Array": {
+                                                        "runAfter": {
+                                                            "Create_Unique_Priority": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "type": "AppendToArrayVariable",
+                                                        "inputs": {
+                                                            "name": "Rules",
+                                                            "value": {
+                                                                "action": "Block",
+                                                                "enabledState": "Enabled",
+                                                                "matchConditions": [
+                                                                    {
+                                                                        "matchValue": [
+                                                                            "@{variables('AttackerIP')}"
+                                                                        ],
+                                                                        "matchVariable": "RemoteAddr",
+                                                                        "negateCondition": false,
+                                                                        "operator": "IPMatch",
+                                                                        "transforms": []
+                                                                    }
+                                                                ],
+                                                                "name": "SentinelBlockIP",
+                                                                "priority": "@variables('Priority')",
+                                                                "rateLimitDurationInMinutes": 1,
+                                                                "rateLimitThreshold": 100,
+                                                                "ruleType": "MatchRule"
+                                                            }
+                                                        }
+                                                    },
+                                                    "Create_Unique_Priority": {
+                                                        "actions": {
+                                                            "Increment_Priority": {
+                                                                "runAfter": {},
+                                                                "type": "IncrementVariable",
+                                                                "inputs": {
+                                                                    "name": "Priority",
+                                                                    "value": 5
+                                                                }
+                                                            }
+                                                        },
+                                                        "runAfter": {},
+                                                        "expression": "@not(contains(variables('Rules'), variables('Priority')))",
+                                                        "limit": {
+                                                            "count": 60,
+                                                            "timeout": "PT1H"
+                                                        },
+                                                        "type": "Until"
+                                                    }
+                                                }
+                                            },
+                                            "expression": {
+                                                "and": [
+                                                    {
+                                                        "contains": [
+                                                            "@string(variables('Rules'))",
+                                                            "SentinelBlockIP"
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "type": "If"
+                                        },
+                                        "Create_JSON_Rules_Object_from_Array": {
+                                            "runAfter": {
+                                                "Check_for_SentinelBlockIP_Rule": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Compose",
+                                            "inputs": "@variables('Rules')"
+                                        },
+                                        "Get_WAF_Policy": {
+                                            "runAfter": {},
+                                            "type": "Http",
+                                            "inputs": {
+                                                "authentication": {
+                                                    "type": "ManagedServiceIdentity"
+                                                },
+                                                "method": "GET",
+                                                "uri": "https://management.azure.com@{items('For_each_5')?['properties']?['webApplicationFirewallPolicyLink']?['id']}?api-version=2019-10-01"
+                                            }
+                                        },
+                                        "Parse_WAF_Policy": {
+                                            "runAfter": {
+                                                "Get_WAF_Policy": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "ParseJson",
+                                            "inputs": {
+                                                "content": "@body('Get_WAF_Policy')",
+                                                "schema": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "location": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "properties": {
+                                                            "properties": {
+                                                                "customRules": {
+                                                                    "properties": {
+                                                                        "rules": {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "action": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "enabledState": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "matchConditions": {
+                                                                                        "items": {
+                                                                                            "properties": {
+                                                                                                "matchValue": {
+                                                                                                    "items": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "type": "array"
+                                                                                                },
+                                                                                                "matchVariable": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "negateCondition": {
+                                                                                                    "type": "boolean"
+                                                                                                },
+                                                                                                "operator": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "selector": {},
+                                                                                                "transforms": {
+                                                                                                    "type": "array"
+                                                                                                }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "matchVariable",
+                                                                                                "selector",
+                                                                                                "operator",
+                                                                                                "negateCondition",
+                                                                                                "matchValue",
+                                                                                                "transforms"
+                                                                                            ],
+                                                                                            "type": "object"
+                                                                                        },
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "name": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "priority": {
+                                                                                        "type": "integer"
+                                                                                    },
+                                                                                    "rateLimitDurationInMinutes": {
+                                                                                        "type": "integer"
+                                                                                    },
+                                                                                    "rateLimitThreshold": {
+                                                                                        "type": "integer"
+                                                                                    },
+                                                                                    "ruleType": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "name",
+                                                                                    "priority",
+                                                                                    "enabledState",
+                                                                                    "ruleType",
+                                                                                    "rateLimitDurationInMinutes",
+                                                                                    "rateLimitThreshold",
+                                                                                    "matchConditions",
+                                                                                    "action"
+                                                                                ],
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": "array"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "frontendEndpointLinks": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "id"
+                                                                        ],
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": "array"
+                                                                },
+                                                                "managedRules": {
+                                                                    "properties": {
+                                                                        "managedRuleSets": {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "exclusions": {
+                                                                                        "items": {
+                                                                                            "properties": {
+                                                                                                "matchVariable": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "selector": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "selectorMatchOperator": {
+                                                                                                    "type": "string"
+                                                                                                }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "matchVariable",
+                                                                                                "selectorMatchOperator",
+                                                                                                "selector"
+                                                                                            ],
+                                                                                            "type": "object"
+                                                                                        },
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "ruleGroupOverrides": {
+                                                                                        "items": {
+                                                                                            "properties": {
+                                                                                                "ruleGroupName": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "rules": {
+                                                                                                    "items": {
+                                                                                                        "properties": {
+                                                                                                            "action": {
+                                                                                                                "type": "string"
+                                                                                                            },
+                                                                                                            "enabledState": {
+                                                                                                                "type": "string"
+                                                                                                            },
+                                                                                                            "ruleId": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "required": [
+                                                                                                            "ruleId",
+                                                                                                            "enabledState"
+                                                                                                        ],
+                                                                                                        "type": "object"
+                                                                                                    },
+                                                                                                    "type": "array"
+                                                                                                }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "ruleGroupName",
+                                                                                                "rules"
+                                                                                            ],
+                                                                                            "type": "object"
+                                                                                        },
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "ruleSetType": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "ruleSetVersion": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "ruleSetType",
+                                                                                    "ruleSetVersion",
+                                                                                    "exclusions",
+                                                                                    "ruleGroupOverrides"
+                                                                                ],
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": "array"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "policySettings": {
+                                                                    "properties": {
+                                                                        "customBlockResponseBody": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "customBlockResponseStatusCode": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "enabledState": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "mode": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "redirectUrl": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "provisioningState": {
+                                                                    "type": "string"
+                                                                },
+                                                                "resourceState": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "tags": {
+                                                            "properties": {
+                                                                "key1": {
+                                                                    "type": "string"
+                                                                },
+                                                                "key2": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "type": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "Update_WAF_Policy": {
+                                            "runAfter": {
+                                                "Create_JSON_Rules_Object_from_Array": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Http",
+                                            "inputs": {
+                                                "authentication": {
+                                                    "type": "ManagedServiceIdentity"
+                                                },
+                                                "body": {
+                                                    "id": "@{items('For_each_5')?['properties']?['webApplicationFirewallPolicyLink']?['id']}",
+                                                    "location": "@{body('Parse_WAF_Policy')?['location']}",
+                                                    "name": "@{body('Parse_WAF_Policy')?['name']}",
+                                                    "properties": {
+                                                        "customRules": {
+                                                            "rules": "@outputs('Create_JSON_Rules_Object_from_Array')"
+                                                        },
+                                                        "managedRules": "@body('Parse_WAF_Policy')?['properties']?['managedRules']",
+                                                        "policySettings": "@body('Parse_WAF_Policy')?['properties']?['policySettings']"
+                                                    },
+                                                    "type": "@{body('Parse_WAF_Policy')?['type']}"
+                                                },
+                                                "method": "PUT",
+                                                "uri": "https://management.azure.com@{items('For_each_5')?['properties']?['webApplicationFirewallPolicyLink']?['id']}?api-version=2019-10-01"
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Parse_Front_Door": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type": "Foreach",
+                                    "runtimeConfiguration": {
+                                        "concurrency": {
+                                            "repetitions": 1
+                                        }
+                                    }
+                                },
+                                "Get_Front_Door": {
+                                    "runAfter": {},
+                                    "type": "Http",
+                                    "inputs": {
+                                        "authentication": {
+                                            "type": "ManagedServiceIdentity"
+                                        },
+                                        "method": "GET",
+                                        "uri": "https://management.azure.com@{variables('ResourceID1')}.@{variables('ResourceID2')}?api-version=2019-05-01"
+                                    }
+                                },
+                                "Parse_Front_Door": {
+                                    "runAfter": {
+                                        "Get_Front_Door": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type": "ParseJson",
+                                    "inputs": {
+                                        "content": "@body('Get_Front_Door')",
+                                        "schema": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "location": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "properties": {
+                                                    "properties": {
+                                                        "backendPools": {
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "properties": {
+                                                                        "properties": {
+                                                                            "backends": {
+                                                                                "items": {
+                                                                                    "properties": {
+                                                                                        "address": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "backendHostHeader": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "enabledState": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "httpPort": {
+                                                                                            "type": "integer"
+                                                                                        },
+                                                                                        "httpsPort": {
+                                                                                            "type": "integer"
+                                                                                        },
+                                                                                        "priority": {
+                                                                                            "type": "integer"
+                                                                                        },
+                                                                                        "weight": {
+                                                                                            "type": "integer"
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "address",
+                                                                                        "httpPort",
+                                                                                        "httpsPort",
+                                                                                        "priority",
+                                                                                        "weight",
+                                                                                        "backendHostHeader",
+                                                                                        "enabledState"
+                                                                                    ],
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "type": "array"
+                                                                            },
+                                                                            "healthProbeSettings": {
+                                                                                "properties": {
+                                                                                    "id": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            },
+                                                                            "loadBalancingSettings": {
+                                                                                "properties": {
+                                                                                    "id": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            },
+                                                                            "resourceState": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "id",
+                                                                    "name",
+                                                                    "type",
+                                                                    "properties"
+                                                                ],
+                                                                "type": "object"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "backendPoolsSettings": {
+                                                            "properties": {
+                                                                "enforceCertificateNameCheck": {
+                                                                    "type": "string"
+                                                                },
+                                                                "sendRecvTimeoutSeconds": {}
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "cName": {
+                                                            "type": "string"
+                                                        },
+                                                        "enabledState": {
+                                                            "type": "string"
+                                                        },
+                                                        "friendlyName": {
+                                                            "type": "string"
+                                                        },
+                                                        "frontendEndpoints": {
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "properties": {
+                                                                        "properties": {
+                                                                            "customHttpsConfiguration": {},
+                                                                            "customHttpsProvisioningState": {},
+                                                                            "customHttpsProvisioningSubstate": {},
+                                                                            "hostName": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "resourceState": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "sessionAffinityEnabledState": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "sessionAffinityTtlSeconds": {
+                                                                                "type": "integer"
+                                                                            },
+                                                                            "webApplicationFirewallPolicyLink": {
+                                                                                "properties": {
+                                                                                    "id": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "id",
+                                                                    "name",
+                                                                    "type",
+                                                                    "properties"
+                                                                ],
+                                                                "type": "object"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "healthProbeSettings": {
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "properties": {
+                                                                        "properties": {
+                                                                            "enabledState": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "healthProbeMethod": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "intervalInSeconds": {
+                                                                                "type": "integer"
+                                                                            },
+                                                                            "path": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "protocol": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "resourceState": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "id",
+                                                                    "name",
+                                                                    "type",
+                                                                    "properties"
+                                                                ],
+                                                                "type": "object"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "loadBalancingSettings": {
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "properties": {
+                                                                        "properties": {
+                                                                            "additionalLatencyMilliseconds": {
+                                                                                "type": "integer"
+                                                                            },
+                                                                            "resourceState": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "sampleSize": {
+                                                                                "type": "integer"
+                                                                            },
+                                                                            "successfulSamplesRequired": {
+                                                                                "type": "integer"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "id",
+                                                                    "name",
+                                                                    "type",
+                                                                    "properties"
+                                                                ],
+                                                                "type": "object"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "provisioningState": {
+                                                            "type": "string"
+                                                        },
+                                                        "resourceState": {
+                                                            "type": "string"
+                                                        },
+                                                        "routingRules": {
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "properties": {
+                                                                        "properties": {
+                                                                            "acceptedProtocols": {
+                                                                                "items": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "type": "array"
+                                                                            },
+                                                                            "enabledState": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "frontendEndpoints": {
+                                                                                "items": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "id"
+                                                                                    ],
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "type": "array"
+                                                                            },
+                                                                            "patternsToMatch": {
+                                                                                "items": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "type": "array"
+                                                                            },
+                                                                            "resourceState": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "routeConfiguration": {
+                                                                                "properties": {
+                                                                                    "@@odata.type": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "backendPool": {
+                                                                                        "properties": {
+                                                                                            "id": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "cacheConfiguration": {},
+                                                                                    "customForwardingPath": {},
+                                                                                    "forwardingProtocol": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "id",
+                                                                    "name",
+                                                                    "type",
+                                                                    "properties"
+                                                                ],
+                                                                "type": "object"
+                                                            },
+                                                            "type": "array"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "tags": {
+                                                    "properties": {},
+                                                    "type": "object"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Set_Variables_from_Entities": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "else": {
+                                "actions": {
+                                    "Compose": {
+                                        "runAfter": {
+                                            "Condition_4": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Compose",
+                                        "inputs": "@variables('Rules')"
+                                    },
+                                    "Condition_4": {
+                                        "actions": {},
+                                        "runAfter": {
+                                            "For_each": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "else": {
+                                            "actions": {
+                                                "Append_to_array_variable_4": {
+                                                    "runAfter": {
+                                                        "Until": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "type": "AppendToArrayVariable",
+                                                    "inputs": {
+                                                        "name": "Rules",
+                                                        "value": {
+                                                            "action": "Block",
+                                                            "matchConditions": [
+                                                                {
+                                                                    "matchValues": [
+                                                                        "@{variables('AttackerIP')}"
+                                                                    ],
+                                                                    "matchVariables": [
+                                                                        {
+                                                                            "variableName": "RemoteAddr"
+                                                                        }
+                                                                    ],
+                                                                    "negationConditon": false,
+                                                                    "operator": "IPMatch",
+                                                                    "transforms": []
+                                                                }
+                                                            ],
+                                                            "name": "SentinelBlockIP",
+                                                            "priority": "@variables('Priority')",
+                                                            "ruleType": "MatchRule"
+                                                        }
+                                                    }
+                                                },
+                                                "Until": {
+                                                    "actions": {
+                                                        "Increment_variable": {
+                                                            "runAfter": {},
+                                                            "type": "IncrementVariable",
+                                                            "inputs": {
+                                                                "name": "Priority",
+                                                                "value": 5
+                                                            }
+                                                        }
+                                                    },
+                                                    "runAfter": {},
+                                                    "expression": "@not(contains(variables('Rules'), variables('Priority')))",
+                                                    "limit": {
+                                                        "count": 60,
+                                                        "timeout": "PT1H"
+                                                    },
+                                                    "type": "Until"
+                                                }
+                                            }
+                                        },
+                                        "expression": {
+                                            "and": [
+                                                {
+                                                    "contains": [
+                                                        "@string(variables('Rules'))",
+                                                        "SentinelBlockIP"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "type": "If"
+                                    },
+                                    "For_each": {
+                                        "foreach": "@body('Parse_AppGW_Policy')?['properties']?['customRules']",
+                                        "actions": {
+                                            "Check_for_Existing_Sentinel_Rule": {
+                                                "actions": {
+                                                    "For_each_2": {
+                                                        "foreach": "@items('For_each')['matchConditions']",
+                                                        "actions": {
+                                                            "Append_to_array_variable_2": {
+                                                                "runAfter": {
+                                                                    "Set_variable_4": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                },
+                                                                "type": "AppendToArrayVariable",
+                                                                "inputs": {
+                                                                    "name": "MatchValue",
+                                                                    "value": "@variables('AttackerIP')"
+                                                                }
+                                                            },
+                                                            "Append_to_array_variable_3": {
+                                                                "runAfter": {
+                                                                    "Append_to_array_variable_2": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                },
+                                                                "type": "AppendToArrayVariable",
+                                                                "inputs": {
+                                                                    "name": "Rules",
+                                                                    "value": {
+                                                                        "action": "@{items('For_each')?['action']}",
+                                                                        "matchConditions": [
+                                                                            {
+                                                                                "matchValues": "@variables('MatchValue')",
+                                                                                "matchVariables": [
+                                                                                    {
+                                                                                        "variableName": "RemoteAddr"
+                                                                                    }
+                                                                                ],
+                                                                                "negationConditon": false,
+                                                                                "operator": "IPMatch",
+                                                                                "transforms": []
+                                                                            }
+                                                                        ],
+                                                                        "name": "@{items('For_each')?['name']}",
+                                                                        "priority": "@items('For_each')?['priority']",
+                                                                        "ruleType": "@{items('For_each')?['ruleType']}"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "Set_variable_4": {
+                                                                "runAfter": {},
+                                                                "type": "SetVariable",
+                                                                "inputs": {
+                                                                    "name": "MatchValue",
+                                                                    "value": "@items('For_each_2')?['matchValues']"
+                                                                }
+                                                            }
+                                                        },
+                                                        "runAfter": {},
+                                                        "type": "Foreach"
+                                                    }
+                                                },
+                                                "runAfter": {},
+                                                "else": {
+                                                    "actions": {
+                                                        "Append_to_array_variable": {
+                                                            "runAfter": {},
+                                                            "type": "AppendToArrayVariable",
+                                                            "inputs": {
+                                                                "name": "Rules",
+                                                                "value": {
+                                                                    "action": "@{items('For_each')?['action']}",
+                                                                    "matchConditions": "@items('For_each')?['matchConditions']",
+                                                                    "name": "@{items('For_each')?['name']}",
+                                                                    "priority": "@items('For_each')?['priority']",
+                                                                    "ruleType": "@{items('For_each')?['ruleType']}"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "equals": [
+                                                                "@items('For_each')?['name']",
+                                                                "SentinelBlockIP"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "type": "If"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Parse_AppGW_Policy": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Foreach"
+                                    },
+                                    "Get_AppGW_WAF_Policy": {
+                                        "runAfter": {
+                                            "Parse_App_Gateway": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Http",
+                                        "inputs": {
+                                            "authentication": {
+                                                "type": "ManagedServiceIdentity"
+                                            },
+                                            "method": "GET",
+                                            "uri": "https://management.azure.com@{body('Parse_App_Gateway')?['properties']?['firewallPolicy']?['id']}?api-version=2020-05-01"
+                                        }
+                                    },
+                                    "Get_App_Gateway": {
+                                        "runAfter": {},
+                                        "type": "Http",
+                                        "inputs": {
+                                            "authentication": {
+                                                "type": "ManagedServiceIdentity"
+                                            },
+                                            "method": "GET",
+                                            "uri": "https://management.azure.com@{variables('ResourceID1')}.@{variables('ResourceID2')}?api-version=2020-05-01"
+                                        }
+                                    },
+                                    "HTTP": {
+                                        "runAfter": {
+                                            "Compose": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Http",
+                                        "inputs": {
+                                            "authentication": {
+                                                "type": "ManagedServiceIdentity"
+                                            },
+                                            "body": {
+                                                "id": "@body('Parse_AppGW_Policy')?['id']",
+                                                "location": "@body('Parse_AppGW_Policy')?['location']",
+                                                "name": "@body('Parse_AppGW_Policy')?['name']",
+                                                "properties": {
+                                                    "applicationGateways": "@body('Parse_AppGW_Policy')?['properties']?['applicationGateways']",
+                                                    "customRules": "@outputs('Compose')",
+                                                    "managedRules": "@body('Parse_AppGW_Policy')?['properties']?['managedRules']",
+                                                    "policySettings": "@body('Parse_AppGW_Policy')?['properties']?['policySettings']"
+                                                },
+                                                "type": "@body('Parse_AppGW_Policy')?['type']"
+                                            },
+                                            "method": "PUT",
+                                            "uri": "https://management.azure.com@{body('Parse_App_Gateway')?['properties']?['firewallPolicy']?['id']}?api-version=2020-05-01"
+                                        }
+                                    },
+                                    "Parse_AppGW_Policy": {
+                                        "runAfter": {
+                                            "Get_AppGW_WAF_Policy": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "ParseJson",
+                                        "inputs": {
+                                            "content": "@body('Get_AppGW_WAF_Policy')",
+                                            "schema": {
+                                                "properties": {
+                                                    "etag": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "location": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "properties": {
+                                                        "properties": {
+                                                            "applicationGateways": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "id"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "customRules": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "action": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "matchConditions": {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "matchValues": {
+                                                                                        "items": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "matchVariables": {
+                                                                                        "items": {
+                                                                                            "properties": {
+                                                                                                "variableName": {
+                                                                                                    "type": "string"
+                                                                                                }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "variableName"
+                                                                                            ],
+                                                                                            "type": "object"
+                                                                                        },
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "negationConditon": {
+                                                                                        "type": "boolean"
+                                                                                    },
+                                                                                    "operator": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "transforms": {
+                                                                                        "type": "array"
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "matchVariables",
+                                                                                    "operator",
+                                                                                    "negationConditon",
+                                                                                    "matchValues",
+                                                                                    "transforms"
+                                                                                ],
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": "array"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "priority": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "ruleType": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "skippedManagedRuleSets": {
+                                                                            "type": "array"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "priority",
+                                                                        "ruleType",
+                                                                        "action",
+                                                                        "matchConditions",
+                                                                        "skippedManagedRuleSets"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "managedRules": {
+                                                                "properties": {
+                                                                    "exclusions": {
+                                                                        "type": "array"
+                                                                    },
+                                                                    "managedRuleSets": {
+                                                                        "items": {
+                                                                            "properties": {
+                                                                                "ruleGroupOverrides": {
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "ruleSetType": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "ruleSetVersion": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "ruleSetType",
+                                                                                "ruleSetVersion",
+                                                                                "ruleGroupOverrides"
+                                                                            ],
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": "array"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "policySettings": {
+                                                                "properties": {
+                                                                    "fileUploadLimitInMb": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "maxRequestBodySizeInKb": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "mode": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "requestBodyCheck": {
+                                                                        "type": "boolean"
+                                                                    },
+                                                                    "state": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "provisioningState": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "Parse_App_Gateway": {
+                                        "runAfter": {
+                                            "Get_App_Gateway": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "ParseJson",
+                                        "inputs": {
+                                            "content": "@body('Get_App_Gateway')",
+                                            "schema": {
+                                                "properties": {
+                                                    "etag": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "location": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "properties": {
+                                                        "properties": {
+                                                            "backendAddressPools": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "etag": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "backendAddresses": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "fqdn": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "fqdn"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "provisioningState": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "requestRoutingRules": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "id": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "id"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "id",
+                                                                        "etag",
+                                                                        "properties",
+                                                                        "type"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "backendHttpSettingsCollection": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "etag": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "cookieBasedAffinity": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "path": {},
+                                                                                "pickHostNameFromBackendAddress": {
+                                                                                    "type": "boolean"
+                                                                                },
+                                                                                "port": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "probe": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "protocol": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "provisioningState": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "requestRoutingRules": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "id": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "id"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "requestTimeout": {
+                                                                                    "type": "integer"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "id",
+                                                                        "etag",
+                                                                        "properties",
+                                                                        "type"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "enableHttp2": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "firewallPolicy": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "frontendIPConfigurations": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "etag": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "httpListeners": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "id": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "id"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "privateIPAllocationMethod": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "provisioningState": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "publicIPAddress": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "id",
+                                                                        "etag",
+                                                                        "type",
+                                                                        "properties"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "frontendPorts": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "etag": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "httpListeners": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "id": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "id"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "port": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "provisioningState": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "id",
+                                                                        "etag",
+                                                                        "properties",
+                                                                        "type"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "gatewayIPConfigurations": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "etag": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "provisioningState": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "subnet": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "id",
+                                                                        "etag",
+                                                                        "properties",
+                                                                        "type"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "httpListeners": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "etag": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "frontendIPConfiguration": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "frontendPort": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "hostNames": {
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "protocol": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "provisioningState": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "requestRoutingRules": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "id": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "id"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "requireServerNameIndication": {
+                                                                                    "type": "boolean"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "id",
+                                                                        "etag",
+                                                                        "properties",
+                                                                        "type"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "loadDistributionPolicies": {
+                                                                "type": "array"
+                                                            },
+                                                            "operationalState": {
+                                                                "type": "string"
+                                                            },
+                                                            "privateEndpointConnections": {
+                                                                "type": "array"
+                                                            },
+                                                            "privateLinkConfigurations": {
+                                                                "type": "array"
+                                                            },
+                                                            "probes": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "etag": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "backendHttpSettings": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "id": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "id"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "interval": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "match": {
+                                                                                    "properties": {},
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "minServers": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "path": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "pickHostNameFromBackendHttpSettings": {
+                                                                                    "type": "boolean"
+                                                                                },
+                                                                                "protocol": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "provisioningState": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "timeout": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "unhealthyThreshold": {
+                                                                                    "type": "integer"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "id",
+                                                                        "etag",
+                                                                        "properties",
+                                                                        "type"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "provisioningState": {
+                                                                "type": "string"
+                                                            },
+                                                            "redirectConfigurations": {
+                                                                "type": "array"
+                                                            },
+                                                            "requestRoutingRules": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "etag": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "backendAddressPool": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "backendHttpSettings": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "httpListener": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "provisioningState": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "rewriteRuleSet": {
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "ruleType": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "id",
+                                                                        "etag",
+                                                                        "properties",
+                                                                        "type"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "resourceGuid": {
+                                                                "type": "string"
+                                                            },
+                                                            "rewriteRuleSets": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "etag": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "provisioningState": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "requestRoutingRules": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "id": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "id"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "rewriteRules": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "actionSet": {
+                                                                                                "properties": {
+                                                                                                    "requestHeaderConfigurations": {
+                                                                                                        "items": {
+                                                                                                            "properties": {
+                                                                                                                "headerName": {
+                                                                                                                    "type": "string"
+                                                                                                                },
+                                                                                                                "headerValue": {
+                                                                                                                    "type": "string"
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "required": [
+                                                                                                                "headerName",
+                                                                                                                "headerValue"
+                                                                                                            ],
+                                                                                                            "type": "object"
+                                                                                                        },
+                                                                                                        "type": "array"
+                                                                                                    },
+                                                                                                    "responseHeaderConfigurations": {
+                                                                                                        "type": "array"
+                                                                                                    }
+                                                                                                },
+                                                                                                "type": "object"
+                                                                                            },
+                                                                                            "conditions": {
+                                                                                                "type": "array"
+                                                                                            },
+                                                                                            "name": {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            "ruleSequence": {
+                                                                                                "type": "integer"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "ruleSequence",
+                                                                                            "conditions",
+                                                                                            "name",
+                                                                                            "actionSet"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "id",
+                                                                        "etag",
+                                                                        "properties",
+                                                                        "type"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "sku": {
+                                                                "properties": {
+                                                                    "capacity": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "tier": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "sslCertificates": {
+                                                                "type": "array"
+                                                            },
+                                                            "sslProfiles": {
+                                                                "type": "array"
+                                                            },
+                                                            "trustedClientCertificates": {
+                                                                "type": "array"
+                                                            },
+                                                            "trustedRootCertificates": {
+                                                                "type": "array"
+                                                            },
+                                                            "urlPathMaps": {
+                                                                "type": "array"
+                                                            },
+                                                            "webApplicationFirewallConfiguration": {
+                                                                "properties": {
+                                                                    "disabledRuleGroups": {
+                                                                        "type": "array"
+                                                                    },
+                                                                    "enabled": {
+                                                                        "type": "boolean"
+                                                                    },
+                                                                    "exclusions": {
+                                                                        "type": "array"
+                                                                    },
+                                                                    "fileUploadLimitInMb": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "firewallMode": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "maxRequestBodySizeInKb": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "requestBodyCheck": {
+                                                                        "type": "boolean"
+                                                                    },
+                                                                    "ruleSetType": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "ruleSetVersion": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "tags": {
+                                                        "properties": {},
+                                                        "type": "object"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "contains": [
+                                            "@variables('ResourceID2')",
+                                            "frontdoors"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "type": "If"
+                        },
+                        "Initialize_AttackerIP_variable": {
+                            "runAfter": {
+                                "Initialize_ResourceID2_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "AttackerIP",
+                                        "type": "string",
+                                        "value": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_MatchValue_variable": {
+                            "runAfter": {
+                                "Initialize_Priority_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "MatchValue",
+                                        "type": "array"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_Priority_variable": {
+                            "runAfter": {
+                                "Initialize_Rules_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "Priority",
+                                        "type": "integer",
+                                        "value": 5
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_ResourceID1_variable": {
+                            "runAfter": {},
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "ResourceID1",
+                                        "type": "string",
+                                        "value": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_ResourceID2_variable": {
+                            "runAfter": {
+                                "Initialize_ResourceID1_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "ResourceID2",
+                                        "type": "string",
+                                        "value": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_Rules_variable": {
+                            "runAfter": {
+                                "Initialize_AttackerIP_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "Rules",
+                                        "type": "array"
+                                    }
+                                ]
+                            }
+                        },
+                        "Parse_Entities": {
+                            "runAfter": {
+                                "Initialize_MatchValue_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "@triggerBody()?['Entities']",
+                                "schema": {
+                                    "items": {
+                                        "properties": {
+                                            "$id": {
+                                                "type": "string"
+                                            },
+                                            "Address": {
+                                                "type": "string"
+                                            },
+                                            "DnsDomain": {
+                                                "type": "string"
+                                            },
+                                            "HostName": {
+                                                "type": "string"
+                                            },
+                                            "Type": {
+                                                "type": "string"
+                                            },
+                                            "Url": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "$id",
+                                            "Type"
+                                        ],
+                                        "type": "object"
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "Set_Variables_from_Entities": {
+                            "foreach": "@body('Parse_Entities')",
+                            "actions": {
+                                "Condition": {
+                                    "actions": {
+                                        "Set_variable_2": {
+                                            "runAfter": {},
+                                            "type": "SetVariable",
+                                            "inputs": {
+                                                "name": "ResourceID1",
+                                                "value": "@items('Set_Variables_from_Entities')?['HostName']"
+                                            }
+                                        },
+                                        "Set_variable_3": {
+                                            "runAfter": {
+                                                "Set_variable_2": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "SetVariable",
+                                            "inputs": {
+                                                "name": "ResourceID2",
+                                                "value": "@items('Set_Variables_from_Entities')?['DnsDomain']"
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {},
+                                    "else": {
+                                        "actions": {
+                                            "Condition_2": {
+                                                "actions": {
+                                                    "Set_variable": {
+                                                        "runAfter": {},
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "AttackerIP",
+                                                            "value": "@items('Set_Variables_from_Entities')?['Address']"
+                                                        }
+                                                    }
+                                                },
+                                                "runAfter": {},
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "equals": [
+                                                                "@items('Set_Variables_from_Entities')['Type']",
+                                                                "ip"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "type": "If"
+                                            }
+                                        }
+                                    },
+                                    "expression": {
+                                        "and": [
+                                            {
+                                                "equals": [
+                                                    "@items('Set_Variables_from_Entities')['Type']",
+                                                    "host"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "type": "If"
+                                }
+                            },
+                            "runAfter": {
+                                "Parse_Entities": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Foreach"
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "azuresentinel": {
+                                "connectionId": "[parameters('connections_azuresentinel_externalid')]",
+                                "connectionName": "azuresentinel",
+                                "id": "/subscriptions/6b1ceacd-5731-4780-8f96-2078dd96fd96/providers/Microsoft.Web/locations/northcentralus/managedApis/azuresentinel"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
