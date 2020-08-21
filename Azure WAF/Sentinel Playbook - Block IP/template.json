@@ -2,22 +2,47 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "workflows_WAF_BlockIP_name": {
-            "defaultValue": "AzureWAF-BlockIP",
-            "type": "String"
+        "PlaybookName": {
+            "defaultValue": "Block-IPAzureWAF",
+            "type": "string",
+            "metadata": {
+                "description": "Name of the playbook."
+            }
         },
-        "connections_azuresentinel_externalid": {
-            "defaultValue": "",
-            "type": "String"
+        "UserName": {
+            "defaultValue": "<username>@<domain>",
+            "type": "string",
+            "metadata": {
+                "description": "Azure AD account to be used to create Logic App connections."
+            }
         }
     },
-    "variables": {},
+    "variables": {
+        "AzureSentinelConnectionName": "[concat('azuresentinel-', parameters('PlaybookName'))]"
+    },
     "resources": [
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('AzureSentinelConnectionName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "displayName": "[parameters('UserName')]",
+                "customParameterValues": {
+                },
+                "api": {
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azuresentinel')]"
+                }
+            }
+        },
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
-            "name": "[parameters('workflows_WAF_BlockIP_name')]",
-            "location": "northcentralus",
+            "name": "[parameters('PlaybookName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', variables('AzureSentinelConnectionName'))]"
+            ],
             "identity": {
                 "principalId": "",
                 "tenantId": "",
@@ -2317,9 +2342,9 @@
                     "$connections": {
                         "value": {
                             "azuresentinel": {
-                                "connectionId": "[parameters('connections_azuresentinel_externalid')]",
-                                "connectionName": "azuresentinel",
-                                "id": "/subscriptions/6b1ceacd-5731-4780-8f96-2078dd96fd96/providers/Microsoft.Web/locations/northcentralus/managedApis/azuresentinel"
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('AzureSentinelConnectionName'))]",
+                                "connectionName": "[variables('AzureSentinelConnectionName')]",
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azuresentinel')]"
                             }
                         }
                     }
