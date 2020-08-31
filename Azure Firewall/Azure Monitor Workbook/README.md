@@ -8,7 +8,7 @@ When deploying via ARM Template, please make sure you know what Resource ID (Log
 
 >Example of a value: /subscriptions/'GUID'/resourcegroups/'RG Name'/providers/microsoft.operationalinsights/workspaces/'Workspace Name'
 
-This workbook visualizes security-relevant Azure Firewall events across several filterable panels. It works with all WAF types, including Application Gateway, Front Door, and CDN, and can be filtered based on WAF type or a specific WAF instance. Import via ARM Template or Gallery Template.
+This workbook visualizes security-relevant Azure Firewall events across several filterable panels for Mutli-Tenant/Workspace view. It works with all Azure Firewall data types, including Application Rule Logs, Network Rule Logs, DNS Proxy logs and ThreatIntel logs. Import via ARM Template or Gallery Template.
 
 ## Contributing
 
