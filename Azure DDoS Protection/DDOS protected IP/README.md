@@ -1,6 +1,6 @@
 # Get All Public IP's protected by DDOS Standard - Powershell
 
-This script will loop through all virtual networks for a list of subscriptions and determine which public IP addresses are protected or unprotected by DDOS standard Protection. This script may run for a long time depending on how many resources you have in each subscription. For usage and examples please refer to the script file
+This script will loop through all virtual networks for a list of subscriptions and determine which public IP addresses are protected or unprotected by DDOS standard Protection. This script may run for a long time depending on how many resources you have in each subscription. For usage and examples, please refer to the script file.
 
 ## Contributing
 
