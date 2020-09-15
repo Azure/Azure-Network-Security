@@ -1,4 +1,4 @@
-## Network Security Queries
+## Azure Network Security Queries
 This folder contains KQL Query Samples for Azure Network Security.
 
 KQL Quick Reference - https://docs.microsoft.com/en-us/azure/data-explorer/kql-quick-reference
