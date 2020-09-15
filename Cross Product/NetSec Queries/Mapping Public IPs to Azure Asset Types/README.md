@@ -1,5 +1,7 @@
-## Mapping Public IPs to Azure Asset Types
-This Azure Resource Graph query shows all Public IPs and maps them to corresponding asset types (NIC, Azure Firewall, Application Gateway, Bastion Host etc) in the selected Azure subscriptions.
+# Mapping Public IPs to Azure Asset Types - Azure Resource Graph Query Deployment Template
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FCross%2520Product%2FNetSec%2520Queries%2FMapping%2520Public%2520IPs%2520to%2520Azure%2520Asset%2520Types%2FAzPIPtoAssetTypeQuerydeploy.json)
+
+This Azure Resource Graph query shows all Public IPs and maps them to corresponding asset types (NIC, Azure Firewall, Application Gateway, Bastion Host etc.) in the selected Azure subscriptions.
 
 Azure Resource Graph Overview - https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview
 
