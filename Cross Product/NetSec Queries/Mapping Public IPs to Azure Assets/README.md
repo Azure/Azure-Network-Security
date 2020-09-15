@@ -3,10 +3,9 @@
 
 This Azure Resource Graph query provides details of all public IPs and the assets associated with them in the selected Azure subscriptions.
 
+Different asset types that can have a public IP in Azure - VM NIC, Azure Firewall, VPN gateways, load balancers, Application Gateway and Bastion Host.
+
 Azure Resource Graph Overview - https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview
-
-Different Asset types that can have a public IP in Azure - VM NIC, Azure Firewall, VPN gateways, load balancers, Application Gateway, Bastion Host etc.
-
 Public IP addresses (in Azure) - https://docs.microsoft.com/en-us/azure/virtual-network/public-ip-addresses
 
 ## Contributing
