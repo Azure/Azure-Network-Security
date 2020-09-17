@@ -90,7 +90,7 @@ It is possible to identify which subscriptions may be incurring unplanned or unn
 
 When policy, assignment, and enforcement mode are configured, the administrator of a subscription in scope will see the following error message upon attempting to create a new DDoS plan. The deployment will fail and the DDoS plan will not be created.
 
-![Error message screenshot - Request disallowed by policy]("\AzurePolicyDenyMessageDDoSplanCreation.jpg")
+![Error message screenshot - Request disallowed by policy]("https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20DDoS%20Protection/Restrict%20creation%20of%20Azure%20DDoS%20Protection%20Standard%20Plans%20with%20Azure%20Policy/AzurePolicyDenyMessageDDoSPlanCreation.jpg")
 
 ## Contributing
 
