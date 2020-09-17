@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "0.1.0.0",
+    "parameters": {
+        "FirewallName": {
+            "type": "string"
+        }, 
+        "WorkspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Log Analytics Workspace Resource ID"
+            }
+        }     
+    },  
+    "resources": [              
+        {
+            "type": "Microsoft.Network/azureFirewalls/providers/diagnosticSettings",
+            "apiVersion": "2017-05-01-preview",
+            "name": "[concat(parameters('FirewallName'),'/Microsoft.Insights/diagnostics')]",            
+            "properties": {
+                "workspaceId": "[parameters('WorkspaceId')]",
+                "logs": [
+                    {
+                        "category": "AzureFirewallApplicationRule",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AzureFirewallNetworkRule",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AzureFirewallDnsProxy",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "enabled": true
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+
+    }
+}
