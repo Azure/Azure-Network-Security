@@ -1,18 +1,18 @@
-# Restrict creation of Azure DDoS Protection Standard Plans with Azure Policy
+# Restrict creation of Azure DDoS Protection Standard plans with Azure Policy
 
 ## Overview
 
-This Azure Policy will deny the creation of Azure DDoS Protection Standard Plans in any subscription in scope. This policy helps prevent unplanned or unnapproved costs associated with the creation of DDoS Plans across multiple subscriptions for the same tenant.
+This Azure Policy will deny the creation of Azure DDoS Protection Standard plans in any subscription in scope. This policy helps prevent unplanned or unnapproved costs associated with the creation of DDoS plans across multiple subscriptions for the same tenant.
 
 ## Use cases
 
 ### Prevent new plans from being created
 
-Deploying this policy in enforcement mode will deny the creation of DDoS Plans for any subscription in scope from that moment on.
+Deploying this policy in enforcement mode will deny the creation of DDoS plans for any subscription in scope from that moment on.
 
-This policy will not retroactively delete DDoS Plans that already existed prior to the assignment of this policy.
+This policy will not retroactively delete DDoS plans that already existed prior to the assignment of this policy.
 
-It is possible to define exclusions to allow desired subscriptions to deploy DDoS Plans.
+It is possible to define exclusions to allow desired subscriptions to deploy DDoS plans.
 
 ### Discover which subscriptions are non-compliant
 
@@ -35,13 +35,13 @@ It is possible to identify which subscriptions may be incurring unplanned or unn
 
 <li>Select the <strong>Definition location</strong>. The definition location must be the <strong>Management Group</strong> that holds all the subscriptions you want to monitor for compliance.</li>
 
-<li>Enter a policy <strong>Name</strong>, for example: <em>Azure DDoS Protection Standard Plans must not be created in non-approved subscriptions</em></li>
+<li>Enter a policy <strong>Name</strong>, for example: <em>Azure DDoS Protection Standard plans must not be created in non-approved subscriptions</em></li>
 
-<li>Enter a policy <strong>Description</strong>, for example: <em>This policy blocks the creation of Azure DDoS Protection Standard Plans in non-approved subscriptions.</em></li>
+<li>Enter a policy <strong>Description</strong>, for example: <em>This policy blocks the creation of Azure DDoS Protection Standard plans in non-approved subscriptions.</em></li>
 
 <li>Select a <strong>Category</strong>, for example: <em>Network</em>. Alternatively, you can create a new category if desired.</li>
 
-<li>In the <strong>Policy Rule</strong> section, enter the code located in the AzurePolicyRuleDenyDDoSPlan.json file.</li>
+<li>In the <strong>Policy Rule</strong> section, enter the code located in the AzurePolicyRuleDenyDDoSplan.json file.</li>
 
 <li>Click on <strong>Save</strong> to create this custom policy.</li>
 </ol>
@@ -55,13 +55,13 @@ It is possible to identify which subscriptions may be incurring unplanned or unn
 
 <li>Select the <strong>Scope</strong>. The scope must be the <strong>Management Group</strong> that holds all the subscriptions you want to monitor for compliance.</li>
 
-<li>If applicable, select the <strong>Exclusions</strong>. The exclusions would be any subscriptions that you want to allow to create DDoS Plans.</li>
+<li>If applicable, select the <strong>Exclusions</strong>. The exclusions would be any subscriptions that you want to allow to create DDoS plans.</li>
 
 <li>In <strong>Policy definition</strong>, search for and select the custom policy you created in the previous step.</li>
 
 <li>The <strong>Assignment name</strong> field will be automatically populated.</li>
 
-<li>Enter an assigment <strong>Description</strong>, for example: <em>This policy blocks the creation of Azure DDoS Protection Standard Plans in non-approved subscriptions. Branches must use the DDoS Plan deployed in the Headquarter's subscription.</em></li>
+<li>Enter an assigment <strong>Description</strong>, for example: <em>This policy blocks the creation of Azure DDoS Protection Standard plans in non-approved subscriptions. Branches must use the DDoS plan deployed in the Headquarter's subscription.</em></li>
 
 <li>The <strong>Policy enforcement</strong> option must be <strong>Enabled</strong>.</li>
 
@@ -83,9 +83,14 @@ It is possible to identify which subscriptions may be incurring unplanned or unn
 
 <li>Observe your <strong>Compliance state</strong>.</li>
 
-<li>If you are not compliant, verify the <strong>Resource compliance</strong> section. The subscriptions that are not compliant will be listed here.</li>
+<li>If you are not compliant, verify the <strong>Resource compliance</strong> section. The subscriptions that are not compliant will be listed there.</li>
 </ol>
 
+## Expected behavior
+
+When policy, assignment, and enforcement mode are configured, the administrator of a subscription in scope will see the following error message upon attempting to create a new DDoS plan. The deployment will fail and the DDoS plan will not be created.
+
+![Error message screenshot - Request disallowed by policy]("\AzurePolicyDenyMessageDDoSplanCreation.jpg")
 
 ## Contributing
 
