@@ -57,6 +57,9 @@ Follow the link to  getting started document: https://docs.microsoft.com/en-us/a
 2.	If using a custom zone upload your zone records using the upload button 
 3.	Run the tool ./Get-DanglingDnsRecordsPsCore.ps1 -InputFileDnsRecords .\zone.csv
 
+**Note:** Ignore any warning similar to below as the script updates the modules to latest version.
+
+WARNING: The version '1.9.4' of module 'Az.Accounts' is currently in use. Retry the operation after closing the applications.
 
 **Steps to use the tool in local machine.**
 
