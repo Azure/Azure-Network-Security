@@ -53,9 +53,9 @@ Generate dangling DNS records list from given CName list (Csv/Json file) and/or 
 
 Follow the link to  getting started document: https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart-powershell
 
-1.	Download the script from this repo by running Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Find%20Dangling%20DNS%20Records/Get-DanglingDnsRecords.ps1" -OutFile "Get-DanglingDnsRecordsPsCore.ps1"
+1.	Download the script from this repo by running Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Find%20Dangling%20DNS%20Records/Get-DanglingDnsRecords.ps1" -OutFile "Get-DanglingDnsRecords.ps1"
 2.	If using a custom zone upload your zone records using the upload button 
-3.	Run the tool ./Get-DanglingDnsRecordsPsCore.ps1 -InputFileDnsRecords .\zone.csv
+3.	Run the tool ./Get-DanglingDnsRecords.ps1 -InputFileDnsRecords .\zone.csv
 
 **Note:** Ignore any warning similar to below as the script updates the modules to latest version.
 
