@@ -49,16 +49,25 @@ Generate dangling DNS records list from given CName list (Csv/Json file) and/or 
 
 - Appropriate permission to be able download, install the required AZ libraries
 
-There are 2 versions of the script, both have the same input params and produce similar output.
+**Steps to use the tool in Azure Cloud Shell.**
+
+Follow the link to  getting started document: https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart-powershell
+
+1.	Download the script from this repo by running Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Find%20Dangling%20DNS%20Records/Get-DanglingDnsRecords.ps1" -OutFile "Get-DanglingDnsRecordsPsCore.ps1"
+2.	If using a custom zone upload your zone records using the upload button 
+3.	Run the tool ./Get-DanglingDnsRecordsPsCore.ps1 -InputFileDnsRecords .\zone.csv
+
+
+**Steps to use the tool in local machine.**
+
+1. Download/clone the repository in local machine
+2. Run the follwomg command in powershell.
 
 ```powershell
-Get-DanglingDnsRecordsPsCore.ps1
+Get-DanglingDnsRecords.ps1
 
 - Parallel mode is supported only in PowerShell version 7 and higher, else will run serial mode.
 
-Get-DanglingDnsRecordsPsDesktop.ps1 – meant for PowerShell desktop version (version lower than 6)
-
-- Only supported in PowerShell desktop/version lower than 6, as this script is using windows workflows.
 ```
 
 **Input params:**
@@ -98,18 +107,16 @@ Location of the output files produced; default current directory.
 To get more help with the current params
 
 ```powershell
-Get-Help .\Get-DanglingDnsRecordsPsCore.ps1
-
-Get-Help .\Get-DanglingDnsRecordsPsDesktop.ps1
+Get-Help .\Get-DanglingDnsRecords.ps1
 
 ```
 
 To get examples
 
 ```powershell
-Get-Help .\Get-DanglingDnsRecordsPsCore.ps1 -Examples
+Get-Help .\Get-DanglingDnsRecords.ps1 -Examples
 
-Get-Help .\Get-DanglingDnsRecordsPsDesktop.ps1 -Examples
+Get-Help .\Get-DanglingDnsRecords.ps1 -Examples
 
 ```
 **Input Examples:**
@@ -118,19 +125,19 @@ To fetch DNS records from an Azure subscription
 
 ```powershell
 
-.\Get-DanglingDnsRecordsPsCore.ps1 -FetchDnsRecordsFromAzureSubscription
+.\Get-DanglingDnsRecords.ps1 -FetchDnsRecordsFromAzureSubscription
 
 To fetch DNS records from Input file Csv/Json
 
-.\Get-DanglingDnsRecordsPsCore.ps1 -InputFileDnsRecords .\CNameDNSMap.csv
+.\Get-DanglingDnsRecords.ps1 -InputFileDnsRecords .\CNameDNSMap.csv
 
 To fetch DNS records from both the input file and an Azure subscription
 
-.\Get-DanglingDnsRecordsPsCore.ps1 -InputFileDnsRecords .\CNameDNSMap.csv -FileAndAzureSubscription
+.\Get-DanglingDnsRecords.ps1 -InputFileDnsRecords .\CNameDNSMap.csv -FileAndAzureSubscription
 
 To fetch DNS records from Azure subscription with Subscription Id and DNS zone filters to reduce the scope of search.
 
-.\Get-DanglingDnsRecordsPsCore.ps1 -FetchDnsRecordsFromAzureSubscription -InputSubscriptionIdRegexFilter 533 -InputDnsZoneNameRegexFilter testdnszone-1.a
+.\Get-DanglingDnsRecords.ps1 -FetchDnsRecordsFromAzureSubscription -InputSubscriptionIdRegexFilter 533 -InputDnsZoneNameRegexFilter testdnszone-1.a
 
 ```
 
