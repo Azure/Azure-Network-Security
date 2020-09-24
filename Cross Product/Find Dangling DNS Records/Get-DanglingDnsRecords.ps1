@@ -541,7 +541,7 @@ Function Run-BySubscription {
     {
         $subscription = $PSItem        
         
-        $status = $($i / $azSubscriptions.count * 100)
+        $status = $($i / ($azSubscriptions|Measure-Object).count * 100)
 
         $ActivityMessage = "Building Azure CName records List"
         
@@ -672,19 +672,37 @@ Function Process-CNameList {
     )
     $i = 0
     foreach ($item in $cNameList) {
-        $status = $($i / $cNameList.count * 100)
+        $status = $($i / ($cNameList |Measure-Object).Count * 100)
                 
         Write-Progress -Activity "$ActivityMessage" -Status "$status Complete:" -PercentComplete $status
         
         If ($item.FQDN) {
             $key = $item.Fqdn.trim(" ").tolower()
-            
-            If ($AzResourcesHash.ContainsKey($key)) {
-                $item | Add-Member -NotePropertyName 'AzRecord' -NotePropertyValue $($AzResourcesHash[$key]) -Force
-                [void]$AzCNameMatchingResources.add($item)
+
+            #Azurefd can have subdomains also which we cannot mark as dangled
+            if($item.FQDN -match "azurefd.net")
+            {
+               $count = (($AzResourcesHash.GetEnumerator() | Where { $item.FQDN -match  "."+$_.key}) | Measure-Object).Count
+               if($count -gt 0)
+               {
+                 [void]$AzCNameMatchingResources.add($item)
+               }
+               else
+               {
+                  [void]$AzCNameMissingResources.add($Item)
+               }
+
             }
-            else {
-                [void]$AzCNameMissingResources.add($Item)
+            else
+            {
+            
+                If ($AzResourcesHash.ContainsKey($key)) {
+                    $item | Add-Member -NotePropertyName 'AzRecord' -NotePropertyValue $($AzResourcesHash[$key]) -Force
+                    [void]$AzCNameMatchingResources.add($item)
+                }
+                else {
+                    [void]$AzCNameMissingResources.add($Item)
+                }
             }
         }
         $i++
@@ -937,7 +955,7 @@ If ($FetchDnsRecordsFromAzureSubscription) {
                     
                     $i = 0
                     foreach ($record in $cNameRecords) {
-                        $status = $($i / $cNameRecords.count * 100)
+                        $status = $($i / ($cNameRecords | Measure-Object).Count  * 100)
                         $ActivityMessage = "Building Azure CName records List"
                         
                         Write-Progress -Activity "$ActivityMessage" -Status "$status Complete:" -PercentComplete $status
