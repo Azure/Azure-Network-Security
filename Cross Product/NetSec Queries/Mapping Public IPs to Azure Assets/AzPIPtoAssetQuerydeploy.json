@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "queries_Mapping_PublicIPs_to_AzureAssets_name": {
+        "queries_Mapping_Public_IPs_to_Azure_Assets_name": {
             "defaultValue": "Mapping Public IPs to Azure Assets",
             "type": "String"
         }
