@@ -1,14 +1,12 @@
-# Sentinel Playbook - Block IP
+# Get All Public IP's protected by DDOS Standard - Powershell
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FSentinel%2520Playbook%2520-%2520Block%2520IP%2Ftemplate.json)
-
-This Logic App Playbook for Sentinel will add the source IP address passed from the Sentinel Incident to a custom WAF rule blocking the IP.
+This script will loop through all virtual networks for a list of subscriptions and determine which public IP addresses are protected or unprotected by DDOS standard Protection. This script may run for a long time depending on how many resources you have in each subscription. For usage and examples, please refer to the script file.
 
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+the rights to use your contribution. For details, visit <https://cla.opensource.microsoft.com>.
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide
 a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
