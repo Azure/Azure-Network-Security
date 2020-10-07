@@ -31,7 +31,8 @@ If applicable, add screenshots/images to help explain your problem.
  - Browser [e.g. chrome, safari]
  - Version [e.g. 22]
 
-
-
+**Logs- if applicable**
+ - If logs are available, please provide relevant snippets
+ 
 **Additional context**
 Add any other context about the problem here.
