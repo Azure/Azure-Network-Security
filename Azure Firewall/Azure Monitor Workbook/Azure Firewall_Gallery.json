@@ -25,7 +25,7 @@
           {
             "cellValue": "selectedTab",
             "linkTarget": "parameter",
-            "linkLabel": "Azure Firewall - Application rule log statitics",
+            "linkLabel": "Azure Firewall - Application rule log statistics",
             "subTarget": "AFAppRule",
             "style": "link"
           },
@@ -505,7 +505,7 @@
     {
       "type": 1,
       "content": {
-        "json": "---\r\n# Azure Firewall - Application rule log statitics"
+        "json": "---\r\n# Azure Firewall - Application rule log statistics"
       },
       "conditionalVisibility": {
         "parameterName": "selectedTab",
