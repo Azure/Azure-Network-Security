@@ -9,7 +9,7 @@ __PASSWORD      = 'password'
 
 __POLL_TIME     = 15
 
-# valid public ip for Web app or endpoint
+# valid public ip for Web app or internet facing endpoint/resource
 __TARGET_IP     = 'valid-public-ip-in-your-azure-subscription'
 __TARGET_PORT   = 443
 __PROFILE_ID    = 'tcp-syn-flood'

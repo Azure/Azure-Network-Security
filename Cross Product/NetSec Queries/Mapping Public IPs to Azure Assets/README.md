@@ -3,6 +3,24 @@
 
 This Azure Resource Graph query provides details of all public IPs and the assets associated with them in the selected Azure subscriptions.
 
+## How it Works
+The query looks for all Public IPs in the subscriptions selected in the Azure Portal and then parses the asset details from the properties of the IP address.
+
+```
+Resources
+| where type contains 'publicIPAddresses' and isnotempty(properties.ipAddress)
+| extend publicipaddress = properties.ipAddress
+| extend pipallocationmethod = properties.publicIPAllocationMethod
+| extend sku = sku.name
+| extend ipConfiguration = parse_json(properties.ipConfiguration.id)
+| extend BrkipConfig = split(ipConfiguration, '/')
+| extend assetprovider = tostring(BrkipConfig[6])
+| extend typeassetassociatedwith = tostring(BrkipConfig[7])
+| extend nameassetassociatedwith = tostring(BrkipConfig[8])
+| extend dnsname = parse_json(properties.dnsSettings.fqdn)
+| project id, name, publicipaddress, pipallocationmethod, dnsname, typeassetassociatedwith, nameassetassociatedwith, tenantId, kind, location, resourceGroup, subscriptionId, managedBy, sku, plan, properties, tags, identity, zones
+```
+
 Different asset types that can have a public IP in Azure - VM NIC, Azure Firewall, VPN gateways, load balancers, Application Gateway and Bastion Host.
 
 Azure Resource Graph Overview - https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview

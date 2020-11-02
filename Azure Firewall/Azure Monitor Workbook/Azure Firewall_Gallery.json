@@ -9,12 +9,25 @@
       "name": "text - 23"
     },
     {
+      "type": 1,
+      "content": {
+        "json": "### Change Log\r\n|Version|Description|\r\n|---|---|\r\n|v1.0\t|Initial Version|\r\n|V1.1.0\t|Split up the data sets, Overview, Application Rule Logs, Network Rule Logs, DNS Proxy Logs. Added in Investigation visibility with Azure Firewall + Azure Graph. Added in visibility to multiple workspaces and filtering to Firewall resources. | "
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "EditOnly"
+      },
+      "name": "text - 40"
+    },
+    {
       "type": 11,
       "content": {
         "version": "LinkItem/1.0",
         "style": "tabs",
         "links": [
           {
+            "id": "20847ce8-91bc-4d8b-b878-a5a41c95c31c",
             "cellValue": "selectedTab",
             "linkTarget": "parameter",
             "linkLabel": "Azure Firewall Overview",
@@ -23,6 +36,7 @@
             "style": "link"
           },
           {
+            "id": "f564709d-1658-46a1-8b44-892210e13017",
             "cellValue": "selectedTab",
             "linkTarget": "parameter",
             "linkLabel": "Azure Firewall - Application rule log statitics",
@@ -30,6 +44,7 @@
             "style": "link"
           },
           {
+            "id": "1f6661e2-f873-4d56-879d-4d085d8cf1d4",
             "cellValue": "selectedTab",
             "linkTarget": "parameter",
             "linkLabel": "Azure Firewall - Network rule log statistics",
@@ -37,6 +52,7 @@
             "style": "link"
           },
           {
+            "id": "ef1548c5-ef55-4eaa-8a81-b049cb93b56c",
             "cellValue": "selectedTab",
             "linkTarget": "parameter",
             "linkLabel": "Azure Firewall - DNS Proxy",
@@ -44,6 +60,7 @@
             "style": "link"
           },
           {
+            "id": "97dc7364-961d-4c19-a730-7b9024f46b91",
             "cellValue": "selectedTab",
             "linkTarget": "parameter",
             "linkLabel": "Azure Firewall - Investigation",
@@ -348,6 +365,19 @@
       },
       "customWidth": "25",
       "name": "Events categories by time"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "### Firewall Metrics\r\nThe data below dosen't read from the Log Analytics workpsace, it's reading directly from the resources which requires resource visibility. \r\nClick [here for more information on Azure Metrics](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-platform-metrics)\r\n",
+        "style": "info"
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "AFOverview"
+      },
+      "name": "text - 39"
     },
     {
       "type": 10,
@@ -1595,6 +1625,9 @@
       },
       "name": "query - 29"
     }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/7b76bfbc-cb1e-4df1-b6e8-b826eef6c592/resourcegroups/soc/providers/microsoft.operationalinsights/workspaces/cybersecuritysoc"
   ],
   "fromTemplateId": "sentinel-AzureFirewall",
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
