@@ -1,8 +1,8 @@
 # Azure Policy for WAF
 
-The "Mandatory WAF Policy" json can be used when you wish to enforce that WAF for Azure Front Door, Azure Application Gateway or Azure CDN resources as a requirement during deployment and that it is in enabled state.
+The "Mandatory WAF Policy" json can be used when you wish to enforce that WAF for Azure Front Door, Azure Application Gateway or Azure CDN resources as a requirement during deployment and that it is in enabled state in the long term.
 
-The "WAF Mode Requirement" jason can be used when you wish to enforce a certain WAF mode (Detection or Prevention mode) on all WAF policies for Azure Front Door, Azure Application Gateway or Azure CDN resources.
+The "WAF Mode Requirement" json can be used when you wish to enforce a certain WAF mode (Detection or Prevention mode) on all WAF policies for Azure Front Door, Azure Application Gateway or Azure CDN resources.
 
 ## Contributing
 
