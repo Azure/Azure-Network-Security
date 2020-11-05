@@ -2,11 +2,11 @@
     .SYNOPSIS
         This script will loop through all vnets for a list of subscriptions and determine which public IP addresses are protected or unprotected
     .Description
-        Given a list of subscriptions, which can be piped to the script, this script will iterate all subscriptions and resources to find 
+        Given a list of subscriptions this script will iterate all subscriptions and resources to find 
         whether or not resources are protected by DDOS 
     .PARAMETER SubscriptionIds
         String[]: Mandatory. 
-        A list of subscription ids to search. Can be piped into this command
+        A list of subscription ids to search
     .PARAMETER CSVRootFileName
         String: Mandatory if OutToCsv is flagged. 
         A root file name for the output csv(s) of this function. Only enabled if OutToCsv is flagged. Files will be overwritten if they already exist
@@ -29,7 +29,7 @@
                 "Enabled": 
                     {
                         "VnetId1": [
-                            //Note these are the actual resource obtained by Get-AzureRm<Resource>
+                            //Note these are the actual resource obtained by Get-Az<Resource>
                             "Resource1",
                             "Resource2"
                         ]
@@ -53,7 +53,7 @@
         { "50d98c97-28f0-4034-88f6-fe47d3334d7c": { "Enabled": { "Vnets": [Resources ]}, "Disabled": { "Vnets": [Resources ]}}
     .EXAMPLE
         $subids = @("2a6f6cf4-092b-42f8-8f80-105dc153db2d", "164d0efe-e05c-4096-afbf-7b2648cb5b61")
-        $subDdosResource = ($subids | ./Get-AllDdosProtectedIPs -OutToCsv)
+        $subDdosResource = (./Get-AllDdosProtectedIPs -OutToCsv -SubscriptionIds $subids)
 
         Finds all DDOS enabled and disabled resources under the two subscriptions.
         Four CSV files will be generated using default $CSVRootFileName:
@@ -72,14 +72,14 @@
         }
     .EXAMPLE
         $subids = @("2a6f6cf4-092b-42f8-8f80-105dc153db2d", "164d0efe-e05c-4096-afbf-7b2648cb5b61")
-        $subDdosResource = ($subids | ./Get-AllDdosProtectedIPs -OutToCsv -CSVRootFileName "My_filename_root")
+        $subDdosResource = (./Get-AllDdosProtectedIPs -OutToCsv -CSVRootFileName "My_filename_root" -SubscriptionIds $subids)
 
         Outputs same as above example, except file names will be:
         (current_directory)/My_filename_root_<subid>_<ProtectionEnabled/ProtectionDisabled>csv
 
     .EXAMPLE
         $subids = @("2a6f6cf4-092b-42f8-8f80-105dc153db2d")
-        $subDdosResource = ($subids | ./Get-AllDdosProtectedIPs -SpecifyResourceGroups myResourceGroup, otherResourceGroup)
+        $subDdosResource = (./Get-AllDdosProtectedIPs -SpecifyResourceGroups myResourceGroup, otherResourceGroup -SubscriptionIds $subids)
 
         No CSV will be output, but all resources under subscription "2a6f6cf4-092b-42f8-8f80-105dc153db2d" that are in resourceGroup 'myResourceGroup' or 'otherResourceGroup' will be checked
         
@@ -90,8 +90,7 @@
 
 
 param(
-    [Parameter(Mandatory=$True,
-        ValueFromPipeline=$True)]
+    [Parameter(Mandatory=$True)]
     [string[]] $SubscriptionIds = @(""),
     [string] $CSVRootFileName = "Azure_PublicIp_AndVnet_DdosAnalysis",
     [string[]] $SpecifyResourceGroups = $null,
