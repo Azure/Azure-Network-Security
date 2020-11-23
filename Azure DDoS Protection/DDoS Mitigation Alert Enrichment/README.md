@@ -2,7 +2,7 @@
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520DDoS%2520Protection%2FDDoS%2520Mitigation%2520Alert%2520Enrichment%2FEnrich-DDoSAlert.json)
 
-This template deploys the necessary components of an enriched DDoS mitigation alert: Azure Monitor alert rule, action group, and Logic App. The result of the process is an email alert with detaila about the IP address under attack, including information about the resource associated with the IP. The owner of the resource is added as a recipient of the email, along with the security team. A basic application availability test is also performed and the results are included in the email alert.
+This template deploys the necessary components of an enriched DDoS mitigation alert: Azure Monitor alert rule, action group, and Logic App. The result of the process is an email alert with details about the IP address under attack, including information about the resource associated with the IP. The owner of the resource is added as a recipient of the email, along with the security team. A basic application availability test is also performed and the results are included in the email alert.
 
 The Log Analytics alert runs every 5 minutes and looks for DDoS MitigationStarted events.
 The action group calls the webhook associated with the Logic App trigger.
@@ -19,7 +19,7 @@ The Logic App queries the Azure Resource Graph to enrich the alert, attempts an 
 2. Choose a subscription and resource group to deploy to. The RG location must match the location of the Log Analytics workspace location.
 3. Edit the names of the Logic App and alert if necessary.
 4. Enter the email address for the security team or other primary alert recipient.
-5. Enter the company domain in the form of @company.com 
+5. Enter the company domain in the form of @company.com.
 6. Enter only the workspace name where DDoS Protection logs are stored.
 
 ## Contributing
