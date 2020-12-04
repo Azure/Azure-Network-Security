@@ -4,6 +4,9 @@
 
 This Logic App Playbook for Sentinel will add the source IP address passed from the Sentinel Incident to a custom WAF rule blocking the IP.
 
+## Step-by-step documentation
+If you'd like more detailed step-by-step instructions on how to deploy this playbook, visit our Tech Community blog post https://aka.ms/wafsentinelintegration-techcommunity and check out the _Respond to Incidents with Playbooks_ section.
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
