@@ -3,6 +3,9 @@
 
 This ARM deployment includes everything needed to test Azure Network Security components.
 
+## Step-by-step documentation:
+If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community blog post https://aka.ms/labdeploy-techcommunity.
+
 ## PowerShell Deployment Example:
 
 Please use this location as a reference how this powershell commandlet works: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-powershell#deploy-remote-template
@@ -11,7 +14,7 @@ There are 6 parameters with defaults
 * DefaultUserName
 * DefaultPassword
 * DiagnosticsWorkspaceName
-* DiagnosticsWorkspaceSubscription
+* DiagnosticsWorkspaceSubscription - enter the Subscription ID where your Workspace is in
 * DiagnosticsWorkspaceResourceGroup
 * DDOSProtectionConfiguration (bool) - true by default
 
