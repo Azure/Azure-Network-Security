@@ -2,6 +2,9 @@
 
 This policy will detect any virtual networks that do not have DDoS Protection Standard enabled and optionally create a remediation task which will associate the specified DDoS Protection Plan.
 
+## Step-by-step documentation
+If you'd like more detailed step-by-step instructions on how to deploy this policy, visit our Tech Community blog post https://aka.ms/ddosvnetpolicy-techcommunity.
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
