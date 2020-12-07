@@ -22,7 +22,6 @@ The Logic App queries the Azure Resource Graph to enrich the alert, attempts an 
 5. Enter the company domain in the form of @company.com.
 6. Enter only the workspace name where DDoS Protection logs are stored.
 
-<<<<<<< HEAD
 ## Post-Deployment
 
 There are steps that must me done to configure the Logic App after it is deployed:
@@ -38,10 +37,8 @@ There are steps that must me done to configure the Logic App after it is deploye
 9. Select the same account for the second Send Email step.
 10. Save the Logic App.
 
-=======
 ## Step-by-step documentation
 If you'd like more detailed step-by-step instructions on how to deploy this template, visit our Tech Community blog post https://aka.ms/ddosalert-techcommunity.
->>>>>>> 006e8802e3de3fc4ccc3d0c8eb06212ff89d8274
 
 ## Contributing
 
