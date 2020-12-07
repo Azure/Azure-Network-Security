@@ -129,11 +129,11 @@
                             "defaultValue": {},
                             "type": "Object"
                         },
-                        "securityTeamEmail": {
+                        "companyDomain": {
                             "defaultValue": {},
                             "type": "String"
                         },
-                        "companyDomain": {
+                        "securityTeamEmail": {
                             "defaultValue": {},
                             "type": "String"
                         }
@@ -458,71 +458,6 @@
                         }
                     },
                     "actions": {
-                        "Condition": {
-                            "actions": {
-                                "Send_an_email_(V2)": {
-                                    "runAfter": {},
-                                    "type": "ApiConnection",
-                                    "inputs": {
-                                        "body": {
-                                            "Body": "<p>An ongoing DDoS mitigation event has been detected against the following resource:<br>\n<br>\n<strong>Target Public IP:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 2))}<br>\n<strong>Public IP Name:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 1))}<br>\n<strong>DNS Name:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 3))}<br>\n<strong>Attached Resource Type: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 4))}<br>\n<strong>Attached Resource Name:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 5))}<br>\n<strong>Region: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 6))}<br>\n<strong>Resource Group: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 7))}<br>\n<strong>Tags:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 9))}<br>\n<strong>Public IP Resource ID:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 0))}<br>\n<strong>Attached Resource ID:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 8))}<br>\n<strong>Resource Owner: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 10))}@{parameters('companyDomain')}<br>\n<br>\n<strong>Message</strong>: @{first(skip(first(variables('Rows')), 2))}<br>\n<br>\n<strong>Link to search results:</strong> @{triggerBody()?['LinkToSearchResults']}<br>\n<br>\nIf DDoS Rapid Response support is necessary, visit the <a href=\"https://docs.microsoft.com/en-us/azure/azure-portal/supportability/how-to-create-azure-support-request\">general support docs here</a> &nbsp;and the <a href=\"https://docs.microsoft.com/en-us/azure/ddos-protection/ddos-rapid-response\">DDoS Rapid Response instructions here</a> .<br>\n<br>\n<strong>Result of test</strong> against http://@{first(skip(first(variables('Rows')), 3))}<br>\n<strong>Status</strong>: @{outputs('HTTP_2')['statusCode']}<br>\n<strong>Headers</strong>: @{outputs('HTTP_2')['headers']}<br>\n<strong>Body</strong>: @{body('HTTP_2')}<br>\n</p>",
-                                            "Importance": "High",
-                                            "Subject": "Potential DDoS Attack",
-                                            "To": "@{parameters('securityTeamEmail')}; @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 10))}@{parameters('companyDomain')}"
-                                        },
-                                        "host": {
-                                            "connection": {
-                                                "name": "@parameters('$connections')['office365']['connectionId']"
-                                            }
-                                        },
-                                        "method": "post",
-                                        "path": "/v2/Mail"
-                                    },
-                                    "description": "1. \"the the\" 2. Should we also add Mitigation status(started, notStarted) to the list of attributes sent out? 3. Timestamp in case of delay at the MesageBroker ?"
-                                }
-                            },
-                            "runAfter": {
-                                "HTTP_2": [
-                                    "Succeeded",
-                                    "Failed",
-                                    "TimedOut"
-                                ]
-                            },
-                            "else": {
-                                "actions": {
-                                    "Send_an_email_(V2)_2": {
-                                        "runAfter": {},
-                                        "type": "ApiConnection",
-                                        "inputs": {
-                                            "body": {
-                                                "Body": "<p>An ongoing DDoS mitigation event has been detected against the following resource:<br>\n<strong><br>\nTarget Public IP: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 2))}</strong><strong><br>\nPublic IP Name: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 1))}</strong><strong><br>\nDNS Name: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 3))}</strong><strong><br>\nAttached Resource Type: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 4))}</strong><strong><br>\nAttached Resource Name: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 5))}</strong><strong><br>\nRegion: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 6))}</strong><strong><br>\nResource Group: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 7))}</strong><strong><br>\nTags: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 9))}</strong><strong><br>\nPublic IP Resource ID: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 0))}</strong><strong><br>\nAttached Resource ID: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 8))}</strong><strong><br>\nResource Owner: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 10))}@{parameters('companyDomain')}<br>\n<br>\nMessage: </strong><strong>@{first(skip(first(variables('Rows')), 2))}</strong><strong><br>\n<br>\nLink to search results:</strong> @{triggerBody()?['LinkToSearchResults']}<br>\n<br>\nIf DDoS Rapid Response support is necessary, visit the <a href=\"https://docs.microsoft.com/en-us/azure/azure-portal/supportability/how-to-create-azure-support-request\">general support docs here </a>&nbsp;and the <a href=\"https://docs.microsoft.com/en-us/azure/ddos-protection/ddos-rapid-response\">DDoS Rapid Response instructions here.</a><br>\n<br>\n<strong>Result of test </strong>against http://@{first(skip(first(variables('Rows')), 3))} failed or timed out.</p>",
-                                                "Importance": "High",
-                                                "Subject": "Potential DDoS Attack",
-                                                "To": "@{parameters('securityTeamEmail')}; @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 10))}@{parameters('companyDomain')}"
-                                            },
-                                            "host": {
-                                                "connection": {
-                                                    "name": "@parameters('$connections')['office365']['connectionId']"
-                                                }
-                                            },
-                                            "method": "post",
-                                            "path": "/v2/Mail"
-                                        }
-                                    }
-                                }
-                            },
-                            "expression": {
-                                "and": [
-                                    {
-                                        "greater": [
-                                            "@outputs('HTTP_2')['statusCode']",
-                                            0
-                                        ]
-                                    }
-                                ]
-                            },
-                            "type": "If"
-                        },
                         "For_each": {
                             "foreach": "@triggerBody()?['SearchResult']?['tables']",
                             "actions": {
@@ -642,6 +577,53 @@
                                     },
                                     "type": "object"
                                 }
+                            }
+                        },
+                        "Send_an_email_(V2)": {
+                            "runAfter": {
+                                "HTTP_2": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>An ongoing DDoS mitigation event has been detected against the following resource:<br>\n<br>\n<strong>Target Public IP:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 2))}<br>\n<strong>Public IP Name:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 1))}<br>\n<strong>DNS Name:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 3))}<br>\n<strong>Attached Resource Type: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 4))}<br>\n<strong>Attached Resource Name:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 5))}<br>\n<strong>Region: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 6))}<br>\n<strong>Resource Group: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 7))}<br>\n<strong>Tags:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 9))}<br>\n<strong>Public IP Resource ID:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 0))}<br>\n<strong>Attached Resource ID:</strong> @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 8))}<br>\n<strong>Resource Owner: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 10))}@{parameters('companyDomain')}<br>\n<br>\n<strong>Message</strong>: @{first(skip(first(variables('Rows')), 2))}<br>\n<br>\n<strong>Link to search results:</strong> @{triggerBody()?['LinkToSearchResults']}<br>\n<br>\nIf DDoS Rapid Response support is necessary, visit the <a href=\"https://docs.microsoft.com/en-us/azure/azure-portal/supportability/how-to-create-azure-support-request\">general support docs here</a> &nbsp;and the <a href=\"https://docs.microsoft.com/en-us/azure/ddos-protection/ddos-rapid-response\">DDoS Rapid Response instructions here</a> .<br>\n<br>\n<strong>Result of test</strong> against http://@{first(skip(first(variables('Rows')), 3))}<br>\n<strong>Status</strong>: @{outputs('HTTP_2')['statusCode']}<br>\n<strong>Headers</strong>: @{outputs('HTTP_2')['headers']}<br>\n<strong>Body</strong>: @{body('HTTP_2')}<br>\n</p>",
+                                    "Importance": "High",
+                                    "Subject": "Potential DDoS Attack",
+                                    "To": "@{parameters('securityTeamEmail')}; @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 10))}@{parameters('companyDomain')}"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['office365_1']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        },
+                        "Send_an_email_(V2)_2": {
+                            "runAfter": {
+                                "HTTP_2": [
+                                    "Failed",
+                                    "TimedOut"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>An ongoing DDoS mitigation event has been detected against the following resource:<br>\n<strong><br>\nTarget Public IP: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 2))}</strong><strong><br>\nPublic IP Name: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 1))}</strong><strong><br>\nDNS Name: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 3))}</strong><strong><br>\nAttached Resource Type: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 4))}</strong><strong><br>\nAttached Resource Name: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 5))}</strong><strong><br>\nRegion: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 6))}</strong><strong><br>\nResource Group: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 7))}</strong><strong><br>\nTags: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 9))}</strong><strong><br>\nPublic IP Resource ID: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 0))}</strong><strong><br>\nAttached Resource ID: </strong><strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 8))}</strong><strong><br>\nResource Owner: </strong>@{first(skip(first(body('Parse_JSON')?['data']?['rows']), 10))}@{parameters('companyDomain')}<br>\n<br>\nMessage: </strong><strong>@{first(skip(first(variables('Rows')), 2))}</strong><strong><br>\n<br>\nLink to search results:</strong> @{triggerBody()?['LinkToSearchResults']}<br>\n<br>\nIf DDoS Rapid Response support is necessary, visit the <a href=\"https://docs.microsoft.com/en-us/azure/azure-portal/supportability/how-to-create-azure-support-request\">general support docs here </a>&nbsp;and the <a href=\"https://docs.microsoft.com/en-us/azure/ddos-protection/ddos-rapid-response\">DDoS Rapid Response instructions here.</a><br>\n<br>\n<strong>Result of test </strong>against http://@{first(skip(first(variables('Rows')), 3))} failed or timed out.</p>",
+                                    "Importance": "High",
+                                    "Subject": "Potential DDoS Attack",
+                                    "To": "@{parameters('securityTeamEmail')}; @{first(skip(first(body('Parse_JSON')?['data']?['rows']), 10))}@{parameters('companyDomain')}"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['office365_1']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
                             }
                         }
                     },

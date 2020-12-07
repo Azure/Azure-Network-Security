@@ -22,6 +22,21 @@ The Logic App queries the Azure Resource Graph to enrich the alert, attempts an 
 5. Enter the company domain in the form of @company.com.
 6. Enter only the workspace name where DDoS Protection logs are stored.
 
+## Post-Deployment
+
+There are steps that must me done to configure the Logic App after it is deployed:
+
+1. From the Logic App resource, click the Identity blade.
+2. Ensure Status is On.
+3. Click Azure Role Assignments.
+4. Click Add Role Assignment.
+5. Assign the Reader role to the scope of your choice.
+6. Click the Logic App Designer blade.
+7. For the first Send Email step (Connections), click Add New.
+8. Authenticate with the account that will be used to send the notification emails.
+9. Select the same account for the second Send Email step.
+10. Save the Logic App.
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
