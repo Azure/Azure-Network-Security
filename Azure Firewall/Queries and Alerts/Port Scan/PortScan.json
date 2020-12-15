@@ -2,31 +2,31 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-		"workspaceName": {
+        "workspaceName": {
             "type": "string",
             "metadata": {
                 "Description": "Name of the Log Analytics workspace"
             }
-		},
-		"MinimumDifferentPortsThreashold": {
+        },
+        "MinimumDifferentPortsThreashold": {
             "type": "string",
-			"defaultValue": "100",
+            "defaultValue": "100",
             "metadata": {
                 "Description": "Minimum number of hosts scanned threashold"
             }
-		},
-		"BinTime": {
+        },
+        "BinTime": {
             "type": "string",
-			"defaultValue": "30",
+            "defaultValue": "30",
             "metadata": {
                 "Description": "Scan bin time in seconds"
             }
-		},
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
             "metadata": {
-            "description": "Location must match the location of the workspace - Do not edit this parameter."
+                "description": "Location must match the location of the workspace - Do not edit this parameter."
             }
         }
     },
@@ -35,48 +35,50 @@
         "alertName": "Port Scan",
         "alertDescription": "Port Scan is the act of scanning different ports on one computer.\nThis alert search for source IP scans multiple ports on one host.\nConfigurable Parameters:\n\tPort scan time - the time range to look for multiple ports scanned. Default set to 30 seconds.\n\tMinimum different ports threashold - alert only if more than this number of ports scanned. Default set to 100.",
         "alertStatus": "true",
-        "alertSource":{
-            "Query": "[concat('let RunTime = 1h; let StartRunTime = 1d; let EndRunTime = StartRunTime - RunTime; let MinimumDifferentPortsThreashold = ', parameters('MinimumDifferentPortsThreashold'), '; let BinTime = ', parameters('BinTime'), 's; AzureDiagnostics | where TimeGenerated  between (ago(StartRunTime) .. ago(EndRunTime)) | where OperationName == \"AzureFirewallApplicationRuleLog\" or OperationName == \"AzureFirewallNetworkRuleLog\" | parse msg_s with * \"from \" srcip \":\" srcport \" to \" dsturl \":\" dstport  \".\" *| where dstport !in (ExcludedPorts) | where isnotempty(dsturl) and isnotempty(srcip) and isnotempty(srcip) | summarize AlertTimedCountPortsInBinTime = dcount(dstport) by srcip, bin(TimeGenerated, BinTime) | where AlertTimedCountPortsInBinTime > MinimumDifferentPortsThreashold')]",
-			"SourceId": "[resourceId('Microsoft.OperationalInsights/workspaces',parameters('workspaceName'))]",
-            "Type":"ResultCount"
+        "alertSource": {
+            "Query": "[concat('let RunTime = 1h; let StartRunTime = 1d; let EndRunTime = StartRunTime - RunTime; let MinimumDifferentPortsThreashold = ', parameters('MinimumDifferentPortsThreashold'), '; let BinTime = ', parameters('BinTime'), 's; AzureDiagnostics | where TimeGenerated  between (ago(StartRunTime) .. ago(EndRunTime)) | where OperationName == \"AzureFirewallApplicationRuleLog\" or OperationName == \"AzureFirewallNetworkRuleLog\" | parse msg_s with * \"from \" srcip \":\" srcport \" to \" dsturl \":\" dstport  \".\" *| where isnotempty(dsturl) and isnotempty(srcip) and isnotempty(srcip) | summarize AlertTimedCountPortsInBinTime = dcount(dstport) by srcip, bin(TimeGenerated, BinTime) | where AlertTimedCountPortsInBinTime > MinimumDifferentPortsThreashold')]",
+            "SourceId": "[resourceId('Microsoft.OperationalInsights/workspaces',parameters('workspaceName'))]",
+            "Type": "ResultCount"
         },
-        "alertSchedule":{
+        "alertSchedule": {
             "Frequency": 5,
             "Time": 60
         },
-        "alertActions":{
+        "alertActions": {
             "SeverityLevel": "4"
         },
-        "alertTrigger":{
-            "Operator":"GreaterThan",
-            "Threshold":"1"
+        "alertTrigger": {
+            "Operator": "GreaterThan",
+            "Threshold": "1"
         }
     },
-    "resources":[ {
-        "name":"[variables('alertName')]",
-        "type":"Microsoft.Insights/scheduledQueryRules",
-        "apiVersion": "2018-04-16",
-        "location": "[variables('alertLocation')]",
-        "properties":{
-            "description": "[variables('alertDescription')]",
-            "enabled": "[variables('alertStatus')]",
-            "source": {
-                "query": "[variables('alertSource').Query]",
-                "dataSourceId": "[variables('alertSource').SourceId]",
-                "queryType":"[variables('alertSource').Type]"
-            },
-            "schedule":{
-                "frequencyInMinutes": "[variables('alertSchedule').Frequency]",
-                "timeWindowInMinutes": "[variables('alertSchedule').Time]"
-            },
-            "action":{
-                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
-                "severity":"[variables('alertActions').SeverityLevel]",
-                "trigger":{
-                    "thresholdOperator":"[variables('alertTrigger').Operator]",
-                    "threshold":"[variables('alertTrigger').Threshold]"
+    "resources": [
+        {
+            "name": "[variables('alertName')]",
+            "type": "Microsoft.Insights/scheduledQueryRules",
+            "apiVersion": "2018-04-16",
+            "location": "[variables('alertLocation')]",
+            "properties": {
+                "description": "[variables('alertDescription')]",
+                "enabled": "[variables('alertStatus')]",
+                "source": {
+                    "query": "[variables('alertSource').Query]",
+                    "dataSourceId": "[variables('alertSource').SourceId]",
+                    "queryType": "[variables('alertSource').Type]"
+                },
+                "schedule": {
+                    "frequencyInMinutes": "[variables('alertSchedule').Frequency]",
+                    "timeWindowInMinutes": "[variables('alertSchedule').Time]"
+                },
+                "action": {
+                    "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                    "severity": "[variables('alertActions').SeverityLevel]",
+                    "trigger": {
+                        "thresholdOperator": "[variables('alertTrigger').Operator]",
+                        "threshold": "[variables('alertTrigger').Threshold]"
+                    }
                 }
             }
         }
-    } ]
+    ]
 }
