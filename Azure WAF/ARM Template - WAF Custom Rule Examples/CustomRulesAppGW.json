@@ -1,0 +1,184 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "policyName": {
+            "defaultValue": "CustomRulesAppGW",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('policyName')]",
+            "location": "eastus2",
+            "tags": {},
+            "properties": {
+                "customRules": [
+                    {
+                        "name": "GeoAllowList",
+                        "priority": 50,
+                        "ruleType": "MatchRule",
+                        "action": "Block",
+                        "matchConditions": [
+                            {
+                                "matchVariables": [
+                                    {
+                                        "variableName": "RemoteAddr"
+                                    }
+                                ],
+                                "operator": "GeoMatch",
+                                "negationConditon": true,
+                                "matchValues": [
+                                    "CA",
+                                    "MX",
+                                    "US"
+                                ],
+                                "transforms": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "GeoBlockList",
+                        "priority": 51,
+                        "ruleType": "MatchRule",
+                        "action": "Block",
+                        "matchConditions": [
+                            {
+                                "matchVariables": [
+                                    {
+                                        "variableName": "RemoteAddr"
+                                    }
+                                ],
+                                "operator": "GeoMatch",
+                                "negationConditon": false,
+                                "matchValues": [
+                                    "BR",
+                                    "HU",
+                                    "US"
+                                ],
+                                "transforms": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "IPAllowList",
+                        "priority": 52,
+                        "ruleType": "MatchRule",
+                        "action": "Block",
+                        "matchConditions": [
+                            {
+                                "matchVariables": [
+                                    {
+                                        "variableName": "RemoteAddr"
+                                    }
+                                ],
+                                "operator": "IPMatch",
+                                "negationConditon": true,
+                                "matchValues": [
+                                    "1.2.3.4",
+                                    "2.3.4.0/24"
+                                ],
+                                "transforms": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "IPBlockList",
+                        "priority": 53,
+                        "ruleType": "MatchRule",
+                        "action": "Block",
+                        "matchConditions": [
+                            {
+                                "matchVariables": [
+                                    {
+                                        "variableName": "RemoteAddr"
+                                    }
+                                ],
+                                "operator": "IPMatch",
+                                "negationConditon": false,
+                                "matchValues": [
+                                    "1.2.3.4",
+                                    "2.3.4.0/24"
+                                ],
+                                "transforms": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "MethodAllowList",
+                        "priority": 54,
+                        "ruleType": "MatchRule",
+                        "action": "Block",
+                        "matchConditions": [
+                            {
+                                "matchVariables": [
+                                    {
+                                        "variableName": "RequestMethod"
+                                    }
+                                ],
+                                "operator": "Equal",
+                                "negationConditon": true,
+                                "matchValues": [
+                                    "GET",
+                                    "HEAD",
+                                    "OPTIONS",
+                                    "POST"
+                                ],
+                                "transforms": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "UserAgentBlock",
+                        "priority": 55,
+                        "ruleType": "MatchRule",
+                        "action": "Block",
+                        "matchConditions": [
+                            {
+                                "matchVariables": [
+                                    {
+                                        "variableName": "RequestHeaders",
+                                        "selector": "User-Agent"
+                                    }
+                                ],
+                                "operator": "Contains",
+                                "negationConditon": false,
+                                "matchValues": [
+                                    "python"
+                                ],
+                                "transforms": [
+                                    "Lowercase"
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "policySettings": {
+                    "requestBodyCheck": true,
+                    "maxRequestBodySizeInKb": 128,
+                    "fileUploadLimitInMb": 100,
+                    "state": "Enabled",
+                    "mode": "Prevention"
+                },
+                "managedRules": {
+                    "managedRuleSets": [
+                        {
+                            "ruleSetType": "OWASP",
+                            "ruleSetVersion": "3.1",
+                            "ruleGroupOverrides": []
+                        },
+                        {
+                            "ruleSetType": "Microsoft_BotManagerRuleSet",
+                            "ruleSetVersion": "0.1",
+                            "ruleGroupOverrides": []
+                        }
+                    ],
+                    "exclusions": []
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,241 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "policyName": {
+            "defaultValue": "CustomRulesAFD",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "apiVersion": "2020-04-01",
+            "name": "[parameters('policyName')]",
+            "location": "Global",
+            "tags": {},
+            "properties": {
+                "policySettings": {
+                    "enabledState": "Enabled",
+                    "mode": "Prevention",
+                    "customBlockResponseStatusCode": 403
+                },
+                "customRules": {
+                    "rules": [
+                        {
+                            "name": "GeoAllowList",
+                            "enabledState": "Enabled",
+                            "priority": 1000,
+                            "ruleType": "MatchRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 100,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RemoteAddr",
+                                    "operator": "GeoMatch",
+                                    "negateCondition": true,
+                                    "matchValue": [
+                                        "CA",
+                                        "MX",
+                                        "US"
+                                    ],
+                                    "transforms": []
+                                }
+                            ],
+                            "action": "Block"
+                        },
+                        {
+                            "name": "GeoBlockList",
+                            "enabledState": "Enabled",
+                            "priority": 1001,
+                            "ruleType": "MatchRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 100,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RemoteAddr",
+                                    "operator": "GeoMatch",
+                                    "negateCondition": false,
+                                    "matchValue": [
+                                        "BR",
+                                        "HU",
+                                        "US"
+                                    ],
+                                    "transforms": []
+                                }
+                            ],
+                            "action": "Block"
+                        },
+                        {
+                            "name": "IPAllowList",
+                            "enabledState": "Enabled",
+                            "priority": 1002,
+                            "ruleType": "MatchRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 100,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RemoteAddr",
+                                    "operator": "IPMatch",
+                                    "negateCondition": true,
+                                    "matchValue": [
+                                        "1.2.3.4",
+                                        "2.3.4.0/24"
+                                    ],
+                                    "transforms": []
+                                }
+                            ],
+                            "action": "Block"
+                        },
+                        {
+                            "name": "IPBlockList",
+                            "enabledState": "Enabled",
+                            "priority": 1003,
+                            "ruleType": "MatchRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 100,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RemoteAddr",
+                                    "operator": "IPMatch",
+                                    "negateCondition": false,
+                                    "matchValue": [
+                                        "1.2.3.4",
+                                        "2.3.4.0/24"
+                                    ],
+                                    "transforms": []
+                                }
+                            ],
+                            "action": "Block"
+                        },
+                        {
+                            "name": "MethodAllowList",
+                            "enabledState": "Enabled",
+                            "priority": 1004,
+                            "ruleType": "MatchRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 100,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RequestMethod",
+                                    "operator": "Equal",
+                                    "negateCondition": true,
+                                    "matchValue": [
+                                        "GET",
+                                        "HEAD",
+                                        "OPTIONS",
+                                        "POST"
+                                    ],
+                                    "transforms": []
+                                }
+                            ],
+                            "action": "Block"
+                        },
+                        {
+                            "name": "RequestBodySizeLimit",
+                            "enabledState": "Enabled",
+                            "priority": 1005,
+                            "ruleType": "MatchRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 100,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RequestBody",
+                                    "operator": "GreaterThan",
+                                    "negateCondition": false,
+                                    "matchValue": [
+                                        "128000"
+                                    ],
+                                    "transforms": []
+                                }
+                            ],
+                            "action": "Block"
+                        },
+                        {
+                            "name": "RateLimitMethod",
+                            "enabledState": "Enabled",
+                            "priority": 1006,
+                            "ruleType": "RateLimitRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 100,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RequestMethod",
+                                    "operator": "Equal",
+                                    "negateCondition": false,
+                                    "matchValue": [
+                                        "POST"
+                                    ],
+                                    "transforms": []
+                                }
+                            ],
+                            "action": "Block"
+                        },
+                        {
+                            "name": "RateLimitURI",
+                            "enabledState": "Enabled",
+                            "priority": 1007,
+                            "ruleType": "RateLimitRule",
+                            "rateLimitDurationInMinutes": 1,
+                            "rateLimitThreshold": 100,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RequestUri",
+                                    "operator": "Contains",
+                                    "negateCondition": false,
+                                    "matchValue": [
+                                        "store"
+                                    ],
+                                    "transforms": [
+                                        "Lowercase"
+                                    ]
+                                }
+                            ],
+                            "action": "Block"
+                        },
+                        {
+                            "name": "UserAgentBlock",
+                            "enabledState": "Enabled",
+                            "priority": 1008,
+                            "ruleType": "MatchRule",
+                            "rateLimitDurationInMinutes": 0,
+                            "rateLimitThreshold": 0,
+                            "matchConditions": [
+                                {
+                                    "matchVariable": "RequestHeader",
+                                    "selector": "User-Agent",
+                                    "operator": "Contains",
+                                    "negateCondition": false,
+                                    "matchValue": [
+                                        "python"
+                                    ],
+                                    "transforms": [
+                                        "Lowercase"
+                                    ]
+                                }
+                            ],
+                            "action": "Block"
+                        }
+                    ]
+                },
+                "managedRules": {
+                    "managedRuleSets": [
+                        {
+                            "ruleSetType": "DefaultRuleSet",
+                            "ruleSetVersion": "1.0",
+                            "ruleGroupOverrides": [],
+                            "exclusions": []
+                        },
+                        {
+                            "ruleSetType": "Microsoft_BotManagerRuleSet",
+                            "ruleSetVersion": "1.0",
+                            "ruleGroupOverrides": [],
+                            "exclusions": []
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
