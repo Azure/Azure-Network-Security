@@ -10,6 +10,10 @@ When deploying via ARM Template, you'll be required to know the following:
 * Workspace ResourceGroup
 * Workspace Subscription ID
 
+<p align="center">
+ <img src="https://github.com/Azure/Azure-Network-Security/blob/master/media/Azure-DDoS-Protection/DDOS_workbookview.png">
+</p>
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
