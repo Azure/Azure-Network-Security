@@ -53,7 +53,7 @@
     },
     "variables": {
         "alertLocation": "[parameters('location')]",
-        "alertName": "Source ip abnormally connectes to multiple hosts",
+        "alertName": "Source ip abnormally connects to multiple hosts",
         "alertDescription": "This alert search for source ip that abnormally connects to multiple destinations according to learning period activity.\nConfigurable Parameters:\n\tMinimum of stds threashold - the number of stds to use in the threashold calculation. Default set to 3.\n\tLearning period time - learning period for threashold calculation in days. Default set to 5.\n\tBin time - learning buckets time in hours. Default set to 1 hour.\n\tMinimum threashold - minimum threashold for alert. Default set to 10.\n\tMinimum bucket threashold - minimum learning buckets threashold for alert. Default set to 5.",
         "alertStatus": "true",
         "alertSource":{
