@@ -12,14 +12,14 @@
             "type": "string",
 			"defaultValue": "3",
             "metadata": {
-                "Description": "Number of stds to use in the threashold calculation"
+                "Description": "Number of stds to use in the threshold calculation"
             }
 		},
 		"LearningPeriod": {
             "type": "string",
 			"defaultValue": "5",
             "metadata": {
-                "Description": "Learning period for threashold calculation in days"
+                "Description": "Learning period for threshold calculation in days"
             }
 		},
 		"BinTime": {
@@ -33,14 +33,14 @@
             "type": "string",
 			"defaultValue": "10",
             "metadata": {
-                "Description": "Minimum threashold for alert"
+                "Description": "Minimum threshold for alert"
             }
 		},
 		"MinLearningBuckets": {
             "type": "string",
 			"defaultValue": "5",
             "metadata": {
-                "Description": "Minimum learning buckets threashold for alert"
+                "Description": "Minimum learning buckets threshold for alert"
             }
 		},
         "location": {
