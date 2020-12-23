@@ -154,6 +154,28 @@
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "name": "AllowFrontDoor",
+                        "priority": 56,
+                        "ruleType": "MatchRule",
+                        "action": "Block",
+                        "matchConditions": [
+                            {
+                                "matchVariables": [
+                                    {
+                                        "variableName": "RequestHeaders",
+                                        "selector": "X-Azure-FDID"
+                                    }
+                                ],
+                                "operator": "Equal",
+                                "negationConditon": true,
+                                "matchValues": [
+                                    "abc12345-ab123-abc12345-abc123"
+                                ],
+                                "transforms": []
+                            }
+                        ]
                     }
                 ],
                 "policySettings": {
