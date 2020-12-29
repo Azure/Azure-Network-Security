@@ -13,7 +13,7 @@
         "type": "string",
         "defaultValue": "workbook",
         "metadata": {
-          "description": "The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
+          "description": "The gallery that the workbook will be shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
         }
       },
       "workbookSourceId": {
