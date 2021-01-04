@@ -1,5 +1,5 @@
 # Azure WAF Attack Testing Lab Environment Deployment Template
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FARM%2520Template%2520-%2520WAF%2520Attack%2520Testing%2520Lab%2FAzNetSecdeploy_Juice-Shop_AZFW-Rules_Updated.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FARM%2520Template%2520-%2520WAF%2520Attack%2520Testing%2520Lab%2FAzNetSecdeploy_Juice-Shop_AZFW-Rules_Updated.json)
 
 
 This ARM deployment includes everything needed to test Azure WAF Security components.  Below are the differences from the default Azure Network Security deployment template.
