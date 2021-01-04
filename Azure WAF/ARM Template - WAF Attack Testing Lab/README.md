@@ -2,10 +2,12 @@
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmohitkusecurity%2Ftemplates%2Fmain%2FARM%2FWAF%2520Attack%2520Testing%2Fv2%2FAzNetSecdeploy_Juice_Shop_FW_Rules_Updated.json)
 
 
-This ARM deployment includes everything needed to test Azure WAF Security components.  Below are the differences from the original Azure Network Security deployment template: https://github.com/Azure/Azure-Network-Security/tree/master/Cross%20Product/Network%20Security%20Lab%20Template  
+This ARM deployment includes everything needed to test Azure WAF Security components.  Below are the differences from the default Azure Network Security deployment template.
 
 - A custom Docker image with a modified version of the OWASP Juice Shop application
 - Built-in Azure Firewall rules to allow inbound and outbound connectivity for the Kali VM
+
+Original Azure Network Security deployment template: https://github.com/Azure/Azure-Network-Security/tree/master/Cross%20Product/Network%20Security%20Lab%20Template  
 
 ## PowerShell Deployment Example:
 
@@ -25,7 +27,7 @@ Adding some `samples` to give context
 - Resource Group Log Analytics workspace is in: "TestResourceGroup"
 
 **Example Powershell command with some parameters configured:**
->New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Network%20Security%20Lab%20Template/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
+>New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Azure%20WAF/ARM%20Template%20-%20WAF%20Attack%20Testing%20Lab/AzNetSecdeploy_Juice-Shop_AZFW-Rules_Updated.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
 
 
 ## What is included with the AzNetSec Deployment Template
