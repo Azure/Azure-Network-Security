@@ -1,4 +1,4 @@
-# Azure WAF Security Testing Lab Environment Deployment Template
+# Azure WAF Attack Testing Lab Environment Deployment Template
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FARM%2520Template%2520-%2520WAF%2520Attack%2520Testing%2520Lab%2FAzNetSecdeploy_Juice-Shop_AZFW-Rules_Updated.json)
 
 
