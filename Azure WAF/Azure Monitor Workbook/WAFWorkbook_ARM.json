@@ -20,7 +20,7 @@
         "type": "string",
         "defaultValue": "<Insert Full Resource ID>",
         "metadata": {
-          "description": "The id of Log Analytics workspace to which the workbook will be associated, found in the Properties blade of the workspace resource."
+          "description": "The Resource ID of Log Analytics workspace to which the workbook will be associated, found in the Properties blade of the resource."
         }
       },
       "workbookId": {
