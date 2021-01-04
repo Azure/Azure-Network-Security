@@ -7,7 +7,8 @@ This ARM deployment includes everything needed to test Azure WAF Security compon
 - A custom Docker image with a modified version of the OWASP Juice Shop application
 - Built-in Azure Firewall rules to allow inbound and outbound connectivity for the Kali VM
 
-Original Azure Network Security deployment template: https://github.com/Azure/Azure-Network-Security/tree/master/Cross%20Product/Network%20Security%20Lab%20Template  
+**Original Azure Network Security deployment template:**
+https://github.com/Azure/Azure-Network-Security/tree/master/Cross%20Product/Network%20Security%20Lab%20Template  
 
 ## PowerShell Deployment Example:
 
