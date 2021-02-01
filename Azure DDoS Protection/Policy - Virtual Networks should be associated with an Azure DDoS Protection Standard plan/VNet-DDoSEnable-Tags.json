@@ -113,6 +113,7 @@
                             "properties": {
                               "addressSpace": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '2020-07-01', 'Full').properties.addressSpace]",
                               "subnets": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '2020-07-01', 'Full').properties.subnets]",
+                              "dhcpOptions": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '2020-07-01', 'Full').properties.dhcpOptions]",
                               "enableDdosProtection": true,
                               "ddosProtectionPlan": {
                                 "id": "[parameters('planId')]"
