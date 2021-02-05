@@ -1,6 +1,6 @@
 # Azure Monitor Workbook for Azure Firewall 
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%20Firewall%2FAzure%20Monitor%20Workbook%2FAzure%20Firewall_ARM.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FWorkbook%2520-%2520Azure%2520Firewall%2520Monitor%2520Workbook%2FAzure%2520Firewall_ARM.json)
 
 Gain insights into Azure Firewall events. You can learn about your application and network rules, see statistics for firewall activities across URLs, ports, and addresses. This workbook allows you to filter your Firewalls and Resource Groups, dynamically filter per category with easy to read data sets when investigating an issue in your logs. Import via ARM Template or Gallery Template.
 
