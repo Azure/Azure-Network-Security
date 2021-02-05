@@ -41,7 +41,7 @@ It is possible to identify which subscriptions may be incurring unplanned or unn
 
 <li>Select a <strong>Category</strong>, for example: <em>Network</em>. Alternatively, you can create a new category if desired.</li>
 
-<li>In the <strong>Policy Rule</strong> section, enter the code located in the AzurePolicyRuleDenyDDoSplan.json file [here](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20DDoS%20Protection/Policy%20-%20DDOS%20Restrict%20creation%20of%20Azure%20DDoS%20Protection%20Standard%20Plans%20with%20Azure%20Policy/AzurePolicyRuleDenyDDoSPlan.json)</li>
+<li>In the <strong>Policy Rule</strong> section, enter the code located in the AzurePolicyRuleDenyDDoSplan.json file [here](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20DDoS%20Protection/Policy%20-%20DDOS%20Restrict%20creation%20of%20Azure%20DDoS%20Protection%20Standard%20Plans%20with%20Azure%20Policy/AzurePolicyRuleDenyDDoSPlan.json) </li>
 <li>Click on <strong>Save</strong> to create this custom policy.</li>
 </ol>
 
