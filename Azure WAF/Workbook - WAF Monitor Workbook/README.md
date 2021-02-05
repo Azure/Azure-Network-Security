@@ -1,12 +1,12 @@
 # Azure Monitor Workbook for WAF
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FAzure%2520Monitor%2520Workbook%2FWAFWorkbook_ARM.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2FAzure%2FAzure-Network-Security%2Fblob%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520Azure%2520Monitor%2520Workbook%2FWAFWorkbook_ARM.json)
 
 This workbook visualizes security-relevant WAF events across several filterable panels. It works with all WAF types, including Application Gateway, Front Door, and CDN, and can be filtered based on WAF type or a specific WAF instance. Import via ARM Template or Gallery Template.
 
-When deploying via ARM Template, please make sure you know the Resource ID of the Log Analytics workspace you are going to use. You can find this information in the Log Analytics workspace menu options under General > Properties.
+When deploying via ARM Template, please make sure you know what Resource ID (Log Analytics Workgroup) you're wanting to use.
 
->The Resource ID value looks similar to this: /subscriptions/'GUID'/resourcegroups/'RG Name'/providers/microsoft.operationalinsights/workspaces/'Workspace Name'
+>Example of a value: /subscriptions/'GUID'/resourcegroups/'RG Name'/providers/microsoft.operationalinsights/workspaces/'Workspace Name'
 
 ## Contributing
 
