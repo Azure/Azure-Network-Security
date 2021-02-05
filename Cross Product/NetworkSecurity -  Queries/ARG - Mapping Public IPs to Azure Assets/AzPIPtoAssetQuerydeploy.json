@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "queries_Mapping_Public_IPs_to_Azure_Assets_name": {
+            "defaultValue": "Mapping Public IPs to Azure Assets",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "microsoft.resourcegraph/queries",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[parameters('queries_Mapping_Public_IPs_to_Azure_Assets_name')]",
+            "location": "global",
+            "properties": {
+                "query": "//Azure Resource Graph Queries\r\n//Find all resources which are associated with Public IPs in Azure\r\n\r\nResources\r\n| where type contains 'publicIPAddresses' and isnotempty(properties.ipAddress)\r\n| extend publicipaddress = properties.ipAddress\r\n| extend pipallocationmethod = properties.publicIPAllocationMethod\r\n| extend sku = sku.name\r\n| extend ipConfiguration = parse_json(properties.ipConfiguration.id)\r\n| extend BrkipConfig = split(ipConfiguration, '/')\r\n| extend assetprovider = tostring(BrkipConfig[6])\r\n| extend typeassetassociatedwith = tostring(BrkipConfig[7])\r\n| extend nameassetassociatedwith = tostring(BrkipConfig[8])\r\n| extend dnsname = parse_json(properties.dnsSettings.fqdn)\r\n| project id, name, publicipaddress, pipallocationmethod, dnsname, typeassetassociatedwith, nameassetassociatedwith, tenantId, kind, location, resourceGroup, subscriptionId, managedBy, sku, plan, properties, tags, identity, zones \r\n\r\n\r\n\r\n//| project id, name, type, publicipaddress, pipallocationmethod, dnsname, assetassociatedwith, assetname, assetprovider, tenantId, kind, location, resourceGroup, subscriptionId, managedBy, sku, plan, properties, tags, identity, zones ",
+                "description": "This query maps Public IPs to corresponding asset types in the selected Azure Subscriptions"
+            }
+        }
+    ]
+}
