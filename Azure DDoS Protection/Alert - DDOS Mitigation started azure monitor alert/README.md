@@ -1,6 +1,6 @@
 ## DDoS Mitigation Started - Potential Attack
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520DDoS%2520Protection%2FAzure%2520Monitor%2520Alert%2520-%2520DDoS%2520Mitigation%2520Started%2FDDoSMitigationStarted.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Azure%20DDoS%20Protection/Alert%20-%20DDOS%20Mitigation%20started%20azure%20monitor%20alert/DDoSMitigationStarted.json)
 
 This Azure Monitor alert rule will run a simple query to detect when an active DDoS mitigation is occuring. This indicates a potential attack. Action groups can be used to invoke actions as a result of the alert.
 
