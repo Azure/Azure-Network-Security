@@ -1,6 +1,6 @@
 # Azure Monitor Workbook for DDoS
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520DDoS%2520Protection%2FAzure%2520DDoS%2520Protection%2520Workbook%2FAzureDDoSWorkbook_ARM.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520DDoS%2520Protection%2FWorkbook%2520-%2520Azure%2520DDOS%2520monitor%2520workbook%2FAzureDDoSWorkbook_ARM.json)
 
 This workbook visualizes security-relevant Azure DDoS events across several filterable panels. Offering a summary tab and a investigate tabs across multiple workspaces.
 
