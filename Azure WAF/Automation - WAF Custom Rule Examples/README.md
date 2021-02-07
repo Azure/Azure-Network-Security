@@ -1,8 +1,8 @@
 # Azure Policy for WAF
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FARM%2520Template%2520-%2520WAF%2520Custom%2520Rule%2520Examples%2FCustomRulesAppGW.json) (Azure WAF on Application Gateway)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FAutomation%2520-%2520WAF%2520Custom%2520Rule%2520Examples%2FCustomRulesAppGW.json) (Azure WAF on Application Gateway)
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FARM%2520Template%2520-%2520WAF%2520Custom%2520Rule%2520Examples%2FCustomRulesAFD.json) (Azure WAF on Front Door)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FAutomation%2520-%2520WAF%2520Custom%2520Rule%2520Examples%2FCustomRulesAFD.json) (Azure WAF on Front Door)
 
 These templates contain various examples of custom rules for use with Azure WAF on either Application Gateway or Front Door. When deployed with the Deploy to Azure buttons above, the templates will create new WAF Policies containing several custom rules. Please note:
 - Customize these rules to your environment. These are just examples to display the logic.
