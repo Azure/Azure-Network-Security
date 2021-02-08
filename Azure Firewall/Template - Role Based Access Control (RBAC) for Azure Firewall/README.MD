@@ -7,9 +7,7 @@ You can [configure role assignments](https://docs.microsoft.com/en-us/azure/role
 
 In some instances, the built-in roles may be either too permissive or insufficient for the assignment that is required. Access should be provided using the principle of least privilege and every role should be carefully created with the user’s duties in mind, as a security control when creating user privileges. In this situation, you will also need to know what role actions are available.  
 
-In this article, we discuss the actions that may be used to create security conscious roles and templates that you can use to create and assign your role with some examples. Once you understand the boundaries for the role you are trying to create, you can use the template below or modify it by carefully selecting the actions required and assigning it to the user. 
-
-\\insert image
+In this article, we discuss the actions that may be used to create security conscious roles and templates that you can use to create and assign your role with some examples. Once you understand the boundaries for the role you are trying to create, you can use the template below or modify it by carefully selecting the actions required and assigning it to the user.  
 
 There are various levels of administrative roles you might be looking to assign, and this may be done at a management group level, subscription level, resource group level or resource level. Azure RBAC focuses on managing user [actions](https://docs.microsoft.com/en-us/azure/role-based-access-control/resource-provider-operations)  at these different scopes.  
 &nbsp;  
