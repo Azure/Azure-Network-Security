@@ -1,6 +1,6 @@
 ## Source IP abnormally connects to multiple destinations
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FSource%2520IP%2520abnormally%2520connects%2520to%2520multiple%2520destinations%2FSourceAbnormallyConnectsToMultipleDsts.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FAlert%2520-%2520Firewall%2520Source%2520IP%2520abnormally%2520connects%2520to%2520multiple%2520destinations%2FSourceAbnormallyConnectsToMultipleDsts.json)
 
 ### Scope
 This alert can indicate initial access attempts by attackers, trying to jump between different machines in the organization, exploiting lateral movement path or the same vulnerability on different machines in order to find vulnerable machines to access.
