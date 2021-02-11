@@ -39,10 +39,6 @@
     },
     "DDOSProtectionConfiguration": {
       "type": "bool",
-      "allowedValues": [
-        true,
-        false
-      ],
       "defaultValue": true,
       "metadata": {
         "description": "Allowing the ability to enable or disable DDoS on deployment, false is disable, true is enable"
@@ -90,7 +86,7 @@
     ],
     "publicIpAddressName1": "SOCNSFWPIP",
     "publicIpAddressName2": "SOCNSAGPIP",
-    "FW-name": "SOC-NS-FW",
+    "FW-Name": "SOC-NS-FW",
     "firewallPolicyName": "SOC-NS-FWPolicy",
     "AppGatewayPolicyName": "SOC-NS-AGPolicy",
     "FrontdoorPolicyName": "SOCNSFDPolicy",
@@ -116,7 +112,25 @@
     "workspaceid": "[concat('/subscriptions/',parameters('DiagnosticsWorkspaceSubscription'),'/resourcegroups/', parameters('DiagnosticsWorkspaceResourceGroup'), '/providers/Microsoft.OperationalInsights/workspaces/',parameters('DiagnosticsWorkspaceName'))]"
   },
   "resources": [
-    {
+          {
+      "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "enableDDoS",
+        "condition": "[parameters('DDOSProtectionConfiguration')]",
+      "dependsOn": [
+            "[resourceId('Microsoft.Network/azureFirewalls', variables('FW-Name'))]",
+            "[resourceId('Microsoft.Network/applicationGateways', variables('AG-Name'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "parameters": {},
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+               {
       "name": "[variables('VN-Name1')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[resourceGroup().location]",
@@ -135,7 +149,52 @@
         "enableVmProtection": false,
         "ddosProtectionPlan": {
           "id": "[resourceid('Microsoft.Network/ddosProtectionPlans', variables('DDoSPlanName'))]"
+        },
+        "subnets": [
+          {"name": "[variables('VN-Name1Subnet1Name')]",
+          "properties": {
+            "addressPrefix": "[variables('VN-Name1Subnet1Prefix')]",
+            "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]"
+          }
+          },
+          {
+        "name": "[variables('VN-Name1Subnet2Name')]",
+          "properties": {
+            "addressPrefix": "[variables('VN-Name1Subnet2Prefix')]",
+            "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]"
+          }
+          }
+        ]
+      }
+    },
+        {
+      "type": "Microsoft.Network/ddosProtectionPlans",
+      "apiVersion": "2020-04-01",
+      "name": "[variables('DDoSPlanName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {}
+    }
+          ],
+          "outputs": {}
+          }
         }
+    },
+    {
+      "name": "[variables('VN-Name1')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2020-03-01",
+      "tags": {
+        "displayName": "[variables('VN-Name1')]"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('VN-Name1Prefix')]"
+          ]
+        },
+        "enableDdosProtection": false,
+        "enableVmProtection": false
       },
       "resources": [
         {
@@ -518,7 +577,7 @@
     {
       "type": "Microsoft.Network/azureFirewalls",
       "apiVersion": "2019-11-01",
-      "name": "[variables('FW-name')]",
+      "name": "[variables('FW-Name')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName1'))]",
@@ -549,10 +608,10 @@
     },
     {
       "type": "Microsoft.Network/azureFirewalls/providers/diagnosticSettings",
-      "name": "[concat(variables('FW-name'),'/microsoft.insights/', 'FirewallDiagnostics')]",
+      "name": "[concat(variables('FW-Name'),'/microsoft.insights/', 'FirewallDiagnostics')]",
       "apiVersion": "2017-05-01-preview",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/azureFirewalls', variables('FW-name'))]"
+        "[resourceId('Microsoft.Network/azureFirewalls', variables('FW-Name'))]"
       ],
       "properties": {
         "name": "DiagService",
@@ -1524,13 +1583,6 @@
         "numberOfWorkers": 1,
         "reserved": true
       }
-    },
-    {
-      "type": "Microsoft.Network/ddosProtectionPlans",
-      "apiVersion": "2020-04-01",
-      "name": "[variables('DDoSPlanName')]",
-      "location": "[resourceGroup().location]",
-      "properties": {}
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
