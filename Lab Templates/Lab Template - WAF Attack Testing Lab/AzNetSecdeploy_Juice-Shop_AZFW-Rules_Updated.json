@@ -1672,6 +1672,9 @@
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('NIC-Name1'))]"
       ],
+      "zones": [
+        "1"
+      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "Standard_B2s"
@@ -1722,6 +1725,9 @@
         "publisher": "kali-linux",
         "product": "kali-linux"
       },
+      "zones": [
+        "1"
+      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "Standard_B2s"
@@ -1762,6 +1768,9 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('NIC-Name3'))]"
+      ],
+      "zones": [
+        "1"
       ],
       "properties": {
         "hardwareProfile": {
