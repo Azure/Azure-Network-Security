@@ -1,0 +1,27 @@
+{
+	"name": "AllowDNSoverHTTPS",
+	"priority": 201,
+	"ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+	"action": {
+		"type": "Allow"
+	},
+	"rules": [
+		{
+			"ruleType": "ApplicationRule",
+			"name": "AllowGoogleDNSoverHTTPS",
+			"protocols": [
+				{
+					"protocolType": "Https",
+					"port": 443
+				}
+			],
+			"targetUrls": [
+				"dns.google/dns-query"
+			],
+			"sourceAddresses": [
+				"*"
+			],
+			"terminateTLS": true
+		}
+	]
+}
