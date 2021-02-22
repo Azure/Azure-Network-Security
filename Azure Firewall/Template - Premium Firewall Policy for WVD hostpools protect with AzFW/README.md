@@ -3,10 +3,10 @@ author: Nathan Swift
 
 This WVD Firewall policy can be deployed and used with Azure Firewall Premium to protect your WVD Host Pools, Rule sets are based on [Azure Docs Here](https://docs.microsoft.com/en-us/azure/firewall/protect-windows-virtual-desktop) and also based on testing.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%20Firewall%2FPolicy%20-%20WVD%20hostpools%20protect%20with%20AzFW%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%20Firewall%2FTemplate%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW%2Fazuredeploy.json" target="_blank">
     <img src="https://aka.ms/deploytoazurebutton"/>
 </a>
-<a href="https://portal.azure.us/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%20Firewall%2FPolicy%20-%20WVD%20hostpools%20protect%20with%20AzFW%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.us/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%20Firewall%2FTemplate%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW%2Fazuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazuregov.png"/>
 </a>
 
@@ -22,13 +22,13 @@ Use the following format for the Array data for WVDServiceBusURLs, WVDBlobURLs, 
 
 ```["gsmUNIQUESTRINGeh.servicebus.windows.net/*","gsmUNIQUESTRINGeh.servicebus.windows.net/*"]```
 
-<img src="https://github.com/Azure/Azure-Network-Security/blob/main/Azure%20Firewall/Policy%20-%20WVD%20hostpools%20protect%20with%20AzFW/images/urls.png"/>
+<img src="https://github.com/Azure/Azure-Network-Security/blob/main/Azure%20Firewall/Template%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW/images/urls.png"/>
 
 Use the following format for the Array data for AD_DNSServers
 
 ```["xx.xx.xx.xx","yy.yy.yy.yy"]```
 
-![New app](https://github.com/Azure/Azure-Network-Security/blob/main/Azure%20Firewall/Policy%20-%20WVD%20hostpools%20protect%20with%20AzFW/images/addnspic.png?raw=true)
+![New app](https://github.com/Azure/Azure-Network-Security/blob/main/Azure%20Firewall/Template%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW/images/addnspic.png?raw=true)
 
 ## Post Install
 
