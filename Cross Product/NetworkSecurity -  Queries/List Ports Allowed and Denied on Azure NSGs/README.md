@@ -1,5 +1,5 @@
 # Listing Ports Allowed and Denied with User Defined Rules on NSGs - Azure Resource Graph Query Deployment Template
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FCross%2520Product%2FNetSec%2520Queries%2FListing%2520Ports%2520Allowed%2520and%2520Denied%2520on%2520NSGs%2FPortsonNSGsQueryDeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FCross%2520Product%2FNetworkSecurity%2520-%2520%2520Queries%2FList%2520Ports%2520Allowed%2520and%2520Denied%2520on%2520Azure%2520NSGs%2FPortsonNSGsQueryDeploy.json)
 
 This Azure Resource Graph query provides details of all ports allowed or denied with user defined inbound and outbound security rules on NSGs in the selected Azure subscriptions. The query does not provide details of ports allowed or denied with the default inbound and outbound security rules on the NSGs.
 

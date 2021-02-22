@@ -1,5 +1,5 @@
 # Listing Ports Allowed on Load Balancers - Azure Resource Graph Query Deployment Template
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FCross%2520Product%2FNetSec%2520Queries%2FListing%2520Ports%2520Allowed%2520and%2520Denied%2520on%2520NSGs%2FPortsonNSGsQueryDeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FCross%2520Product%2FNetworkSecurity%2520-%2520%2520Queries%2FList%2520Ports%2520Allowed%2520on%2520Azure%2520Load%2520Balancers%2FPortsonLoadBalancersQueryDeploy.json)
 
 This Azure Resource Graph query provides details of all ports allowed with load balancing and inbound NAT rules on Azure Load Balancers in the selected Azure subscriptions.
 

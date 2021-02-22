@@ -1,5 +1,5 @@
 # Mapping Public IPs to Azure Assets - Azure Resource Graph Query Deployment Template
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FCross%2520Product%2FNetSec%2520Queries%2FMapping%2520Public%2520IPs%2520to%2520Azure%2520Assets%2FAzPIPtoAssetQuerydeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FCross%2520Product%2FNetworkSecurity%2520-%2520%2520Queries%2FMapping%2520Public%2520IPs%2520to%2520Azure%2520Assets%2FAzPIPtoAssetQuerydeploy.json)
 
 This Azure Resource Graph query provides details of all public IPs and the assets associated with them in the selected Azure subscriptions.
 
