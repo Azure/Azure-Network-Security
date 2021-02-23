@@ -12,9 +12,9 @@ This WVD Firewall policy can be deployed and used with Azure Firewall Premium to
 
 ## Prerequistes
 
-![Azure Firewall Premium](https://docs.microsoft.com/en-us/azure/firewall/premium-portal)
-![Keyvault and Azure Firewall CACert](https://docs.microsoft.com/en-us/azure/firewall/premium-certificates) 
-![User Assigned Identity w/ Access to CACert Secret in Keyvault](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal#create-a-user-assigned-managed-identity)
+[Azure Firewall Premium](https://docs.microsoft.com/en-us/azure/firewall/premium-portal)  
+[Keyvault and Azure Firewall CACert](https://docs.microsoft.com/en-us/azure/firewall/premium-certificates)   
+[User Assigned Identity w/ Access to CACert Secret in Keyvault](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal#create-a-user-assigned-managed-identity)
 
 ## Arrays
 
@@ -22,7 +22,7 @@ Use the following format for the Array data for WVDServiceBusURLs, WVDBlobURLs, 
 
 ```["gsmUNIQUESTRINGeh.servicebus.windows.net/*","gsmUNIQUESTRINGeh.servicebus.windows.net/*"]```
 
-<img src="https://github.com/Azure/Azure-Network-Security/blob/main/Azure%20Firewall/Template%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW/images/urls.png"/>
+<img src="https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Firewall/Template%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW/images/urls.png"/>
 
 Use the following format for the Array data for AD_DNSServers
 
