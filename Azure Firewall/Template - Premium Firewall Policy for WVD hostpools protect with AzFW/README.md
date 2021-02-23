@@ -28,7 +28,7 @@ Use the following format for the Array data for AD_DNSServers
 
 ```["xx.xx.xx.xx","yy.yy.yy.yy"]```
 
-![New app](https://github.com/Azure/Azure-Network-Security/blob/main/Azure%20Firewall/Template%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW/images/addnspic.png?raw=true)
+<img src="https://github.com/Azure/Azure-Network-Security/blob/main/Azure%20Firewall/Template%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW/images/addnspic.png"/>
 
 ## Post Install
 
