@@ -1,5 +1,5 @@
 # GitHub Repo Firewall Policy Sample
-author: Nathan Swift
+Author: Nathan Swift
 
 This GitHub Repo Firewall policy can be deployed and used with Azure Firewall Premium to allow VMs to access GitHub functionality and only certain GitHub Repos you want to grant
 
@@ -12,6 +12,6 @@ This GitHub Repo Firewall policy can be deployed and used with Azure Firewall Pr
 
 ## Prerequistes
 
-![Azure Firewall Premium](https://docs.microsoft.com/en-us/azure/firewall/premium-portal)
-![Keyvault and Azure Firewall CACert](https://docs.microsoft.com/en-us/azure/firewall/premium-certificates) 
-![User Assigned Identity w/ Access to CACert Secret in Keyvault](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal#create-a-user-assigned-managed-identity)
+[Azure Firewall Premium](https://docs.microsoft.com/en-us/azure/firewall/premium-portal)  
+[Keyvault and Azure Firewall CACert](https://docs.microsoft.com/en-us/azure/firewall/premium-certificates)    
+[User Assigned Identity w/ Access to CACert Secret in Keyvault](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal#create-a-user-assigned-managed-identity)
