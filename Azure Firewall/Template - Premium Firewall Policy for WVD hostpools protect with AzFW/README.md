@@ -1,5 +1,6 @@
 # WVD Firewall Policy Sample
-author: Nathan Swift
+author: Nathan Swift  
+
 
 This WVD Firewall policy can be deployed and used with Azure Firewall Premium to protect your WVD Host Pools, Rule sets are based on [Azure Docs Here](https://docs.microsoft.com/en-us/azure/firewall/protect-windows-virtual-desktop) and also based on testing.
 
@@ -28,7 +29,7 @@ Use the following format for the Array data for AD_DNSServers
 
 ```["xx.xx.xx.xx","yy.yy.yy.yy"]```
 
-<img src="https://github.com/Azure/Azure-Network-Security/blob/main/Azure%20Firewall/Template%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW/images/addnspic.png"/>
+<img src="https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Firewall/Template%20-%20Premium%20Firewall%20Policy%20for%20WVD%20hostpools%20protect%20with%20AzFW/images/addnspic.png"/>
 
 ## Post Install
 
