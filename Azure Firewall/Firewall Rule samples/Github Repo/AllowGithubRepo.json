@@ -1,0 +1,34 @@
+{
+	"name": "AllowGithubRepo",
+	"priority": 202,
+	"ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+	"action": {
+		"type": "Allow"
+	},
+	"rules": [
+		{
+			"ruleType": "ApplicationRule",
+			"name": "AllowSwiftSolves-MSFT",
+			"protocols": [
+				{
+					"protocolType": "Https",
+					"port": 443
+				}
+			],
+			"targetUrls": [
+				"github.githubassets.com/*",
+				"github.com/session",
+				"github.com/sessions/two-factor",
+				"github.com/login*",
+				"github.com/swiftsolves-msft*",
+				"raw.githubusercontent.com/swiftsolves-msft*",
+				"github.com/Azure*",
+				"raw.githubusercontent.com/Azure*"
+			],
+			"sourceAddresses": [
+				"*"
+			],
+			"terminateTLS": true
+		}
+	]
+}

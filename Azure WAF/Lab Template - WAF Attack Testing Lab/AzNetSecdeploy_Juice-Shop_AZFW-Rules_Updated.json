@@ -1,0 +1,1808 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "DefaultUserName": {
+      "type": "string",
+      "defaultValue": "svradmin",
+      "metadata": {
+        "description": "Builtin\\Administrator account's name for the Virtual Machines. This is not a domain account."
+      }
+    },
+    "DefaultPassword": {
+      "type": "securestring",
+      "defaultValue": "H@ppytimes123!",
+      "metadata": {
+        "description": "Password for the Builtin Administrator account. Default is 'H@ppytimes!'"
+      }
+    },
+    "DiagnosticsWorkspaceName": {
+      "type": "string",
+      "defaultValue": "<WorkspaceName>",
+      "metadata": {
+        "description": "Provide the workspace name for your Network Diagnostic logs"
+      }
+    },
+    "DiagnosticsWorkspaceSubscription": {
+      "type": "string",
+      "defaultValue": "<WorkspaceSubscriptionID>",
+      "metadata": {
+        "description": "Provide the workspace subscription GUID for your Network Diagnostic logs"
+      }
+    },
+    "DiagnosticsWorkspaceResourceGroup": {
+      "type": "string",
+      "defaultValue": "<ResourceGroupName>",
+      "metadata": {
+        "description": "Provide the workspace resourcegroupname for your Network Diagnostic logs"
+      }
+    },
+    "DDOSProtectionConfiguration": {
+      "type": "bool",
+      "allowedValues": [
+        true,
+        false
+      ],
+      "defaultValue": true,
+      "metadata": {
+        "description": "Allowing the ability to enable or disable DDoS on deployment, false is disable, true is enable"
+      }
+    }
+  },  
+  "variables": {
+    "VN-Name1": "VN-HUB",
+    "VN-Name2": "VN-SPOKE1",
+    "VN-Name3": "VN-SPOKE2",
+    "VN-Name1Prefix": "10.0.25.0/24",
+    "VN-Name1Subnet1Name": "AGWAFSubnet",
+    "VN-Name1Subnet1Prefix": "10.0.25.64/26",
+    "VN-Name1Subnet2Name": "AzureFirewallSubnet",
+    "VN-Name1Subnet2Prefix": "10.0.25.0/26",
+    "VN-Name2Prefix": "10.0.27.0/24",
+    "VN-Name2Subnet1Name": "SPOKE1-SUBNET1",
+    "VN-Name2Subnet1Prefix": "10.0.27.0/26",
+    "VN-Name2Subnet2Name": "SPOKE1-SUBNET2",
+    "VN-Name2Subnet2Prefix": "10.0.27.64/26",
+    "VN-Name3Prefix": "10.0.28.0/24",
+    "VN-Name3Subnet1Name": "SPOKE2-SUBNET1",
+    "VN-Name3Subnet1Prefix": "10.0.28.0/26",
+    "VN-Name3Subnet2Name": "SPOKE2-SUBNET2",
+    "VN-Name3Subnet2Prefix": "10.0.28.64/26",
+    "Subnet_serviceEndpoints": [
+      {
+        "service": "Microsoft.Web"
+      },
+      {
+        "service": "Microsoft.Storage"
+      },
+      {
+        "service": "Microsoft.Sql"
+      },
+      {
+        "service": "Microsoft.ServiceBus"
+      },
+      {
+        "service": "Microsoft.KeyVault"
+      },
+      {
+        "service": "Microsoft.AzureActiveDirectory"
+      }
+    ],
+    "publicIpAddressName1": "SOCNSFWPIP",
+    "publicIpAddressName2": "SOCNSAGPIP",
+    "FW-name": "SOC-NS-FW",
+    "firewallPolicyName": "SOC-NS-FWPolicy",
+    "AppGatewayPolicyName": "SOC-NS-AGPolicy",
+    "FrontdoorPolicyName": "SOCNSFDPolicy",
+    "AG-Name": "SOC-NS-AG-WAFv2",
+    "AppGateway_IPAddress": "10.0.25.70",
+    "applicationGatewayId": "[resourceId('Microsoft.Network/applicationGateways', variables('AG-Name'))]",
+    "FrontDoorName": "[concat('Demowasp','-', uniqueString(resourceGroup().id))]",
+    "RT-Name1": "SOC-NS-DEFAULT-ROUTE",
+    "NSG-Name1": "SOC-NS-NSG-SPOKE1",
+    "NSG-Name2": "SOC-NS-NSG-SPOKE2",
+    "Site-Name1": "[concat('owaspdirect','-', uniqueString(resourceGroup().id))]",
+    "Site-HPN": "OWASP-ASP",
+    "NIC-Name1": "Nic1",
+    "NIC-Name2": "Nic2",
+    "NIC-Name3": "Nic3",
+    "NIC-Name1Ipaddress": "10.0.27.4",
+    "NIC-Name2Ipaddress": "10.0.27.68",
+    "NIC-Name3Ipaddress": "10.0.28.4",
+    "DDoSPlanName": "SOCNSDDOSPLAN",
+    "VM-Name1": "VM-Win10",
+    "VM-Name2": "VM-Kali",
+    "VM-Name3": "VM-Win2019",
+    "workspaceid": "[concat('/subscriptions/',parameters('DiagnosticsWorkspaceSubscription'),'/resourcegroups/', parameters('DiagnosticsWorkspaceResourceGroup'), '/providers/Microsoft.OperationalInsights/workspaces/',parameters('DiagnosticsWorkspaceName'))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('VN-Name1')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2020-03-01",
+      "dependsOn": [ "[resourceid('Microsoft.Network/ddosProtectionPlans', variables('DDoSPlanName'))]" ],
+      "tags": {
+        "displayName": "[variables('VN-Name1')]"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('VN-Name1Prefix')]"
+          ]
+        },
+        "enableDdosProtection": "[parameters('DDOSProtectionConfiguration')]",
+        "enableVmProtection": false,
+        "ddosProtectionPlan": {
+          "id": "[resourceid('Microsoft.Network/ddosProtectionPlans', variables('DDoSPlanName'))]"
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2020-03-01",
+          "type": "subnets",
+          "location": "[resourceGroup().location]",
+          "name": "[variables('VN-Name1Subnet1Name')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]"
+          ],
+          "properties": {
+            "addressPrefix": "[variables('VN-Name1Subnet1Prefix')]",
+            "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]"
+          }
+        },
+        {
+          "apiVersion": "2020-03-01",
+          "type": "subnets",
+          "location": "[resourceGroup().location]",
+          "name": "[variables('VN-Name1Subnet2Name')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]",
+            "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet1Name'))]"
+          ],
+          "properties": {
+            "addressPrefix": "[variables('VN-Name1Subnet2Prefix')]",
+            "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
+      "name": "[concat(variables('VN-Name1'),'/microsoft.insights/', 'VN1Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "VMProtectionAlerts",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "[variables('VN-Name2')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2020-03-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/routeTables', variables('RT-Name1'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name1'))]"
+      ],
+      "tags": {
+        "displayName": "[variables('VN-Name2')]"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('VN-Name2Prefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('VN-Name2Subnet1Name')]",
+            "properties": {
+              "addressPrefix": "[variables('VN-Name2Subnet1Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name1'))]"
+              },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', variables('RT-Name1'))]"
+              },
+              "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          },
+          {
+            "name": "[variables('VN-Name2Subnet2Name')]",
+            "properties": {
+              "addressPrefix": "[variables('VN-Name2Subnet2Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name1'))]"
+              },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', variables('RT-Name1'))]"
+              },
+              "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
+      "name": "[concat(variables('VN-Name2'),'/microsoft.insights/', 'VN2Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "VMProtectionAlerts",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "[variables('VN-Name3')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2020-03-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/routeTables', variables('RT-Name1'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name2'))]"
+      ],
+      "tags": {
+        "displayName": "[variables('VN-Name3')]"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('VN-Name3Prefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('VN-Name3Subnet1Name')]",
+            "properties": {
+              "addressPrefix": "[variables('VN-Name3Subnet1Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name2'))]"
+              },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', variables('RT-Name1'))]"
+              },
+              "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          },
+          {
+            "name": "[variables('VN-Name3Subnet2Name')]",
+            "properties": {
+              "addressPrefix": "[variables('VN-Name3Subnet2Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name2'))]"
+              },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', variables('RT-Name1'))]"
+              },
+              "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
+      "name": "[concat(variables('VN-Name3'),'/microsoft.insights/', 'VN3Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name3'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "VMProtectionAlerts",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2020-04-01",
+      "name": "[concat(variables('VN-Name1'), '/', variables('VN-Name1'), '-Peering-To-', variables('VN-NAME2'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name3'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet1Name'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet2Name'))]"
+      ],
+      "properties": {
+        "peeringState": "Connected",
+        "remoteVirtualNetwork": {
+          "id": "[resourceid('Microsoft.Network/virtualNetworks', variables('VN-Name2'))]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteAddressSpace": {
+          "addressPrefixes": [
+            "[variables('VN-Name2Prefix')]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2020-04-01",
+      "name": "[concat(variables('VN-Name1'), '/', variables('VN-Name1'), '-Peering-To-', variables('VN-NAME3'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name3'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet1Name'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet2Name'))]"
+      ],
+      "properties": {
+        "peeringState": "Connected",
+        "remoteVirtualNetwork": {
+          "id": "[resourceid('Microsoft.Network/virtualNetworks', variables('VN-Name3'))]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteAddressSpace": {
+          "addressPrefixes": [
+            "[variables('VN-Name3Prefix')]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2020-04-01",
+      "name": "[concat(variables('VN-Name2'), '/', variables('VN-Name2'), '-Peering-To-', variables('VN-NAME1'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name3'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet1Name'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet2Name'))]"
+      ],
+      "properties": {
+        "peeringState": "Connected",
+        "remoteVirtualNetwork": {
+          "id": "[resourceid('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteAddressSpace": {
+          "addressPrefixes": [
+            "[variables('VN-Name1Prefix')]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2020-04-01",
+      "name": "[concat(variables('VN-Name3'), '/', variables('VN-Name3'), '-Peering-To-', variables('VN-NAME1'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name3'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet1Name'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet2Name'))]"
+      ],
+      "properties": {
+        "peeringState": "Connected",
+        "remoteVirtualNetwork": {
+          "id": "[resourceid('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteAddressSpace": {
+          "addressPrefixes": [
+            "[variables('VN-Name1Prefix')]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIpAddresses",
+      "apiVersion": "2019-02-01",
+      "name": "[variables('publicIpAddressName1')]",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIpAddresses/providers/diagnosticSettings",
+      "name": "[concat(variables('publicIpAddressName1'),'/microsoft.insights/', 'PIP1Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName1'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "DDoSProtectionNotifications",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationFlowLogs",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationReports",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIpAddresses",
+      "apiVersion": "2019-02-01",
+      "name": "[variables('publicIpAddressName2')]",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIpAddresses/providers/diagnosticSettings",
+      "name": "[concat(variables('publicIpAddressName2'),'/microsoft.insights/', 'PIP2Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName2'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "DDoSProtectionNotifications",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationFlowLogs",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationReports",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/azureFirewalls",
+      "apiVersion": "2019-11-01",
+      "name": "[variables('FW-name')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName1'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet2Name'))]",
+        "[resourceId('Microsoft.Network/firewallPolicies', variables('firewallPolicyName'))]",
+        "[resourceId('Microsoft.Network/applicationGateways', variables('AG-Name'))]"
+      ],
+      "tags": {},
+      "properties": {
+        "threatIntelMode": "Deny",
+        "ipConfigurations": [
+          {
+            "name": "[variables('publicIpAddressName1')]",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet2Name'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName1'))]"
+              }
+            }
+          }
+        ],
+        "firewallPolicy": {
+          "id": "[resourceId('Microsoft.Network/firewallPolicies',variables('firewallPolicyName'))]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/azureFirewalls/providers/diagnosticSettings",
+      "name": "[concat(variables('FW-name'),'/microsoft.insights/', 'FirewallDiagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/azureFirewalls', variables('FW-name'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "AzureFirewallApplicationRule",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AzureFirewallNetworkRule",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": false,
+              "days": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('firewallPolicyName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [],
+      "tags": {},
+      "properties": {
+        "threatIntelMode": "Deny"
+      },
+      "resources": [
+        {
+          "type": "ruleGroups",
+          "apiVersion": "2019-06-01",
+          "name": "DefaultDnatRuleCollectionGroup",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Network/firewallPolicies',variables('firewallPolicyName'))]"
+          ],
+          "properties": {
+            "priority": 100,
+            "rules": [
+              {
+                "name": "APPGW-WEBAPP",
+                "priority": 100,
+                "ruleType": "FirewallPolicyNatRule",
+                "action": {
+                  "type": "Dnat"
+                },
+                "ruleCondition": {
+                  "name": "DNATRule",
+                  "ipProtocols": [
+                    "TCP"
+                  ],
+                  "destinationPorts": [
+                    "443"
+                  ],
+                  "sourceAddresses": [
+                    "*"
+                  ],
+                  "destinationAddresses": [
+                    "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName1'))).IpAddress]"
+                  ],
+                  "ruleConditionType": "NetworkRuleCondition"
+                },
+                "translatedAddress": "[variables('AppGateway_IPAddress')]",
+                "translatedPort": "443"
+              },
+              {
+                "name": "[variables('VM-Name1')]",
+                "priority": 101,
+                "ruleType": "FirewallPolicyNatRule",
+                "action": {
+                  "type": "Dnat"
+                },
+                "ruleCondition": {
+                  "name": "DNATRule",
+                  "ipProtocols": [
+                    "TCP"
+                  ],
+                  "destinationPorts": [
+                    "33891"
+                  ],
+                  "sourceAddresses": [
+                    "*"
+                  ],
+                  "destinationAddresses": [
+                    "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName1'))).IpAddress]"
+                  ],
+                  "ruleConditionType": "NetworkRuleCondition"
+                },
+                "translatedAddress": "[variables('NIC-Name1Ipaddress')]",
+                "translatedPort": "3389"
+              },
+
+              {
+                  "name": "Kali-SSH",
+                  "priority": 102,
+                  "ruleType": "FirewallPolicyNatRule",
+                  "action": {
+                    "type": "Dnat"
+                  },
+                  "ruleCondition": {
+                    "name": "SSH-DNATRule",
+                    "ipProtocols": [
+                      "TCP"
+                    ],
+                    "destinationPorts": [
+                      "22"
+                    ],
+                    "sourceAddresses": [
+                      "*"
+                    ],
+                    "destinationAddresses": [
+                      "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName1'))).IpAddress]"
+                    ],
+                    "ruleConditionType": "NetworkRuleCondition"
+                  },
+                  "translatedAddress": "[variables('NIC-Name2Ipaddress')]",
+                  "translatedPort": "22"
+              },
+                
+              {
+                  "name": "Kali-RDP",
+                  "priority": 103, 
+                  "ruleType": "FirewallPolicyNatRule",
+                  "action": {
+                    "type": "Dnat"
+                  },
+                  "ruleCondition": {
+                    "name": "DNATRule",
+                    "ipProtocols": [
+                      "TCP"
+                    ],
+                    "destinationPorts": [
+                      "33892"
+                    ],
+                    "sourceAddresses": [
+                      "*"
+                    ],
+                    "destinationAddresses": [
+                      "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName1'))).IpAddress]"
+                    ],
+                    "ruleConditionType": "NetworkRuleCondition"
+                  },
+                  "translatedAddress": "[variables('NIC-Name2Ipaddress')]",
+                  "translatedPort": "3389"
+                    
+              },
+
+
+              {
+                "name": "[variables('VM-Name3')]",
+                "priority": 104,
+                "ruleType": "FirewallPolicyNatRule",
+                "action": {
+                  "type": "Dnat"
+                },
+                "ruleCondition": {
+                  "name": "DNATRule",
+                  "ipProtocols": [
+                    "TCP"
+                  ],
+                  "destinationPorts": [
+                    "33890"
+                  ],
+                  "sourceAddresses": [
+                    "*"
+                  ],
+                  "destinationAddresses": [
+                    "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName1'))).IpAddress]"
+                  ],
+                  "ruleConditionType": "NetworkRuleCondition"
+                },
+                "translatedAddress": "[variables('NIC-Name3Ipaddress')]",
+                "translatedPort": "3389"
+              }
+            ]
+          }
+        },
+        {
+          "type": "ruleGroups",
+          "apiVersion": "2019-06-01",
+          "name": "DefaultNetworkRuleCollectionGroup",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Network/firewallPolicies/', variables('firewallPolicyName'), '/ruleGroups/', 'DefaultDnatRuleCollectionGroup')]",
+            "[resourceId('Microsoft.Network/firewallPolicies',variables('firewallPolicyName'))]"
+          ],
+          "properties": {
+            "priority": 200,
+            "rules": [
+              {
+                "name": "IntraVNETandHTTPOutAccess",
+                "priority": 100,
+                "ruleType": "FirewallPolicyFilterRule",
+                "action": {
+                  "type": "Allow"
+                },
+                "ruleConditions": [
+                  {
+                    "name": "SMB",
+                    "ipProtocols": [
+                      "TCP"
+                    ],
+                    "destinationPorts": [
+                      "445"
+                    ],
+                    "sourceAddresses": [
+                      "[variables('NIC-Name2Ipaddress')]",
+                      "[variables('NIC-Name3Ipaddress')]",
+                      "[variables('NIC-Name1Ipaddress')]"
+                    ],
+                    "destinationAddresses": [
+                      "[variables('NIC-Name2Ipaddress')]",
+                      "[variables('NIC-Name3Ipaddress')]",
+                      "[variables('NIC-Name1Ipaddress')]"
+                    ],
+                    "ruleConditionType": "NetworkRuleCondition"
+                  },
+                  {
+                    "name": "RDP",
+                    "ipProtocols": [
+                      "TCP"
+                    ],
+                    "destinationPorts": [
+                      "3389"
+                    ],
+                    "sourceAddresses": [
+                      "[variables('NIC-Name2Ipaddress')]",
+                      "[variables('NIC-Name3Ipaddress')]",
+                      "[variables('NIC-Name1Ipaddress')]"
+                    ],
+                    "destinationAddresses": [
+                      "[variables('NIC-Name2Ipaddress')]",
+                      "[variables('NIC-Name3Ipaddress')]",
+                      "[variables('NIC-Name1Ipaddress')]"
+                    ],
+                    "ruleConditionType": "NetworkRuleCondition"
+                  },
+                  {
+                    "name": "SSH",
+                    "ipProtocols": [
+                      "TCP"
+                    ],
+                    "destinationPorts": [
+                      "22"
+                    ],
+                    "sourceAddresses": [
+                      "[variables('NIC-Name2Ipaddress')]",
+                      "[variables('NIC-Name3Ipaddress')]"
+                    ],
+                    "destinationAddresses": [
+                      "[variables('NIC-Name1Ipaddress')]"
+                    ],
+                    "ruleConditionType": "NetworkRuleCondition"
+                  },
+                  {
+                    "name": "Kali-HTTP",
+                    "ipProtocols": [
+                      "TCP"
+                    ],
+                    "destinationPorts": [
+                      "80"
+                    ],
+                    "sourceAddresses": [
+                      "[variables('NIC-Name2Ipaddress')]"
+                    ],
+                    "destinationAddresses": [
+                      "*"
+                    ],
+                    "ruleConditionType": "NetworkRuleCondition"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "ruleGroups",
+          "apiVersion": "2019-06-01",
+          "name": "DefaultApplicationRuleCollectionGroup",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Network/firewallPolicies/', variables('firewallPolicyName'), '/ruleGroups/', 'DefaultNetworkRuleCollectionGroup')]",
+            "[resourceId('Microsoft.Network/firewallPolicies',variables('firewallPolicyName'))]"
+          ],
+          "properties": {
+            "priority": 300,
+            "rules": [
+              {
+                "name": "Internet-Access",
+                "priority": 100,
+                "ruleType": "FirewallPolicyFilterRule",
+                "action": {
+                  "type": "Allow"
+                },
+                "ruleConditions": [
+                  {
+                    "name": "SearchEngineAccess",
+                    "protocols": [
+                      {
+                        "protocolType": "Http",
+                        "port": 80
+                      },
+                      {
+                        "protocolType": "Https",
+                        "port": 443
+                      }
+                    ],
+                    "sourceAddresses": [
+                      "*"
+                    ],
+                    "targetFqdns": [
+                      "www.google.com",
+                      "www.bing.com",
+                      "google.com",
+                      "bing.com"
+                    ],
+                    "fqdnTags": [],
+                    "ruleConditionType": "ApplicationRuleCondition"
+                  },
+                  {
+                    "name": "Kali-InternetAccess",
+                    "protocols": [
+                      {
+                        "protocolType": "Http",
+                        "port": 80
+                      },
+                      {
+                        "protocolType": "Https",
+                        "port": 443
+                      }
+                    ],
+                    "sourceAddresses": [
+                      "[variables('NIC-Name2Ipaddress')]"
+                    ],
+                    "targetFqdns": [
+                      "*"
+                    ],
+                    "fqdnTags": [],
+                    "ruleConditionType": "ApplicationRuleCondition"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Network/applicationGateways",
+      "apiVersion": "2020-04-01",
+      "name": "[variables('AG-Name')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName1'))]",
+        "[resourceId('Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies', variables('AppGatewayPolicyName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet1Name'))]"
+      ],
+      "tags": {},
+      "properties": {
+        "sku": {
+          "name": "WAF_v2",
+          "tier": "WAF_v2",
+          "capacity": 2
+        },
+        "gatewayIPConfigurations": [
+          {
+            "name": "appGatewayIpConfig",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet1Name'))]"
+              }
+            }
+          }
+        ],
+        "frontendIPConfigurations": [
+          {
+            "name": "appGwPublicFrontendIp",
+            "properties": {
+              "PublicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName2'))]"
+              }
+            }
+          },
+          {
+            "name": "appGwPrivateFrontendIp",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VN-Name1'), variables('VN-Name1Subnet1Name'))]"
+              },
+              "privateIPAddress": "[variables('AppGateway_IPAddress')]",
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "port_80",
+            "properties": {
+              "port": 80
+            }
+          },
+          {
+            "name": "port_8080",
+            "properties": {
+              "port": 8080
+            }
+          },
+          {
+            "name": "port_443",
+            "properties": {
+              "port": 443
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "PAAS-APP",
+            "properties": {
+              "backendAddresses": [
+                {
+                  "fqdn": "[concat(variables('Site-Name1'),'.azurewebsites.net')]"
+                }
+              ]
+            }
+          }
+        ],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "Default",
+            "properties": {
+              "port": 443,
+              "protocol": "Https",
+              "cookieBasedAffinity": "Disabled",
+              "hostName": "[concat(variables('Site-Name1'),'.azurewebsites.net')]",
+              "pickHostNameFromBackendAddress": false,
+              "affinityCookieName": "ApplicationGatewayAffinity",
+              "requestTimeout": 20
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "Public-HTTP",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(variables('applicationGatewayId'), '/frontendIPConfigurations/appGwPublicFrontendIp')]"
+              },
+              "frontendPort": {
+                "id": "[concat(variables('applicationGatewayId'), '/frontendPorts/port_80')]"
+              },
+              "protocol": "Http"
+            }
+          }
+        ],
+        "requestRoutingRules": [
+          {
+            "Name": "PublicIPRule",
+            "properties": {
+              "RuleType": "Basic",
+              "httpListener": {
+                "id": "[concat(variables('applicationGatewayId'), '/httpListeners/Public-HTTP')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(variables('applicationGatewayId'), '/backendAddressPools/PAAS-APP')]"
+              },
+              "backendHttpSettings": {
+                "id": "[concat(variables('applicationGatewayId'), '/backendHttpSettingsCollection/Default')]"
+              }
+            }
+          }
+        ],
+        "enableHttp2": false,
+        "firewallPolicy": {
+          "id": "[resourceId('Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies', variables('AppGatewayPolicyName'))]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/applicationGateways/providers/diagnosticSettings",
+      "name": "[concat(variables('AG-Name'),'/microsoft.insights/', 'AppGatewayDiagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/applicationGateways', variables('AG-Name'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "ApplicationGatewayAccessLog",
+            "enabled": true
+          },
+          {
+            "category": "ApplicationGatewayPerformanceLog",
+            "enabled": true
+          },
+          {
+            "category": "ApplicationGatewayFirewallLog",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies",
+      "apiVersion": "2019-09-01",
+      "name": "[variables('AppGatewayPolicyName')]",
+      "dependsOn": [],
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {
+        "customRules": [
+          {
+            "name": "SentinelBlockIP",
+            "priority": 10,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RemoteAddr"
+                  }
+                ],
+                "operator": "IPMatch",
+                "negationConditon": false,
+                "matchValues": [
+                  "104.210.223.108"
+                ],
+                "transforms": []
+              }
+            ]
+          },
+          {
+            "name": "BlockGeoLocationChina",
+            "priority": 20,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RemoteAddr"
+                  }
+                ],
+                "operator": "GeoMatch",
+                "negationConditon": false,
+                "matchValues": [
+                  "CN"
+                ],
+                "transforms": []
+              }
+            ]
+          },
+          {
+            "name": "BlockInternetExplorer11",
+            "priority": 30,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RequestHeaders",
+                    "selector": "User-Agent"
+                  }
+                ],
+                "operator": "Contains",
+                "negationConditon": false,
+                "matchValues": [
+                  "rv:11.0"
+                ],
+                "transforms": []
+              }
+            ]
+          }
+        ],
+        "policySettings": {
+          "fileUploadLimitInMb": 100,
+          "maxRequestBodySizeInKb": 128,
+          "mode": "Prevention",
+          "requestBodyCheck": true,
+          "state": "Enabled"
+        },
+        "managedRules": {
+          "exclusions": [],
+          "managedRuleSets": [
+            {
+              "ruleSetType": "OWASP",
+              "ruleSetVersion": "3.1",
+              "ruleGroupOverrides": [
+                {
+                  "ruleGroupName": "REQUEST-920-PROTOCOL-ENFORCEMENT",
+                  "rules": [
+                    {
+                      "ruleId": "920350",
+                      "state": "Disabled"
+                    },
+                    {
+                      "ruleId": "920320",
+                      "state": "Disabled"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/frontdoors",
+      "apiVersion": "2019-04-01",
+      "dependsOn": [ "[concat(resourceGroup().id, '/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/',variables('FrontDoorPolicyName'))]" ],
+      "name": "[variables('FrontDoorName')]",
+      "location": "global",
+      "tags": {},
+      "properties": {
+        "friendlyName": "[variables('FrontDoorName')]",
+        "enabledState": "Enabled",
+        "healthProbeSettings": [
+          {
+            "name": "healthProbeSettings1",
+            "properties": {
+              "path": "/",
+              "protocol": "Http",
+              "intervalInSeconds": 30
+            }
+          }
+        ],
+        "loadBalancingSettings": [
+          {
+            "name": "loadBalancingSettings1",
+            "properties": {
+              "sampleSize": 4,
+              "successfulSamplesRequired": 2
+            }
+          }
+        ],
+        "frontendEndpoints": [
+          {
+            "id": "[concat(resourceId('Microsoft.Network/frontdoors', variables('FrontDoorName')), concat('/FrontendEndpoints/', variables('FrontDoorName'), '-azurefd-net'))]",
+            "name": "[concat(variables('FrontDoorName'), '-azurefd-net')]",
+            "properties": {
+              "hostName": "[concat(variables('FrontDoorName'), '.azurefd.net')]",
+              "sessionAffinityEnabledState": "Disabled",
+              "sessionAffinityTtlSeconds": 0,
+              "webApplicationFirewallPolicyLink": {
+                "id": "[concat(resourceGroup().id, '/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/',variables('FrontDoorPolicyName'))]"
+              },
+              "resourceState": "Enabled"
+            }
+          }
+        ],
+        "backendPools": [
+          {
+            "name": "OWASP",
+            "properties": {
+              "backends": [
+                {
+                  "address": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIpAddressName2'))).IpAddress]",
+                  "enabledState": "Enabled",
+                  "httpPort": 80,
+                  "httpsPort": 443,
+                  "priority": 1,
+                  "weight": 50,
+                  "backendHostHeader": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIpAddressName2'))).IpAddress]"
+                }
+              ],
+              "loadBalancingSettings": {
+                "id": "[resourceId('Microsoft.Network/frontDoors/loadBalancingSettings', variables('FrontDoorName'), 'loadBalancingSettings1')]"
+              },
+              "healthProbeSettings": {
+                "id": "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', variables('FrontDoorName'), 'healthProbeSettings1')]"
+              }
+            }
+          }
+        ],
+        "routingRules": [
+          {
+            "name": "AppGW",
+            "properties": {
+              "frontendEndpoints": [
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/frontdoors', variables('frontdoorname')), concat('/frontendEndpoints/', variables('frontdoorname'), '-azurefd-net'))]"
+                }
+              ],
+              "acceptedProtocols": [
+                "Http",
+                "Https"
+              ],
+              "patternsToMatch": [
+                "/*"
+              ],
+              "enabledState": "Enabled",
+              "routeConfiguration": {
+                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
+                "forwardingProtocol": "HttpOnly",
+                "backendPool": {
+                  "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', variables('FrontDoorName'), 'OWASP')]"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+      "apiVersion": "2019-10-01",
+      "name": "[variables('FrontdoorPolicyName')]",
+      "location": "Global",
+      "properties": {
+        "policySettings": {
+                    "enabledState": "Enabled",
+                    "mode": "Prevention",
+                    "redirectUrl": "https://www.microsoft.com/en-us/edge",
+                    "customBlockResponseStatusCode": 403,
+                    "customBlockResponseBody": "QmxvY2tlZCBieSBmcm9udCBkb29yIFdBRg=="
+        },
+        "customRules": {
+          "rules": [
+            {
+              "name": "BlockGeoLocationChina",
+              "enabledState": "Enabled",
+              "priority": 10,
+              "ruleType": "MatchRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 100,
+              "matchConditions": [
+                {
+                  "matchVariable": "RemoteAddr",
+                  "operator": "GeoMatch",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "CN"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Block"
+            },
+            {
+              "name": "RedirectInternetExplorerUserAgent",
+              "enabledState": "Enabled",
+              "priority": 20,
+              "ruleType": "MatchRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 100,
+              "matchConditions": [
+                {
+                  "matchVariable": "RequestHeader",
+                  "selector": "User-Agent",
+                  "operator": "Contains",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "rv:11.0"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Redirect"
+            },
+            {
+              "name": "RateLimitRequest",
+              "enabledState": "Enabled",
+              "priority": 30,
+              "ruleType": "RateLimitRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 1,
+              "matchConditions": [
+                {
+                  "matchVariable": "RequestUri",
+                  "operator": "Contains",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "search"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Block"
+            }
+          ]
+        },
+        "managedRules": {
+          "managedRuleSets": [
+            {
+              "ruleSetType": "DefaultRuleSet",
+              "ruleSetVersion": "1.0"
+
+            },
+            {
+              "ruleSetType": "BotProtection",
+              "ruleSetVersion": "preview-0.1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/frontdoors/providers/diagnosticSettings",
+      "name": "[concat(variables('FrontDoorName'),'/microsoft.insights/', 'FrontDoorDiagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/frontdoors', variables('FrontDoorName'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "FrontdoorAccessLog",
+            "enabled": true
+          },
+          {
+            "category": "FrontdoorWebApplicationFirewallLog",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/routeTables",
+      "apiVersion": "2019-02-01",
+      "name": "[variables('RT-Name1')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [],
+      "properties": {
+        "disableBgpRoutePropagation": false,
+        "routes": [
+          {
+            "name": "DefaultRoute",
+            "properties": {
+              "addressPrefix": "0.0.0.0/0",
+              "nextHopType": "VirtualAppliance",
+              "nextHopIpAddress": "10.0.25.4"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-04-01",
+      "name": "[variables('NSG-Name1')]",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Allow-Spoke2-VNET",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[variables('VN-Name3Prefix')]",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Allow-Spoke2-VNET-outbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "[variables('VN-Name3Prefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
+      "name": "[concat(variables('NSG-Name1'),'/microsoft.insights/', 'NSG1Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name1'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "NetworkSecurityGroupEvent",
+            "enabled": true
+          },
+          {
+            "category": "NetworkSecurityGroupRuleCounter",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-04-01",
+      "name": "[variables('NSG-Name2')]",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Allow-Spoke1-VNET-Inbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[variables('VN-Name2Prefix')]",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Allow-Spoke1-VNET-Outbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "[variables('VN-Name2Prefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
+      "name": "[concat(variables('NSG-Name2'),'/microsoft.insights/', 'NSG2Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name2'))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[variables('workspaceId')]",
+        "logs": [
+          {
+            "category": "NetworkSecurityGroupEvent",
+            "enabled": true
+          },
+          {
+            "category": "NetworkSecurityGroupRuleCounter",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[variables('Site-Name1')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', variables('Site-HPN'))]"
+      ],
+      "tags": {},
+      "properties": {
+        "name": "[variables('Site-Name1')]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "DOCKER_REGISTRY_SERVER_URL",
+              "value": "https://index.docker.io"
+            },
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "false"
+            }
+          ],
+          "linuxFxVersion": "DOCKER|mohitkusecurity/juice-shop-updated",
+          "alwaysOn": true
+        },
+        "serverFarmId": "[concat(resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('Site-HPN'))]",
+        "clientAffinityEnabled": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2018-02-01",
+      "name": "[variables('Site-HPN')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "Tier": "PremiumV2",
+        "Name": "P1v2"
+      },
+      "kind": "linux",
+      "properties": {
+        "name": "[variables('Site-HPN')]",
+        "workerSize": 3,
+        "workerSizeId": 3,
+        "numberOfWorkers": 1,
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Network/ddosProtectionPlans",
+      "apiVersion": "2020-04-01",
+      "name": "[variables('DDoSPlanName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2019-07-01",
+      "dependsOn": [ "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2'))]" ],
+      "name": "[variables('NIC-Name1')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[variables('NIC-Name1Ipaddress')]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2')), '/subnets/',variables('VN-Name2Subnet1Name'))]"
+              },
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2019-07-01",
+      "dependsOn": [ "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2'))]" ],
+      "name": "[variables('NIC-Name2')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[variables('NIC-Name2Ipaddress')]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2')), '/subnets/',variables('VN-Name2Subnet2Name'))]"
+              },
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2019-07-01",
+      "dependsOn": [ "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name3'))]" ],
+      "name": "[variables('NIC-Name3')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[variables('NIC-Name3Ipaddress')]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name3')), '/subnets/',variables('VN-Name3Subnet1Name'))]"
+              },
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2019-07-01",
+      "name": "[variables('VM-Name1')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('NIC-Name1'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B2s"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "[concat(variables('VM-Name1'),'-datadisk1')]",
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "imageReference": {
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-10",
+            "sku": "rs5-pro",
+            "version": "latest"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NIC-Name1'))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[variables('VM-Name1')]",
+          "adminUsername": "[parameters('DefaultUserName')]",
+          "adminPassword": "[parameters('DefaultPassword')]",
+          "windowsConfiguration": {
+            "enableAutomaticUpdates": true,
+            "provisionVmAgent": true
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2019-07-01",
+      "name": "[variables('VM-Name2')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('NIC-Name2'))]"
+      ],
+      "plan": {
+        "name": "kali",
+        "publisher": "kali-linux",
+        "product": "kali-linux"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B2s"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "[concat(variables('VM-Name2'),'-datadisk1')]",
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "imageReference": {
+            "publisher": "kali-linux",
+            "offer": "kali-linux",
+            "sku": "kali",
+            "version": "2019.2.0"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NIC-Name2'))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[variables('VM-Name2')]",
+          "adminUsername": "[parameters('DefaultUserName')]",
+          "adminPassword": "[parameters('DefaultPassword')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2019-07-01",
+      "name": "[variables('VM-Name3')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('NIC-Name3'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B2s"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "[concat(variables('VM-Name3'),'-datadisk1')]",
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2019-Datacenter",
+            "version": "latest"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NIC-Name3'))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[variables('VM-Name2')]",
+          "adminUsername": "[parameters('DefaultUserName')]",
+          "adminPassword": "[parameters('DefaultPassword')]",
+          "windowsConfiguration": {
+            "enableAutomaticUpdates": true,
+            "provisionVmAgent": true
+          }
+        },
+        "licenseType": "Windows_Server"
+      }
+    }
+  ],
+
+
+    "outputs": {}
+  }

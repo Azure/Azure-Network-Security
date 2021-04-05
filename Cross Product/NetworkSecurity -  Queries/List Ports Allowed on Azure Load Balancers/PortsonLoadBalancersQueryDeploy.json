@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "queries_Ports_Allowed_with_Load_Balancing_and_NAT_Rules_on_Load_Balancer_name": {
+            "defaultValue": "Ports Allowed with Load Balancing and NAT Rules on Load Balancer",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "microsoft.resourcegraph/queries",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[parameters('queries_Ports_Allowed_with_Load_Balancing_and_NAT_Rules_on_Load_Balancer_name')]",
+            "location": "global",
+            "properties": {
+                "query": "Resources\r\n| where type contains 'microsoft.network/loadbalancers'\r\n| extend loadBalancingRules = properties.loadBalancingRules\r\n| extend NatRules = properties.inboundNatRules\r\n| extend frontendIPConfig = properties.frontendIPConfigurations\r\n| mv-expand bagexpansion=array loadBalancingRules, NatRules\r\n//| extend LBfrontendIP = loadBalancingRules.properties.frontendIPConfiguration.id\r\n| extend LBrulename = loadBalancingRules.name\r\n| extend LBruleprotocol = loadBalancingRules.properties.protocol\r\n| extend LBrulefrontendPort = loadBalancingRules.properties.frontendPort\r\n| extend LBrulebackendPort = loadBalancingRules.properties.backendPort\r\n| extend LBrulebackendPool = loadBalancingRules.properties.backendAddressPool.id\r\n//| extend NATfrontendIP = NatRules.properties.frontendIPConfiguration.id\r\n| extend Natrulename = NatRules.name\r\n| extend Natruleprotocol = NatRules.properties.protocol\r\n| extend NatrulefrontendPort = NatRules.properties.frontendPort\r\n| extend NatrulebackendPort = NatRules.properties.backendPort\r\n| extend NatrulebackendConfig = NatRules.properties.backendIPConfiguration.id\r\n| extend frontendIPConfig = properties.frontendIPConfigurations\r\n| mv-expand bagexpansion=array frontendIPConfig\r\n| extend frontendIPAllocation = frontendIPConfig.properties.privateIPAllocationMethod\r\n//| extend privateIPVersion = frontendIPConfig.properties.privateIPAddressVersion\r\n| extend frontendprivateIPAddress = frontendIPConfig.properties.privateIPAddress\r\n| extend frontendpublicIPResource = tostring(frontendIPConfig.properties.publicIPAddress.id)\r\n| join ( Resources | where type=='microsoft.network/publicipaddresses' | extend frontendPublicIPAddress=properties.ipAddress | project frontendpublicIPResource=id,frontendPublicIPAddress ) on frontendpublicIPResource\r\n| project-away kind, managedBy, apiVersion, aliases, identity, zones, frontendpublicIPResource, frontendpublicIPResource1",
+                "description": "This query lists all ports allowed through load balancing and NAT rules on Load Balancers"
+            }
+        }
+    ]
+}
