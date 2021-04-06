@@ -500,7 +500,7 @@ Function Process-CNameList {
 
             #Azurefd can have subdomains also which we cannot mark as dangled
             if ($item.FQDN -match "azurefd.net") {
-                $count = (($AzResourcesHash.GetEnumerator() | Where { $item.FQDN -match "." + $_.key }) | Measure-Object).Count
+                $count = (($AzResourcesHash.GetEnumerator() | Where { $item.FQDN -match  $_.key }) | Measure-Object).Count
                 if ($count -gt 0) {
                     [void]$AzCNameMatchingResources.add($item)
                 }
