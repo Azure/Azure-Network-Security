@@ -1,0 +1,64 @@
+{
+	"name": "DenyWebCategories",
+	"priority": 100,
+	"ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+	"action": {
+		"type": "Deny"
+	},
+	"rules": [
+		{
+			"ruleType": "ApplicationRule",
+			"name": "DenyCategories",
+			"protocols": [
+				{
+					"protocolType": "Https",
+					"port": 443
+				},
+				{
+					"protocolType": "Http",
+					"port": 80
+				}
+			],
+			"webCategories": [
+				"socialnetworking",
+				"gambling"
+			],
+			"targetUrls": [],
+			"sourceAddresses": [
+				"*"
+			],
+			"terminateTLS": true
+		}
+	]
+},
+{
+	"name": "AllowAllWeb",
+	"priority": 200,
+	"ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+	"action": {
+		"type": "Allow"
+	},
+	"rules": [
+		{
+			"ruleType": "ApplicationRule",
+			"name": "AllowAllWeb",
+			"protocols": [
+				{
+					"protocolType": "Https",
+					"port": 443
+				},
+				{
+					"protocolType": "Http",
+					"port": 80
+				}
+			],
+			"targetUrls": [
+				"*"
+			],
+			"sourceAddresses": [
+				"*"
+			],
+			"terminateTLS": true
+		}
+	]
+}
