@@ -1729,11 +1729,14 @@
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
         "timeContext": {
-          "durationMs": 1209600000
+          "durationMs": 0
         },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
         "visualization": "timechart"
       },
       "conditionalVisibility": {
