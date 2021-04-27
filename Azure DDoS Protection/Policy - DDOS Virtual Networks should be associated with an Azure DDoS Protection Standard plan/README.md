@@ -2,6 +2,8 @@
 
 This policy will detect any virtual networks that do not have DDoS Protection Standard enabled and optionally create a remediation task which will associate the specified DDoS Protection Plan.
 
+This Policy is a modified version of the built-in policy "Virtual networks should be protected by Azure DDoS Protection Standard." This version adds a tag value as an evaluation criterion.
+
 ## Step-by-step documentation
 If you'd like more detailed step-by-step instructions on how to deploy this policy, visit our Tech Community blog post https://aka.ms/ddosvnetpolicy-techcommunity.
 
