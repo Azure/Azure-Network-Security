@@ -155,7 +155,9 @@ Function Get-AZResourcesHash {
         { 
             $key = $psitem.$keyName.trim(" ").tolower()
             If ($AzResources.ContainsKey($key)) {
-                $AzResources[$key] += $psitem
+                $recordList = $AzResources[$key]
+                $recordList.add($psitem) | Out-Null
+                $AzResources[$key] = $recordList
             }
             else {
                 $recordList = [System.Collections.ArrayList]::new()
