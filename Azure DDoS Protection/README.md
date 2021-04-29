@@ -3,7 +3,6 @@ Azure DDoS Protection Standard, combined with application design best practices,
 
 This repository contains useful templates, artifacts and queries to improve the overall DDOS protection experience. 
 
-
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
