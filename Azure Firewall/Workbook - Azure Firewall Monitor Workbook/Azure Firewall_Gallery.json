@@ -802,7 +802,7 @@
         ],
         "title": "Average Throughput of Firewall Traffic",
         "gridSettings": {
-          "rowLimit": 10000
+          "rowLimit": 2000
         }
       },
       "conditionalVisibility": {
@@ -840,7 +840,7 @@
         ],
         "title": "SNAT Port Utilization",
         "gridSettings": {
-          "rowLimit": 10000
+          "rowLimit": 2000
         }
       },
       "conditionalVisibility": {
@@ -878,7 +878,7 @@
         ],
         "title": "Network Rule Hitcount (SUM)",
         "gridSettings": {
-          "rowLimit": 10000
+          "rowLimit": 2000
         }
       },
       "conditionalVisibility": {
@@ -916,7 +916,7 @@
         ],
         "title": "Application Rule Hitcount (SUM)",
         "gridSettings": {
-          "rowLimit": 10000
+          "rowLimit": 2000
         }
       },
       "conditionalVisibility": {
