@@ -1418,7 +1418,7 @@
           "{Workspaces}"
         ],
         "gridSettings": {
-          "rowLimit": 10000,
+          "rowLimit": 2000,
           "filter": true
         }
       },
@@ -1612,7 +1612,7 @@
               }
             }
           ],
-          "rowLimit": 10000,
+          "rowLimit": 2000,
           "filter": true,
           "hierarchySettings": {
             "treeType": 1,
@@ -1673,7 +1673,7 @@
               }
             }
           ],
-          "rowLimit": 10000,
+          "rowLimit": 2000,
           "filter": true,
           "hierarchySettings": {
             "treeType": 1,
@@ -1797,7 +1797,7 @@
           "{Workspaces}"
         ],
         "gridSettings": {
-          "rowLimit": 10000,
+          "rowLimit": 2000,
           "filter": true
         }
       },
@@ -2013,7 +2013,7 @@
           "{Workspaces}"
         ],
         "gridSettings": {
-          "rowLimit": 10000,
+          "rowLimit": 2000,
           "filter": true
         }
       },
@@ -2510,7 +2510,7 @@
               }
             }
           ],
-          "rowLimit": 10000,
+          "rowLimit": 2000,
           "filter": true,
           "hierarchySettings": {
             "treeType": 1,
@@ -2684,7 +2684,7 @@
           "{Workspaces}"
         ],
         "gridSettings": {
-          "rowLimit": 10000,
+          "rowLimit": 2000,
           "filter": true
         }
       },
@@ -2715,7 +2715,7 @@
           "{Workspaces}"
         ],
         "gridSettings": {
-          "rowLimit": 10000,
+          "rowLimit": 2000,
           "filter": true
         }
       },
