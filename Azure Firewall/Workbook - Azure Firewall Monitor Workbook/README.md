@@ -1,4 +1,5 @@
 # Azure Monitor Workbook for Azure Firewall 
+&nbsp;
 
 <p align="center">
 <img src="https://github.com/Azure/Azure-Network-Security/blob/master/Cross%20Product/MediaFiles/Azure-Firewall/AzFwWorkbook.png">
@@ -17,6 +18,7 @@ When deploying via ARM Template, please make sure you know what Resource ID (Log
 >Example of a value: /subscriptions/'GUID'/resourcegroups/'RG Name'/providers/microsoft.operationalinsights/workspaces/'Workspace Name'
 
 This workbook visualizes security-relevant Azure Firewall events across several filterable panels for Mutli-Tenant/Workspace view. It works with all Azure Firewall data types, including Application Rule Logs, Network Rule Logs, DNS Proxy logs and ThreatIntel logs. Import via ARM Template or Gallery Template.
+
 
 ## Contributing
 
