@@ -1,4 +1,9 @@
 # Azure Monitor Workbook for DDoS
+&nbsp;
+
+<p align="center">
+ <img src="https://github.com/Azure/Azure-Network-Security/blob/master/Cross%20Product/MediaFiles/Azure-DDoS-Protection/DDOSworkbookview.jpg">
+</p>
 
 This workbook visualizes security-relevant Azure DDoS events across several filterable panels. Offering a summary tab and an investigate tabs across multiple workspaces.
 
@@ -9,10 +14,6 @@ When deploying via ARM Template, you'll be required to know the following:
 * Workspace Name
 * Workspace ResourceGroup
 * Workspace Subscription ID
-
-<p align="center">
- <img src="https://github.com/Azure/Azure-Network-Security/blob/master/media/Azure-DDoS-Protection/DDOSworkbookview.jpg">
-</p>
 
 
 ## Contributing
