@@ -1,6 +1,6 @@
 ## First time source IP to destination using port
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FFirst%2520time%2520source%2520IP%2520to%2520destination%2520using%2520port%2FFirstTimeSrcIpToDstWithPort.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FAlert%2520-%2520Firewall%2520First%2520time%2520source%2520IP%2520to%2520destination%2520using%2520port%2FFirstTimeSrcIpToDstWithPort.json)
 
 ### Scope
 This alert can indicate malicious communication (C2) from machines that never accessed the destination before, using a specific port. This alert can also be used for hunting destinations that were never accessed before in the organization, and correlating it with different alerts for higher confidence.
