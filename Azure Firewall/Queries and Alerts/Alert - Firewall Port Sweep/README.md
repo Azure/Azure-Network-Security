@@ -1,6 +1,6 @@
 ## Port sweep
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FPort%2520Sweep%2FPortSweep.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FAlert%2520-%2520Firewall%2520Port%2520Sweep%2FPortSweep.json)
 
 ### Scope
 This alert can indicate malicious scanning of port by an attacker, trying to reveal machines with specific ports open in the organization. The ports can be compromised by attackers for initial access, most often by exploiting vulnerability.
