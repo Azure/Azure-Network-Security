@@ -1,6 +1,6 @@
 ## Port scan
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FPort%2520Scan%2FPortScan.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FQueries%2520and%2520Alerts%2FAlert%2520-%2520Firewall%2520Port%2520Scan%2FPortScan.json)
 
 ### Scope
 This alert can indicate malicious scanning of ports by an attacker, trying to reveal open ports in the organization that can be compromised for initial access.
