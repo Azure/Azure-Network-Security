@@ -12,18 +12,15 @@ Configurable Parameters:
 - Minimum affected threshold - alert only if more than this number of hosts affected. Default is set to 5.
 
 ```
-let RunTime = 1h;
-let StartRunTime = 1d;
-let EndRunTime = StartRunTime - RunTime;
-let MinimumDifferentPortsThreashold = 100;
-let BinTime = 30s;
-AzureDiagnostics
-| where TimeGenerated  between (ago(StartRunTime) .. ago(EndRunTime))
-| where OperationName == "AzureFirewallApplicationRuleLog" or OperationName == "AzureFirewallNetworkRuleLog"
-| parse msg_s with * "from " srcip ":" srcport " to " dsturl ":" dstport
-| where isnotempty(dsturl) and isnotempty(srcip)
-| summarize AlertTimedCountPortsInBinTime = dcount(dstport) by srcip, bin(TimeGenerated, BinTime)
-| where AlertTimedCountPortsInBinTime > MinimumDifferentPortsThreashold
+let RunTime = 1h; 
+let StartRunTime = 1d; 
+let EndRunTime = StartRunTime - RunTime; 
+let MinAffectedThearshold = 5; AzureDiagnostics 
+| where TimeGenerated  between (ago(StartRunTime) .. ago(EndRunTime)) 
+| parse msg_s with * "from " srcip ":" srcport " to " dsturl ":" dstport  "." * "ThreatIntel: " ThreatIntel 
+| where OperationName == "AzureFirewallThreatIntelLog" 
+| summarize TiTrafficCount = count(), dCountSourceIps = dcount(srcip), AffectedIps = make_set(srcip) by dsturl, ThreatIntel 
+| where dCountSourceIps > MinAffectedThearshold | order by TiTrafficCount desc
 ```
 
 ## Contributing
