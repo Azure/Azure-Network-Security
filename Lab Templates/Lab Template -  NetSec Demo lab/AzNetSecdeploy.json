@@ -1349,8 +1349,8 @@
         "managedRules": {
           "managedRuleSets": [
             {
-              "ruleSetType": "DefaultRuleSet",
-              "ruleSetVersion": "1.0"
+              "ruleSetType": "Microsoft_DefaultRuleSet",
+              "ruleSetVersion": "1.1"
 
             },
             {

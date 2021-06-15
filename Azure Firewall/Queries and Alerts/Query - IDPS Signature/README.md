@@ -14,7 +14,7 @@ AzureDiagnostics
 | project TimeGenerated, Source, Destination, ActionTaken, IDPSSig, IDSMessage, Priority, Classification
 ```
 
-![IDPS Testing](https://docs.microsoft.com/en-us/azure/firewall/premium-deploy#idps-tests)
+[See more information on IDPS Testing](https://docs.microsoft.com/en-us/azure/firewall/premium-deploy#idps-tests)
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
