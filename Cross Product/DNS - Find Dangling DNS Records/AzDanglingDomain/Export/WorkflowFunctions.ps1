@@ -1,6 +1,55 @@
-﻿# For running the workflows in parellel by subscription
+﻿# Workflow to fetch Azure resource records
+Function Get-AZResourcesListForWorkFlow
+{
+    param
+    (
+        $query
+    )
+
+    # Function to retrive the Azure resources
+    #
+    Function Get-AZResources
+    {
+        param
+        (    
+            [int]$startId,
+    
+            [long]$endId,
+    
+            $query
+        )
+    
+        If($endId -gt 0)
+        {
+            $params = @{ 'First' = $startId; 'Skip' = $endId }
+        }else
+        {
+            $params = @{ 'First' = $startId }
+        }
+        return $(Search-AzGraph -Query $query @params)    
+    }
+    $AzResourcesList = [System.Collections.ArrayList ]::new()
+    
+    $numberOfResources = (Search-AzGraph -Query $(-join($query, ' | count'))).Count
+    $maxRecords = 1000
+    $skipRecords = 0
+    Do
+    {
+        $AzResourcesList += Get-AzResources -startId $maxRecords -endId $skipRecords -query $query
+        if(($null -ne $AzResourcesList) -and   ($null -ne $AzResourcesList.Data))
+        {
+                $AzResourcesList = $AzResourcesList.Data
+        }
+        $skipRecords += $maxRecords
+    
+    }Until($numberOfResources -le $skipRecords)
+    
+    return $AzResourcesList
+}
+
+# For running the workflows in parellel by subscription
 #
-workflow Run-BySubscriptionWorkflow
+Function Run-BySubscriptionWorkflow
 {
     param
     (
@@ -30,8 +79,9 @@ workflow Run-BySubscriptionWorkflow
     
     [pscustomObject]@{'Name' = 'ProcessSummaryData'; 'wfNumberOfDnsZones' = $wfNumberOfDnsZones; 'wfNumberOfDnsRecordSets' = $wfNumberOfDnsRecordSets } 
 
-    Foreach -parallel ($subscription in $azSubscriptions)
+    Foreach ($subscription in $azSubscriptions)
     {
+
         If($subscription.subscriptionId -in $subsWithZones)
         {
             Select-AzSubscription -SubscriptionObject $subscription
