@@ -150,6 +150,7 @@ Function Get-AZResourcesHash {
         Write-Progress $ProgessActivity -Status "$($percentage.ToString('P')) Complete ($skipRecords/$numberOfResources):" -PercentComplete ($percentage*100)
 
         $Resources = Get-AZResources -startId $maxRecords -endId $skipRecords -query $query
+        if ($Resources.Data -is [System.Collections.Generic.IList[psobject]]) {$Resources = $Resources.Data}
     
         $Resources |  ForEach-Object `
         { 
