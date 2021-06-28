@@ -19,7 +19,7 @@ There are 6 parameters with defaults
 * DDOSProtectionConfiguration (bool) - true by default
 
 Adding some `samples` to give context
-- SubscriptionID : "12345678-1234-1234-1234-b826eef6c592"
+- Subscription ID : "12345678-1234-1234-1234-b826eef6c592"
 - Log Analyitcs Workspace name: "TestWorkspace"
 - Resource Group Log Analytics workspace is in: "TestResourceGroup"
 
@@ -31,9 +31,9 @@ Adding some `samples` to give context
 
 | Resource |  Purpose |
 |----------|---------|
-| Virtual Network-1 |  VN1(Hub) has 2 Subnets 10.0.25.0/24 & 10.0.25.64/24 peered to VN1 and VN2 (Enabled with DDoSProtection)|
-| Virtual Network-2 |  VN2(Spoke1) has 2 Subnets 10.0.27.0/24 & 10.0.27.64/24 peered to VN2 |
-| Virtual Network-3 |  VN3(Spoke2) has 2 Subnets 10.0.28.0/24 & 10.0.28.64/24 peered to VN1 |
+| Virtual Network-1 |  VN1(Hub) has 2 Subnets 10.0.25.0/26 & 10.0.25.64/26 peered to VN1 and VN2 (Enabled with DDoSProtection)|
+| Virtual Network-2 |  VN2(Spoke1) has 2 Subnets 10.0.27.0/26 & 10.0.27.64/26 peered to VN2 |
+| Virtual Network-3 |  VN3(Spoke2) has 2 Subnets 10.0.28.0/26 & 10.0.28.64/26 peered to VN1 |
 | PublicIPAddress-1 |  Static Public IP address for Application gateway |
 | PublicIPAddress-2 |  Static Public IP address for Azure firewall |
 | Virtual Machine-1 | Windows 10 Machine connected to VN2(subnet1) |
