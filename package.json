@@ -27,12 +27,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Azure-Sentinel.git"
+    "url": "git+https://github.com/Azure/Azure-Network-Security.git"
   },
   "author": "",
   "license": "",
   "bugs": {
-    "url": "https://github.com/Azure/Azure-Sentinel/issues"
+    "url": "https://github.com/Azure/Azure-Network-Security/issues"
   },
-  "homepage": "https://github.com/Azure-Sentinel#readme"
+  "homepage": "https://github.com/Azure/Azure-Network-Security#readme"
 }
