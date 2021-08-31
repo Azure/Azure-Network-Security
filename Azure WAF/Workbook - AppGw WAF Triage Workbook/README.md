@@ -6,6 +6,16 @@ This workbook visualizes Application Gateway WAF rule violations and helps with 
 
 Often companies struggle to parse the logs from the Application Gateway Web Application Firewall and triage them to determine which ones are true violations and which ones are false positives.  Especially during the design phase of an application, it is important to review these logs and make sure to adapt the application and/or WAF configuration so to eliminate false positives.  This is where this workbook might help.
 
+## Deploying the Workbook
+
+To deploy this workbook, click the button "Deploy to Azure".  Fill in the requested parameters:
+- `Workbook Display Name`: the name of the workbook as it will be shown in the portal
+- `Log Analytics Workspace Name`: the name of the Log Analytics workspace to associate this workbook with
+
+![deployment-parameters](./images/AppGw-WAF-triage-workbook-deployment-params.png)
+
+Then click "Review + create".
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
