@@ -9,8 +9,9 @@ Often companies struggle to parse the logs from the Application Gateway Web Appl
 ## Deploying the Workbook
 
 To deploy this workbook, click the button "Deploy to Azure".  Fill in the requested parameters:
+
 - `Workbook Display Name`: the name of the workbook as it will be shown in the portal
-- `Log Analytics Workspace Name`: the name of the Log Analytics workspace to associate this workbook with
+- `Workbook Source Id`: the full Resource ID of the Log Analytics workspace you want to link to workbook to.  Example of a value: /subscriptions/'GUID'/resourcegroups/'RG Name'/providers/microsoft.operationalinsights/workspaces/'Workspace Name'
 
 ![deployment-parameters](./images/AppGw-WAF-triage-workbook-deployment-params.png)
 
