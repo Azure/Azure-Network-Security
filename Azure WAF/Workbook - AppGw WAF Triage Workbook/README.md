@@ -1,6 +1,6 @@
 # Application Gateway WAF Triage Workbook
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fxstof%2FAzure-Network-Security%2Fxstof-add-appgw-waf-triage-workbook%2FAzure%2520WAF%2FWorkbook%2520-%2520AppGw%2520WAF%2520Triage%2520Workbook%2FWAFTriageWorkbook_ARM.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520AppGw%2520WAF%2520Triage%2520Workbook%2FWAFTriageWorkbook_ARM.json)
 
 This workbook visualizes Application Gateway WAF rule violations and helps with triaging those so to facilitate tuning the WAF against valid traffic.
 
