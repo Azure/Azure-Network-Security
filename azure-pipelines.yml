@@ -4,11 +4,15 @@
 # https://aka.ms/yaml
 
 
-name: "Azure Security Center Validations"
+name: "Azure Network Security Validations"
 
 trigger:
 - master
 
 jobs:
+- template: .azure-pipelines/detectionsValidations.yaml
+- template: .azure-pipelines/kqlValidations.yaml
+- template: .azure-pipelines/workbooksValidations.yaml
 - template: .azure-pipelines/yamlFileValidator.yaml
 - template: .azure-pipelines/jsonFileValidator.yaml
+- template: .azure-pipelines/documentsLinkValidator.yaml

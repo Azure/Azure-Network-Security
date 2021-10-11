@@ -1,7 +1,7 @@
 {
-  "name": "azure-sentinel",
+  "name": "azure-network-security",
   "version": "1.0.0",
-  "description": "Welcome to the Azure Sentinel repository! This repository contains out of the box detections, exploration queries, hunting queries, workbooks and playbooks to help you get ramped up with Azure Sentinel and provide you security content to secure your environment and hunt for threats. You can also submit any [issues](https://github.com/Azure/Azure-Sentinel/issues) or feature requests as you onboard to Azure Sentinel. For questions and feedback, please contact [AzureSentinel@microsoft.com](AzureSentinel@microsoft.com)",
+  "description": "Welcome to the Azure Nework Security repository! This repository contains Azure Network security artifacts, out of the box detection for Sentinel integration, queries, workbooks and playbooks to help you get ramped up with Azure Network security and provide you security contents. You can also submit any [issues](https://github.com/Azure/Azure-Network-Security/issues) or feature requests as you onboard to Azure Sentinel.",
   "main": "",
   "directories": {
     "doc": "docs"
@@ -10,7 +10,7 @@
     "@azure/avocado": "^0.6.2",
     "@types/js-yaml": "^3.12.1",
     "@types/mocha": "^5.2.7",
-    "mocha": "^6.2.2",
+    "mocha": "^9.0.2",
     "prettier": "^1.19.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.3"
@@ -27,12 +27,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Azure-Sentinel.git"
+    "url": "git+https://github.com/Azure/Azure-Network-Security.git"
   },
   "author": "",
   "license": "",
   "bugs": {
-    "url": "https://github.com/Azure/Azure-Sentinel/issues"
+    "url": "https://github.com/Azure/Azure-Network-Security/issues"
   },
-  "homepage": "https://github.com/Azure-Sentinel#readme"
+  "homepage": "https://github.com/Azure/Azure-Network-Security#readme"
 }
