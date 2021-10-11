@@ -876,9 +876,11 @@ Function Get-DanglingDnsRecords {
     | project id, tenantId, subscriptionId, type, resourceGroup, name, dnsEndpoint, dnsEndpoints, properties, resourceProvider
     | order by dnsEndpoint asc, name asc, id asc"
 
-    $dnszoneQuery = "resources | where type =~ 'microsoft.network/dnszones'
-             | where subscriptionId matches regex '(?i)$InputSubscriptionIdRegexFilterForAzureResourcesGraph'
-             | where name matches regex '(?i)$inputDnsZoneNameRegexFilter'"
+    $inputDnsZoneNameRegexFilterForSearch =   $inputDnsZoneNameRegexFilter.replace('\','\\')
+    $InputSubscriptionIdRegexFilterForAzureResourcesGraphSearch = $InputSubscriptionIdRegexFilterForAzureResourcesGraph.replace('\','\\')
+    $dnszoneQuery = ("resources | where type =~ 'microsoft.network/dnszones'" +
+             " | where subscriptionId matches regex '(?i)$InputSubscriptionIdRegexFilterForAzureResourcesGraphSearch'"+
+             " | where name matches regex '(?i)$inputDnsZoneNameRegexFilterForSearch'")
 
     # Main
     #

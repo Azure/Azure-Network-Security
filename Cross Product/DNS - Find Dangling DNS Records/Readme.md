@@ -105,10 +105,6 @@ Filter to run the query against matching subscription Ids, default match all.
 
 Filter to run the query against matching DNS zone names, default match all.
 
--InputInterestedDnsZones 
-
-Filter to match the target matching domain zone names, default match all.
-
 -OutputFileLocation 
 
 Location of the output files produced; default current directory.
