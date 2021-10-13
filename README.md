@@ -16,10 +16,10 @@ Welcome to the Azure Network Security community repository. This repo is designe
 - [Azure Networking Feedback](https://feedback.azure.com/forums/217313-networking)
 
 # What's new?
-Please find the latest artifacts in this repo on the [What's New Page](https://github.com/Azure/Azure-Network-Security/wiki/What's-New)
+Please find the latest artifacts in this repo on our [What's New Page](https://github.com/Azure/Azure-Network-Security/wiki/What's-New)
 
 # Wiki
-This project has its own [Wiki](https://github.com/Azure/Azure-Network-Security/wiki) which will provide you with further information about the Azure Network Security community, how to contribute, templates to use, and further resources.
+This project has its own [Wiki](https://github.com/Azure/Azure-Network-Security/wiki) which will provide you with further information about the Azure Network Security community, how to contribute, templates to use and other resources.
 
 # Contributing
 
