@@ -15,6 +15,12 @@ Welcome to the Azure Network Security community repository. This repo is designe
 - [Azure DDoS Protection Docs](https://docs.microsoft.com/en-us/azure/virtual-network/ddos-protection-overview)
 - [Azure Networking Feedback](https://feedback.azure.com/forums/217313-networking)
 
+# What's new?
+Please find the latest artifacts in this repo on the [What's New Page](https://github.com/Azure/Azure-Network-Security/wiki/What's-New)
+
+# Wiki
+This project has its own [Wiki](https://github.com/Azure/Azure-Network-Security/wiki) which will provide you with further information about the Azure Network Security community, how to contribute, templates to use, and further resources.
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
