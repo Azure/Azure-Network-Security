@@ -2,14 +2,14 @@
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520%2520NetSec%2520Demo%2520lab%2FAzNetSecdeploy.json)
 
-This ARM deployment includes everything needed to test Azure Network Security components with the new Azure Firewall Premium. If you are looking to test out a migration, please use the old lab.
+This ARM deployment includes everything needed to test Azure Network Security components including the new Azure Firewall Premium. If you are looking to test out a migration, please use the [old lab](https://github.com/Azure/Azure-Network-Security/tree/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab-Standard) with Azure firewall standard.
 
 ## Step-by-step documentation:
 If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community blog post https://aka.ms/labdeploy-techcommunity.
 
 ## PowerShell Deployment Example:
 
-Please use this location as a reference how this powershell commandlet works: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-powershell#deploy-remote-template
+Please use this location as a reference on how this powershell commandlet works: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-powershell#deploy-remote-template
 
 There are 6 parameters with defaults
 * DefaultUserName
@@ -19,6 +19,7 @@ There are 6 parameters with defaults
 * DiagnosticsWorkspaceResourceGroup
 * DDOSProtectionConfiguration (bool) - true by default
 
+
 Adding some `samples` to give context
 - Subscription ID : "12345678-1234-1234-1234-b826eef6c592"
 - Log Analyitcs Workspace name: "TestWorkspace"
@@ -27,6 +28,12 @@ Adding some `samples` to give context
 **Example Powershell command with some parameters configured:**
 >New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Network%20Security%20Lab%20Template/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
 
+
+**Example Proof of Concept Scenarios designed for this lab**
+- Azure Firewall with Frontdoor and App Gateway plus Virtual Machines and Web App
+- Azure Frontdoot and Azure Gateway plus WebApp
+- App Gateway plus Webapp
+- Azure Firewall and Virtual machines
 
 ## What is included with the AzNetSec Deployment Template
 
@@ -48,7 +55,9 @@ Adding some `samples` to give context
 | Frontdoor | Pre-configured designer with Backend pool as Applicaion gateway public interface  |
 | WebApp(PaaS) | Pre-configured app for Frontdoor and Application Gateway WAF testing |
 
+
 > This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace
+
 
 
 ## Contributing
