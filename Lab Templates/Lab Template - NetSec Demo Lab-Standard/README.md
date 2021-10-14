@@ -1,3 +1,6 @@
+<!-- Hello, Please note that this lab contains the Azure Firewall Standard SKU and will be deprecated soon. This is available for testing Firewall migration purposes-->
+
+
 # Azure Network Security Lab Environment Deployment Template
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520%2520NetSec%2520Demo%2520lab%2FAzNetSecdeploy.json)
 
