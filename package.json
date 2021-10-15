@@ -1,7 +1,7 @@
 {
   "name": "azure-network-security",
   "version": "1.0.0",
-  "description": "Welcome to the Azure Nework Security repository! This repository contains Azure Network security artifacts, out of the box detection for Sentinel integration, queries, workbooks and playbooks to help you get ramped up with Azure Network security and provide you security contents. You can also submit any [issues](https://github.com/Azure/Azure-Network-Security/issues) or feature requests as you onboard to Azure Sentinel.",
+  "description": "Welcome to the Azure Nework Security repository! This repository contains Azure Network security artifacts, out of the box detection for Sentinel integration, queries, workbooks and playbooks to help you get ramped up with Azure Network security and provide you security contents. You can also submit any [issues](https://github.com/Azure/Azure-Network-Security/issues) or feature requests.",
   "main": "",
   "directories": {
     "doc": "docs"
