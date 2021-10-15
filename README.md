@@ -1,4 +1,11 @@
-# Azure Network Security Samples
+# Azure Network Security 
+
+![GitHub](https://img.shields.io/github/license/Azure/Azure-Network-Security?style=plastic)
+![GitHub contributors](https://img.shields.io/github/contributors/azure/Azure-Network-Security?color=white&logo=Microsoft%20azure&logoColor=blue&style=plastic)
+![GitHub last commit](https://img.shields.io/github/last-commit/azure/Azure-Network-Security)
+![GitHub issues](https://img.shields.io/github/issues-raw/azure/Azure-Network-Security)
+
+
 
 Welcome to the Azure Network Security community repository. This repo is designed to help:
 - Deploy Azure NetSec resources programmatically using scripts and templates.
