@@ -1,0 +1,97 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceNames": {
+      "type": "object"
+    },
+    "win2019VmIpAddress": {
+      "type": "string"
+    },
+    "defaultUserName": {
+      "type": "string",
+      "defaultValue": "svradmin",
+      "metadata": {
+        "description": "Builtin\\Administrator account's name for the Virtual Machines. This is not a domain account."
+      }
+    },
+    "defaultPassword": {
+      "type": "securestring",
+      "defaultValue": "H@ppytimes123!",
+      "metadata": {
+        "description": "Password for the Builtin Administrator account. Default is 'H@ppytimes!'"
+      }
+    }    
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2019-07-01",
+      "name": "[concat(parameters('resourceNames').win2019Vm, '-nic')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[parameters('win2019VmIpAddress')]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet3), '/subnets/',parameters('resourceNames').vnet3subnet1)]"
+              },
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2019-07-01",
+      "name": "[parameters('resourceNames').win2019Vm]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('resourceNames').win2019Vm, '-nic')]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B4ms"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "[concat(parameters('resourceNames').win2019Vm,'-datadisk1')]",
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2019-Datacenter",
+            "version": "latest"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('resourceNames').win2019Vm, '-nic'))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[parameters('resourceNames').win2019Vm]",
+          "adminUsername": "[parameters('DefaultUserName')]",
+          "adminPassword": "[parameters('DefaultPassword')]",
+          "windowsConfiguration": {
+            "enableAutomaticUpdates": true,
+            "provisionVmAgent": true
+          }
+        },
+        "licenseType": "Windows_Server"
+      }
+    }
+  ],
+  "outputs": {}
+}

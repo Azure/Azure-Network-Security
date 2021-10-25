@@ -1,0 +1,97 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceNames": {
+      "type": "object"
+    },
+    "kaliVmIpAddress": {
+      "type": "string"
+    },
+    "defaultUserName": {
+      "type": "string",
+      "defaultValue": "svradmin",
+      "metadata": {
+        "description": "Builtin\\Administrator account's name for the Virtual Machines. This is not a domain account."
+      }
+    },
+    "defaultPassword": {
+      "type": "securestring",
+      "defaultValue": "H@ppytimes123!",
+      "metadata": {
+        "description": "Password for the Builtin Administrator account. Default is 'H@ppytimes!'"
+      }
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2019-07-01",
+      "name": "[concat(parameters('resourceNames').kaliVm, '-nic')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[parameters('kaliVmIpAddress')]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet2), '/subnets/',parameters('resourceNames').vnet2subnet2)]"
+              },
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2019-07-01",
+      "name": "[parameters('resourceNames').kaliVm]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('resourceNames').kaliVm, '-nic')]"
+      ],
+      "plan": {
+        "name": "kali",
+        "publisher": "kali-linux",
+        "product": "kali-linux"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B4ms"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "[concat(parameters('resourceNames').kaliVm,'-datadisk1')]",
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "imageReference": {
+            "publisher": "kali-linux",
+            "offer": "kali-linux",
+            "sku": "kali",
+            "version": "2019.2.0"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('resourceNames').kaliVm, '-nic'))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[parameters('resourceNames').kaliVm]",
+          "adminUsername": "[parameters('defaultUserName')]",
+          "adminPassword": "[parameters('defaultPassword')]"
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

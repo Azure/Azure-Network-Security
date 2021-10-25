@@ -1,0 +1,400 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceNames": {
+      "type": "object"
+    },
+    "enableDdosProtection": {
+      "type": "bool",
+      "defaultValue": false
+    }
+  },
+  "variables": {
+    "Subnet_serviceEndpoints": [
+      {
+        "service": "Microsoft.Web"
+      },
+      {
+        "service": "Microsoft.Storage"
+      },
+      {
+        "service": "Microsoft.Sql"
+      },
+      {
+        "service": "Microsoft.ServiceBus"
+      },
+      {
+        "service": "Microsoft.KeyVault"
+      },
+      {
+        "service": "Microsoft.AzureActiveDirectory"
+      }
+    ],
+    "vnet1Prefix": "10.0.25.0/24",
+    "vnet1subnet1Prefix": "10.0.25.64/26",
+    "vnet1subnet2Prefix": "10.0.25.0/26",
+    "vnet2Prefix": "10.0.27.0/24",
+    "vnet2subnet1Prefix": "10.0.27.0/26",
+    "vnet2subnet2Prefix": "10.0.27.64/26",
+    "vnet3Prefix": "10.0.28.0/24",
+    "vnet3subnet1Prefix": "10.0.28.0/26",
+    "vnet3subnet2Prefix": "10.0.28.64/26",
+    "ddosProtectionPlan": {
+      "id": "[resourceid('Microsoft.Network/ddosProtectionPlans', parameters('resourceNames').ddosProtectionPlan)]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-04-01",
+      "name": "[parameters('resourceNames').nsg1]",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Allow-Spoke2-VNET",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[variables('vnet3Prefix')]",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Allow-Spoke2-VNET-outbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "[variables('vnet3Prefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-04-01",
+      "name": "[parameters('resourceNames').nsg2]",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Allow-Spoke1-VNET-Inbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[variables('vnet2Prefix')]",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Allow-Spoke1-VNET-Outbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "[variables('vnet2Prefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/routeTables",
+      "apiVersion": "2019-02-01",
+      "name": "[parameters('resourceNames').routeTable]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "disableBgpRoutePropagation": false,
+        "routes": [
+          {
+            "name": "DefaultRoute",
+            "properties": {
+              "addressPrefix": "0.0.0.0/0",
+              "nextHopType": "VirtualAppliance",
+              "nextHopIpAddress": "10.0.25.4"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/ddosProtectionPlans",
+      "condition": "[parameters('enableDdosProtection')]",
+      "apiVersion": "2020-04-01",
+      "name": "[parameters('resourceNames').ddosProtectionPlan]",
+      "location": "[resourceGroup().location]",
+      "properties": {}
+    },
+    {
+      "name": "[parameters('resourceNames').vnet1]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [ "[variables('ddosProtectionPlan').id]" ],
+      "apiVersion": "2020-03-01",
+      "tags": {
+        "displayName": "[parameters('resourceNames').vnet1]"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet1Prefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('resourceNames').vnet1subnet1]",
+            "properties": {
+              "addressPrefix": "[variables('vnet1subnet1Prefix')]",
+              "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]"
+            }
+          },
+          {
+            "name": "[parameters('resourceNames').vnet1subnet2]",
+            "properties": {
+              "addressPrefix": "[variables('vnet1subnet2Prefix')]",
+              "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]"
+            }
+          }
+        ],
+        "enableDdosProtection": "[parameters('enableDdosProtection')]",
+        "ddosProtectionPlan": "[if(parameters('enableDdosProtection'), variables('ddosProtectionPlan'), null())]",
+        "enableVmProtection": false
+      }
+    },
+    {
+      "name": "[parameters('resourceNames').vnet2]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2020-03-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/routeTables', parameters('resourceNames').routeTable)]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('resourceNames').nsg1)]"
+      ],
+      "tags": {
+        "displayName": "[parameters('resourceNames').vnet2]"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet2Prefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('resourceNames').vnet2subnet1]",
+            "properties": {
+              "addressPrefix": "[variables('vnet2subnet1Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('resourceNames').nsg1)]"
+              },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', parameters('resourceNames').routeTable)]"
+              },
+              "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          },
+          {
+            "name": "[parameters('resourceNames').vnet2subnet2]",
+            "properties": {
+              "addressPrefix": "[variables('vnet2subnet2Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('resourceNames').nsg1)]"
+              },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', parameters('resourceNames').routeTable)]"
+              },
+              "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('resourceNames').vnet3]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2020-03-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/routeTables', parameters('resourceNames').routeTable)]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('resourceNames').nsg2)]"
+      ],
+      "tags": {
+        "displayName": "[parameters('resourceNames').vnet3]"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet3Prefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('resourceNames').vnet3subnet1]",
+            "properties": {
+              "addressPrefix": "[variables('vnet3subnet1Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('resourceNames').nsg2)]"
+              },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', parameters('resourceNames').routeTable)]"
+              },
+              "serviceEndpoints": "[variables('Subnet_serviceEndpoints')]",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          },
+          {
+            "name": "[parameters('resourceNames').vnet3subnet2]",
+            "properties": {
+              "addressPrefix": "[variables('vnet3subnet2Prefix')]",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2020-04-01",
+      "name": "[concat(parameters('resourceNames').vnet1, '/', parameters('resourceNames').vnet1, '-Peering-To-', parameters('resourceNames').vnet2)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet1)]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet2)]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet3)]"
+      ],
+      "properties": {
+        "peeringState": "Connected",
+        "remoteVirtualNetwork": {
+          "id": "[resourceid('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet2)]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteAddressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet2Prefix')]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2020-04-01",
+      "name": "[concat(parameters('resourceNames').vnet1, '/', parameters('resourceNames').vnet1, '-Peering-To-', parameters('resourceNames').vnet3)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet1)]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet2)]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet3)]"
+      ],
+      "properties": {
+        "peeringState": "Connected",
+        "remoteVirtualNetwork": {
+          "id": "[resourceid('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet3)]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteAddressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet3Prefix')]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2020-04-01",
+      "name": "[concat(parameters('resourceNames').vnet2, '/', parameters('resourceNames').vnet2, '-Peering-To-', parameters('resourceNames').vnet1)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet1)]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet2)]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet3)]"
+      ],
+      "properties": {
+        "peeringState": "Connected",
+        "remoteVirtualNetwork": {
+          "id": "[resourceid('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet1)]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteAddressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet1Prefix')]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2020-04-01",
+      "name": "[concat(parameters('resourceNames').vnet3, '/', parameters('resourceNames').vnet3, '-Peering-To-', parameters('resourceNames').vnet1)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet1)]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet2)]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet3)]"
+      ],
+      "properties": {
+        "peeringState": "Connected",
+        "remoteVirtualNetwork": {
+          "id": "[resourceid('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet1)]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteAddressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet1Prefix')]"
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
