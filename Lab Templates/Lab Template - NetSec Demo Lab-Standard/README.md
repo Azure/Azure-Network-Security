@@ -1,6 +1,6 @@
 
 
-*This lab contains the Azure Firewall Standard SKU and will be deprecated soon. This is available for testing Firewall migration and other Azure firewall standard tests. Head over to the [new lab](https://github.com/Azure/Azure-Network-Security/tree/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab) if your POC requires Azure firewall Premium SKU*
+*This lab contains the Azure Firewall Standard SKU and will be deprecated soon. This lab is available for testing Firewall migration to premium SKU and other Azure firewall standard tests. Head over to the [new lab](https://github.com/Azure/Azure-Network-Security/tree/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab) if your POC requires Azure firewall Premium SKU*
 
 
 # Azure Network Security Lab Environment Deployment Template
