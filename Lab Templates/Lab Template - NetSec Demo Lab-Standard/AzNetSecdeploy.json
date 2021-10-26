@@ -13,7 +13,7 @@
       "type": "securestring",
       "defaultValue": "H@ppytimes123!",
       "metadata": {
-        "description": "Password for the Builtin Administrator account. Default is 'H@ppytimes!'"
+        "description": "Password for the Builtin Administrator account. Default is 'H@ppytimes123!'"
       }
     },
     "DiagnosticsWorkspaceName": {

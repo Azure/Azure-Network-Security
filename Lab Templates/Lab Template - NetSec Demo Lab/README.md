@@ -1,8 +1,11 @@
-# Azure Network Security Lab Environment Deployment Template
-
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520%2520NetSec%2520Demo%2520lab%2FAzNetSecdeploy.json)
+# Azure Network Security Lab Environment Deployment Template with Azure Premium Firewall
 
 This ARM deployment includes everything needed to test Azure Network Security components including the new Azure Firewall Premium. If you are looking to test out a migration, please use the [old lab](https://github.com/Azure/Azure-Network-Security/tree/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab-Standard) with Azure firewall standard.
+
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2FAzure%2FAzure-Network-Security%2Fblob%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520NetSec%2520Demo%2520Lab%2FAzNetSecdeploy.json)
+
+
 
 ## Step-by-step documentation:
 If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community blog post https://aka.ms/labdeploy-techcommunity.
@@ -29,7 +32,8 @@ Adding some `samples` to give context
 >New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Network%20Security%20Lab%20Template/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
 
 
-**Example Proof of Concept Scenarios designed for this lab**
+
+# Example Proof of Concept Scenarios designed for this lab
 - Azure Firewall with Frontdoor and App Gateway plus Virtual Machines and Web App
 - Azure Frontdoot and Azure Gateway plus WebApp
 - App Gateway plus Webapp
@@ -73,4 +77,5 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 
