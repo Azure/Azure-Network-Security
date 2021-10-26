@@ -1,8 +1,11 @@
-# Azure Network Security Lab Environment Deployment Template
-
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520%2520NetSec%2520Demo%2520lab%2FAzNetSecdeploy.json)
+# Azure Network Security Lab Environment Deployment Template with Azure Premium Firewall
 
 This ARM deployment includes everything needed to test Azure Network Security components including the new Azure Firewall Premium. If you are looking to test out a migration, please use the [old lab](https://github.com/Azure/Azure-Network-Security/tree/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab-Standard) with Azure firewall standard.
+
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2FAzure%2FAzure-Network-Security%2Fblob%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520NetSec%2520Demo%2520Lab%2FAzNetSecdeploy.json)
+
+
 
 ## Step-by-step documentation:
 If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community blog post https://aka.ms/labdeploy-techcommunity.
