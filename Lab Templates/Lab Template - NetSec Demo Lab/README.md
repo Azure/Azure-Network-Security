@@ -32,7 +32,8 @@ Adding some `samples` to give context
 >New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Network%20Security%20Lab%20Template/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
 
 
-**Example Proof of Concept Scenarios designed for this lab**
+
+# Example Proof of Concept Scenarios designed for this lab
 - Azure Firewall with Frontdoor and App Gateway plus Virtual Machines and Web App
 - Azure Frontdoot and Azure Gateway plus WebApp
 - App Gateway plus Webapp
@@ -76,4 +77,5 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 
