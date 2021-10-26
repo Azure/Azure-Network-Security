@@ -162,7 +162,7 @@
           "mode": "Prevention",
           "redirectUrl": "https://www.microsoft.com/en-us/edge?r=1",
           "customBlockResponseStatusCode": 403,
-          "customBlockResponseBody": "PGh0bWw+PGhlYWQ+PHRpdGxlPldBRiBEZW1vPC90aXRsZT48L2hlYWQ+PGJvZHkgYmdjb2xvcj0iI0ZGQjI5OSI+PHA+PGgxPjxzdHJvbmc+V0FGIFVuaXF1ZSBSZXNwb25zZSBDb2RlPC9zdHJvbmc+PC9oMT48L3A+PHA+Q29udGFjdCB1cyBhbmQgcHJvdmlkZSB0aGUgZm9sbG93aW5nIGNvZGU6IHsoYXp1cmUtcmVmKX08YnI+PC9wPjwvYm9keT48L2h0bWw+",
+          "customBlockResponseBody": "[base64('<html><head><title>WAF Demo</title></head><body bgcolor=\"#FFB299\"><p><h1><strong>WAF Unique Response Code</strong></h1></p><p>Contact us and provide the following code: {(azure-ref)}<br></p></body></html>')]",
           "requestBodyCheck": "Enabled"
         },
         "customRules": {
