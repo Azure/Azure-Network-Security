@@ -8,7 +8,7 @@ This ARM deployment includes everything needed to test Azure Network Security co
 
 
 ## Step-by-step documentation:
-If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community blog post https://aka.ms/labdeploy-techcommunity created for the older lab and then use the new lab template at deployment
+If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community [blog post](https://aka.ms/labdeploy-techcommunity) created for the older lab and then use the new lab template at deployment
 
 ## PowerShell Deployment Example:
 
@@ -34,15 +34,15 @@ Adding some `samples` to give context
 
 # Example Proof of Concept Scenarios designed for this lab  
 
-•	Network segmentation using Azure Firewall with Frontdoor and App Gateway plus Virtual Machines and Web App
-•	Azure Frontdoor and Azure Gateway plus WebApp scenarios
-•	WAF attack demo with App Gateway plus Webapp deployment
-•	Azure Firewall with Bastion and Windows Virtual Desktop deployment.
-•	Azure Premium Firewall for intermediate Certificate Authority
-•	Web Categories settings using Azure Firewall premium
-•	Network Security Integration with Azure Security Center and Azure Sentinel
-•	Rule Processing Logic
-•	DDOS response to volumetric attack in a controlled environment.
+- Network segmentation using Azure Firewall with Frontdoor and App Gateway plus Virtual Machines and Web App
+- Azure Frontdoor and Azure Gateway plus WebApp scenarios
+- WAF attack demo with App Gateway plus Webapp deployment
+- Azure Firewall with Bastion and Windows Virtual Desktop deployment.
+- Azure Premium Firewall for intermediate Certificate Authority
+- Web Categories settings using Azure Firewall premium
+- Network Security Integration with Azure Security Center and Azure Sentinel
+- Rule Processing Logic
+- DDOS response to volumetric attack in a controlled environment.  
 For more information on POC scenarios, visit our [TechCommunity blog](https://techcommunity.microsoft.com/t5/azure-network-security/azure-network-security-demo-lab-environment-with-new-updates-v2/ba-p/2892204) 
 
 ## What is included with the AzNetSec Deployment Template  
