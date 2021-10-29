@@ -8,7 +8,7 @@ This ARM deployment includes everything needed to test Azure Network Security co
 
 
 ## Step-by-step documentation:
-If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community blog post https://aka.ms/labdeploy-techcommunity.
+If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community blog post https://aka.ms/labdeploy-techcommunity created for the older lab and then use the new lab template at deployment
 
 ## PowerShell Deployment Example:
 
@@ -28,18 +28,24 @@ Adding some `samples` to give context
 - Log Analyitcs Workspace name: "TestWorkspace"
 - Resource Group Log Analytics workspace is in: "TestResourceGroup"
 
-**Example Powershell command with some parameters configured:**
->New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Network%20Security%20Lab%20Template/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
+**Example Powershell command with some parameters configured:**  
+>New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
 
 
+# Example Proof of Concept Scenarios designed for this lab  
 
-# Example Proof of Concept Scenarios designed for this lab
-- Azure Firewall with Frontdoor and App Gateway plus Virtual Machines and Web App
-- Azure Frontdoot and Azure Gateway plus WebApp
-- App Gateway plus Webapp
-- Azure Firewall and Virtual machines
+•	Network segmentation using Azure Firewall with Frontdoor and App Gateway plus Virtual Machines and Web App
+•	Azure Frontdoor and Azure Gateway plus WebApp scenarios
+•	WAF attack demo with App Gateway plus Webapp deployment
+•	Azure Firewall with Bastion and Windows Virtual Desktop deployment.
+•	Azure Premium Firewall for intermediate Certificate Authority
+•	Web Categories settings using Azure Firewall premium
+•	Network Security Integration with Azure Security Center and Azure Sentinel
+•	Rule Processing Logic
+•	DDOS response to volumetric attack in a controlled environment.
+For more information on POC scenarios, visit our [TechCommunity blog](https://techcommunity.microsoft.com/t5/azure-network-security/azure-network-security-demo-lab-environment-with-new-updates-v2/ba-p/2892204) 
 
-## What is included with the AzNetSec Deployment Template
+## What is included with the AzNetSec Deployment Template  
 
 | Resource |  Purpose |
 |----------|---------|
