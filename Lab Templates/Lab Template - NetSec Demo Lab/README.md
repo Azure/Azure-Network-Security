@@ -3,8 +3,7 @@
 This ARM deployment includes everything needed to test Azure Network Security components including the new Azure Firewall Premium. If you are looking to test out a migration, please use the [old lab](https://github.com/Azure/Azure-Network-Security/tree/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab-Standard) with Azure firewall standard.
 
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520NetSec%2520Demo%2520Lab%2FAzNetSecdeploy.json)
-
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520NetSec%2520Demo%2520Lab%2FAzNetSecdeploy.json)  
 
 
 ## Step-by-step documentation:
@@ -12,24 +11,24 @@ If you'd like more detailed step-by-step instructions on how to deploy this lab,
 
 ## PowerShell Deployment Example:
 
-Please use this location as a reference on how this powershell commandlet works: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-powershell#deploy-remote-template
+Please use this location as a reference on how this powershell commandlet works: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-powershell#deploy-remote-template  
 
-There are 6 parameters with defaults
+*There are 6 parameters with defaults*
 * DefaultUserName
 * DefaultPassword
 * DiagnosticsWorkspaceName
 * DiagnosticsWorkspaceSubscription - enter the Subscription ID where your Workspace is in
 * DiagnosticsWorkspaceResourceGroup
-* DDOSProtectionConfiguration (bool) - true by default
+* DDOSProtectionConfiguration (bool) - true by default  
 
 
-Adding some `samples` to give context
+*Adding some `samples` to give context*
 - Subscription ID : "12345678-1234-1234-1234-b826eef6c592"
 - Log Analyitcs Workspace name: "TestWorkspace"
-- Resource Group Log Analytics workspace is in: "TestResourceGroup"
+- Resource Group Log Analytics workspace is in: "TestResourceGroup"  
 
 **Example Powershell command with some parameters configured:**  
->New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
+```New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true```  
 
 
 # Example Proof of Concept Scenarios designed for this lab  
@@ -63,11 +62,10 @@ For more information on POC scenarios, visit our [TechCommunity blog](https://te
 | Application Gateway v2 (WAF) | Pre-configured to publish webapp on HTTP on Public Interface|
 | Azure Firewall Premium with Firewall Manager | Pre-configured with RDP(DNAT) rules to 3 VM's and allow search engine access(application rules) from VM's. Network rule configured to allow SMB, RDP and SSH access between VM's. Azure firewall is deployed in Hub Virtual Network managed by Firewall manager |
 | Frontdoor | Pre-configured designer with Backend pool as Applicaion gateway public interface  |
-| WebApp(PaaS) | Pre-configured app for Frontdoor and Application Gateway WAF testing |
+| WebApp(PaaS) | Pre-configured app for Frontdoor and Application Gateway WAF testing |  
 
 
-> This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace
-
+> This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace  
 
 
 ## Contributing
