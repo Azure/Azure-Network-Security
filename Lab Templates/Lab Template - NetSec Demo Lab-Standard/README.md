@@ -1,8 +1,10 @@
-<!-- Hello, Please note that this lab contains the Azure Firewall Standard SKU and will be deprecated soon. This is available for testing Firewall migration purposes-->
+
+
+*This lab contains the Azure Firewall Standard SKU and will be deprecated soon. This lab is available for testing Firewall migration to premium SKU and other Azure firewall standard tests. Head over to the [new lab](https://github.com/Azure/Azure-Network-Security/tree/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab) if your POC requires Azure firewall Premium SKU*
 
 
 # Azure Network Security Lab Environment Deployment Template
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520%2520NetSec%2520Demo%2520lab%2FAzNetSecdeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520NetSec%2520Demo%2520Lab-Standard%2FAzNetSecdeploy.json)
 
 This ARM deployment includes everything needed to test Azure Network Security components.
 
@@ -27,7 +29,7 @@ Adding some `samples` to give context
 - Resource Group Log Analytics workspace is in: "TestResourceGroup"
 
 **Example Powershell command with some parameters configured:**
->New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Network%20Security%20Lab%20Template/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
+>New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab-Standard/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
 
 
 ## What is included with the AzNetSec Deployment Template

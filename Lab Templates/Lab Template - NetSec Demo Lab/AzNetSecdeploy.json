@@ -53,7 +53,7 @@
       "type": "object",
       "defaultValue": {},
       "metadata": {
-        "description": "Predefined resource names would be set to default. The resource names are generated using the prefix and the suffix. The value is passed when the template is integrated into a complex pipeline."
+        "description": "Predefined resource names. Should be set to default. The resourse names are generated using the prefix and the suffix. The value is passed when the template is integrated into a complex pipeline."
       }
     },
     "win10VmIpAddress": {

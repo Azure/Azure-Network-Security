@@ -1,41 +1,50 @@
-# Azure Network Security Lab Environment Deployment Template
-
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520%2520NetSec%2520Demo%2520lab%2FAzNetSecdeploy.json)
+# Azure Network Security Lab Environment Deployment Template with Azure Premium Firewall
 
 This ARM deployment includes everything needed to test Azure Network Security components including the new Azure Firewall Premium. If you are looking to test out a migration, please use the [old lab](https://github.com/Azure/Azure-Network-Security/tree/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab-Standard) with Azure firewall standard.
 
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520NetSec%2520Demo%2520Lab%2FAzNetSecdeploy.json)  
+
+
 ## Step-by-step documentation:
-If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community blog post https://aka.ms/labdeploy-techcommunity.
+If you'd like more detailed step-by-step instructions on how to deploy this lab, visit our Tech Community [blog post](https://aka.ms/labdeploy-techcommunity) created for the older lab and then use the new lab template at deployment
 
 ## PowerShell Deployment Example:
 
-Please use this location as a reference on how this powershell commandlet works: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-powershell#deploy-remote-template
+Please use this location as a reference on how this powershell commandlet works: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deploy-powershell#deploy-remote-template  
 
-There are 6 parameters with defaults
+*There are 6 parameters with defaults*
 * DefaultUserName
 * DefaultPassword
 * DiagnosticsWorkspaceName
 * DiagnosticsWorkspaceSubscription - enter the Subscription ID where your Workspace is in
 * DiagnosticsWorkspaceResourceGroup
-* DDOSProtectionConfiguration (bool) - true by default
+* DDOSProtectionConfiguration (bool) - true by default  
 
 
-Adding some `samples` to give context
+*Adding some `samples` to give context*
 - Subscription ID : "12345678-1234-1234-1234-b826eef6c592"
 - Log Analyitcs Workspace name: "TestWorkspace"
-- Resource Group Log Analytics workspace is in: "TestResourceGroup"
+- Resource Group Log Analytics workspace is in: "TestResourceGroup"  
 
-**Example Powershell command with some parameters configured:**
->New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Cross%20Product/Network%20Security%20Lab%20Template/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
+**Example Powershell command with some parameters configured:**  
+```New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20NetSec%20Demo%20Lab/AzNetSecdeploy.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true```  
 
 
-**Example Proof of Concept Scenarios designed for this lab**
-- Azure Firewall with Frontdoor and App Gateway plus Virtual Machines and Web App
-- Azure Frontdoot and Azure Gateway plus WebApp
-- App Gateway plus Webapp
-- Azure Firewall and Virtual machines
+# Example Proof of Concept Scenarios designed for this lab  
 
-## What is included with the AzNetSec Deployment Template
+- Network segmentation using Azure Firewall with Frontdoor and App Gateway plus Virtual Machines and Web App
+- Azure Frontdoor and Azure Gateway plus WebApp scenarios
+- WAF attack demo with App Gateway plus Webapp deployment
+- Azure Firewall with Bastion and Windows Virtual Desktop deployment.
+- Azure Premium Firewall for intermediate Certificate Authority
+- Web Categories settings using Azure Firewall premium
+- Network Security Integration with Azure Security Center and Azure Sentinel
+- Rule Processing Logic
+- DDOS response to volumetric attack in a controlled environment.  
+For more information on POC scenarios, visit our [TechCommunity blog](https://techcommunity.microsoft.com/t5/azure-network-security/azure-network-security-demo-lab-environment-with-new-updates-v2/ba-p/2892204) 
+
+## What is included with the AzNetSec Deployment Template  
 
 | Resource |  Purpose |
 |----------|---------|
@@ -53,11 +62,10 @@ Adding some `samples` to give context
 | Application Gateway v2 (WAF) | Pre-configured to publish webapp on HTTP on Public Interface|
 | Azure Firewall Premium with Firewall Manager | Pre-configured with RDP(DNAT) rules to 3 VM's and allow search engine access(application rules) from VM's. Network rule configured to allow SMB, RDP and SSH access between VM's. Azure firewall is deployed in Hub Virtual Network managed by Firewall manager |
 | Frontdoor | Pre-configured designer with Backend pool as Applicaion gateway public interface  |
-| WebApp(PaaS) | Pre-configured app for Frontdoor and Application Gateway WAF testing |
+| WebApp(PaaS) | Pre-configured app for Frontdoor and Application Gateway WAF testing |  
 
 
-> This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace
-
+> This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace  
 
 
 ## Contributing
@@ -73,4 +81,5 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 

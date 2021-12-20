@@ -4,7 +4,12 @@
 
 This workbook visualizes Application Gateway WAF rule violations and helps with triaging those so to facilitate tuning the WAF against valid traffic.
 
-Often companies struggle to parse the logs from the Application Gateway Web Application Firewall and triage them to determine which ones are true violations and which ones are false positives.  Especially during the design phase of an application, it is important to review these logs and make sure to adapt the application and/or WAF configuration so to eliminate false positives.  This is where this workbook might help. For additional information and step by step deployment guide and usage, see this [blogpost in TechCommunity](https://techcommunity.microsoft.com/t5/azure-network-security-blog/introducing-the-application-gateway-waf-triage-workbook/ba-p/2973341)
+This workbook is designed to parse WAF logs from Application Gateway WAF V2 configured with WAF Policy.
+
+Often companies struggle to parse the logs from the Application Gateway Web Application Firewall and triage them to determine which ones are true violations and which ones are false positives.  Especially during the design phase of an application, it is important to review these logs and make sure to adapt the application and/or WAF configuration so to eliminate false positives.  This is where this workbook might help.  
+ 
+_For additional information and step by step deployment guide and usage, see this [blogpost in TechCommunity](https://techcommunity.microsoft.com/t5/azure-network-security-blog/introducing-the-application-gateway-waf-triage-workbook/ba-p/2973341)_  
+  
 
 ## Deploying the Workbook
 
