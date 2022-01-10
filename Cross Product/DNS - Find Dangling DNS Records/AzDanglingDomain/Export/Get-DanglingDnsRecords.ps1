@@ -117,7 +117,7 @@ Function Get-AZResourcesList {
 
     $AzResources = [System.Collections.ArrayList ]::new()
 
-    $numberOfResources = (Search-AzGraph -Query $( -join ($query, ' | count'))).Count
+    $numberOfResources = (Search-AzGraph -Query $( -join ($query, ' |  summarize TotalResources=count()'))).TotalResources
     $maxRecords = 1000
     $skipRecords = 0
     Do {
@@ -141,7 +141,12 @@ Function Get-AZResourcesHash {
     $ProgessActivity = "Fetching resources"
     $percentage = 0
     Write-Progress $ProgessActivity -Status "$percentage precentage Complete:" -PercentComplete $percentage
-    $numberOfResources = (Search-AzGraph -Query $( -join ($query, ' | count'))).Count
+    $AzResourcesList = Search-AzGraph -Query $( -join ($query, ' |  summarize TotalResources=count()'))
+    if(($null -ne $AzResourcesList) -and   ($null -ne $AzResourcesList.Data))
+    {
+            $AzResourcesList = $AzResourcesList.Data
+    }
+    $numberOfResources =  $AzResourcesList.TotalResources
     $maxRecords = 1000
     $skipRecords = 0
     Do {
@@ -310,7 +315,7 @@ Function Get-AZResourcesListForWorkFlow {
     }
     $AzResourcesList = [System.Collections.ArrayList ]::new()
     
-    $numberOfResources = (Search-AzGraph -Query $( -join ($query, ' | count'))).Count
+    $numberOfResources = (Search-AzGraph -Query $( -join ($query, ' |  summarize TotalResources=count()'))).TotalResources
     $maxRecords = 1000
     $skipRecords = 0
     Do {
@@ -499,7 +504,7 @@ Function Process-CNameList {
         Write-Progress -Activity "$ActivityMessage" -Status "$($status.ToString('P')) Complete:" -PercentComplete ($status*100)
           
         If ($item.FQDN) {
-            $key = $item.Fqdn.trim(" ").tolower()
+            $key = $item.Fqdn.trim(" ").TrimEnd('.').tolower()
 
             #Azurefd can have subdomains also which we cannot mark as dangled
             if ($item.FQDN -match "azurefd.net") {
