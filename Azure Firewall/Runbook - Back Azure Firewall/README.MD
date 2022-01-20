@@ -1,8 +1,10 @@
-## This runbook is part of a step-by-step process to run back-ups and create schedules for your Azure Firewall.
+# Create back ups for Azure Firewall  
+
+This runbook is part of a step-by-step process to run back-ups and create schedules/task for your Azure Firewall.
 &nbsp;
 
 
-# Follow the tutorial in our [TechCommunity Blogpost](https://techcommunity.microsoft.com/t5/azure-network-security-blog/runbook-to-manage-azure-firewall-back-ups/ba-p/3066035) for more information on how this script works and the pre-requisites for redeployment
+Follow the tutorial in our [TechCommunity Blogpost](https://techcommunity.microsoft.com/t5/azure-network-security-blog/runbook-to-manage-azure-firewall-back-ups/ba-p/3066035) for more information on how this script works and the pre-requisites for redeployment
 &nbsp;
 
 Requirements
