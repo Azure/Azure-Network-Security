@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.2.7",
-    "@types/chai-as-promised": "^7.1.2",
+    "@types/chai-as-promised": "^7.1.4",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1"
   },
