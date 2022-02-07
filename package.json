@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "dependencies": {
-    "@azure/avocado": "^0.6.2",
+    "@azure/avocado": "^0.8.4",
     "@types/js-yaml": "^4.0.5",
     "@types/mocha": "^9.1.0",
     "mocha": "^9.0.2",
