@@ -1687,7 +1687,7 @@
           "imageReference": {
             "publisher": "MicrosoftWindowsDesktop",
             "offer": "Windows-10",
-            "sku": "rs5-pro",
+            "sku": "20h2-pro",
             "version": "latest"
           }
         },
