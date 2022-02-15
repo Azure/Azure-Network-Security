@@ -12,7 +12,7 @@
 #region variables
 $filepathp = ".\pipresources.json"
 $filepathv = ".\vnetresources.json"
-$filepathr = ".\Az_PIP_DDOS_Report-$(get-date -Format yyyyMMdd).csv"
+$filepathr = ".\Az_PIP_DDOS_Report-$(get-date -Format yyyyMMddHHmm).csv"
 $pipinfo = @()
 $vnetinfo = @()
 #endregion variables
