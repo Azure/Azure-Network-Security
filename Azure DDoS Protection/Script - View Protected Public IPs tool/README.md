@@ -28,14 +28,14 @@ This script will generate a CSV file containing the following information for ea
 | PIP_Address         | Public IP Address currently assigned to the Public IP Address resource                                                                 |
 | PIP_Subscription    | Azure Subscription GUID for where the Public IP Address resource was found                                                             |
 | Resource_Group      | Name of the Azure Resource Group that contains the Public IP Address                              |
-| Associated_Resource | Name of the Azure resource associated with the Public IP Address is associated |
+| Associated_Resource | Name of the Azure resource associated with the Public IP Address |
 | Resource_Type       | Type of resource associated with the Public IP Address                                                                         |
 | Associated_Resource_RG       | Name of the Azure Resource Group that contains the associated resource                                                                         |
 | VNet                | Name of the Azure Virtual Network that the Public IP Address and its associated resource are connected                               |
 | DDOS_Enabled        | True or False value if Azure DDOS is enabled on the Virtual Network containing the Public IP Address and its associated resource |
 | DDOS_Plan           | Name of the DDOS Plan applied to the Azure Virtual Network                                                                          |
 
-## Things To Note  
+## Things To Note
 
 * If the associated resource can not be determined, the script will output "Associated resource type not found for sample-PIP", and the CSV file will populate the appropriate columns with "Unable_To_Determine"
 * If the associated resource is an Azure Load Balancer that is not configured with a backend, the CSV will populate the VNet column with "Invalid_Subnet_ID"
