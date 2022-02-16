@@ -12,7 +12,7 @@
 #region variables
 $filepathp = ".\pipresources.json"
 $filepathv = ".\vnetresources.json"
-$filepathr = ".\Az_PIP_DDOS_Report-$(get-date -Format yyyyMMddHHmm).csv"
+$filepathr = ".\Az_PIP_DDOS_Report-$(get-date -Format yyyyMMdd-HHmm).csv"
 $pipinfo = @()
 $vnetinfo = @()
 #endregion variables
@@ -23,7 +23,7 @@ function Get-PIPResources {
         $pipResource = @()
         $vnetResource = @()
         $allSub = Get-AzSubscription
-        Write-Host -ForegroundColor Yellow "Collecting information on Publiic IP and Virtual Network resources for all subscriptions..."
+        Write-Host -ForegroundColor Yellow "Collecting information on Public IP and Virtual Network resources for all subscriptions..."
         $allSub | foreach {
             Set-AzContext -SubscriptionId $_.Id
             $pipResource += Get-AzPublicIpAddress
@@ -245,4 +245,5 @@ foreach ($p in $pipinfo) {
 Write-Host -ForegroundColor Green "Finished building report CSV file" 
 Clear-CreatedJSONFiles -filepathp $filepathp -filepathv $filepathv
 Write-Host -ForegroundColor Green "Generated report CSV file: $($filepathr)" 
+Write-Host -ForegroundColor Green "Generated report is located at: $((Get-ChildItem $filepathr).FullName)"
 #endregion main
