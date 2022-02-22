@@ -10,7 +10,7 @@
     "@azure/avocado": "^0.8.4",
     "@types/js-yaml": "^4.0.5",
     "@types/mocha": "^9.1.0",
-    "mocha": "^9.2.0",
+    "mocha": "^9.2.1",
     "prettier": "^2.5.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.5"
