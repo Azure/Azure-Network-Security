@@ -1,5 +1,6 @@
-# Reference code for Processing Alerts in Azure FrontDoor WAF (Blog/Video) 
-This code is to be purely used as a reference to the accompanying video blog. It's not meant to compile without changes discussed in the video.
+# Reference code for Processing Alerts in Azure FrontDoor WAF (Blog and Video) 
+This code is to be purely used as a reference to the accompanying video blog. It's not meant to compile without changes discussed in the video.  
+Link to blogpost: [Detect traffic anomalies and auto-mitigate spikes with Azure WAF on Microsoft Azure Front Door](https://techcommunity.microsoft.com/t5/azure-network-security-blog/detect-traffic-anomalies-and-auto-mitigate-spikes-with-azure-waf/ba-p/3217404)
 
 # Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
