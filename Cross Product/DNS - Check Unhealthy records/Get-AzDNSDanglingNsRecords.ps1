@@ -70,53 +70,55 @@ $InvalidItems = @()
 $TotalRecCount = 0;
 $ProgessActivity = "Processing Subscriptions";
 $progressItr = 1; 
+
+$allNsRecords = @()
+$allDnsZones = @()
 $subscriptions | ForEach-Object {
     $progressValue = $progressItr / $scount.Count
-
     Select-AzSubscription -Subscription $_  | Out-Null
     Write-Progress -Activity $ProgessActivity -Status "current subscription $_  $($progressValue.ToString('P')) Complete:" -PercentComplete ($progressValue * 100)
     $progressItr = $progressItr + 1;
-    $subscription = $_ 
     try {
         $dnsZones = Get-AzDnsZone -ErrorAction Continue
+        $allDnsZones += $dnsZones
+        $dnsZones | ForEach-Object {
+            $allNsRecords += Get-AzDnsRecordSet -Zone $_ -RecordType NS | Where-Object { $_.Name -ne '@' }
+        }
     }
     catch {
         Write-Host "Error retrieving DNS Zones for subscription $_"
         return;
     }
+}
 
 
-    $dnsZones |  ForEach-Object {
-        $nsrecords = Get-AzDnsRecordSet  -Zone $_ -RecordType NS | Where-Object { $_.Name -ne '@' }
-        $sZoneName = $_.Name
-        $nsrecords | ForEach-Object {    
-            $rec = $_
-            $dnsZoneForNsRecord = $dnsZones | Where-Object { $_.Name -eq "$($rec.Name).$($sZoneName)" }
-            $dangling = $null -eq $dnsZoneForNsRecord
-            $missingNameServersInDnsZone = @()
-            if (-not $dangling) {
-                $missingNameServersInDnsZone = $rec.Records.Where({ !$dnsZoneForNsRecord.NameServers.Contains($_) })
-            }
-            $TotalRecCount++
-            if ($dangling -or ($missingNameServersInDnsZone.Length -gt 0)) {
-                Write-Host -ForegroundColor Yellow "NS record: $($rec.Name). ZoneName $sZoneName. Subscription $subscription" 
-                $hash = @{
-                    Name                                = $rec.Name
-                    RecordType                          = $rec.RecordType
-                    ZoneName                            = $sZoneName
-                    Dangling                            = $dangling
-                    NsRecordNameServersMissingInSubZone = $missingNameServersInDnsZone
-                    subscriptionId                      = $subscription
-                }
-                $item = New-Object PSObject -Property $hash    
-                $InvalidItems += $item
-            }
-            else {
-                # Write-Host -ForegroundColor Green "$($rec.Name) recordType $($rec.RecordType)  zoneName $ZoneName  subscription $subscription " 
-            }
+$allNsRecords | ForEach-Object {    
+    $rec = $_
+    $dnsZoneForNsRecord = $allDnsZones | Where-Object { $_.Name -eq "$($rec.Name).$($sZoneName)" }
+    $dangling = $null -eq $dnsZoneForNsRecord
+    $missingNameServersInDnsZone = @()
+    if (-not $dangling) {
+        $missingNameServersInDnsZone = $rec.Records.Where({ !$dnsZoneForNsRecord.NameServers.Contains($_) })
+    }
+    $TotalRecCount++
+    if ($dangling -or ($missingNameServersInDnsZone.Length -gt 0)) {
+        Write-Host -ForegroundColor Yellow "NS record: $($rec.Name). ZoneName $sZoneName. Subscription $subscription" 
+        $hash = @{
+            Name                                = $rec.Name
+            RecordType                          = $rec.RecordType
+            ZoneName                            = $sZoneName
+            Dangling                            = $dangling
+            NsRecordNameServersMissingInSubZone = $missingNameServersInDnsZone
+            subscriptionId                      = $subscription
         }
+        $item = New-Object PSObject -Property $hash    
+        $InvalidItems += $item
+    }
+    else {
+        # Write-Host -ForegroundColor Green "$($rec.Name) recordType $($rec.RecordType)  zoneName $ZoneName  subscription $subscription " 
     }
 }
+
 Write-Progress -Activity $ProgessActivity -Completed
 
 Write-Host "Total records processed $TotalRecCount"
