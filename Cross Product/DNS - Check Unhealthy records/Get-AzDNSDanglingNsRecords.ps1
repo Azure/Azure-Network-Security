@@ -7,12 +7,20 @@
 #>
 param(
     # subscription if to fetch dns records from
-    [String]$SubscriptionId = "All"
+    [String]$SubscriptionId = "All",
+
+    #filtering zone name
+    [String]$ZoneName = "All"
 ) 
 
 if ($SubscriptionId -eq "All") {
     Write-Host -ForegroundColor Yellow "No subscription Id passed will process all subscriptions"
 }
+
+if ($ZoneName -eq "All") {
+    Write-Host -ForegroundColor Yellow "No Zone name passed will process all zones in subscription"
+}
+
 
 $ErrorActionPreference = "Stop"
 
@@ -71,6 +79,7 @@ $TotalRecCount = 0;
 $ProgessActivity = "Processing Subscriptions";
 $progressItr = 1; 
 
+$nsRecordsToProcess = @()
 $allNsRecords = @()
 $allDnsZones = @()
 $subscriptions | ForEach-Object {
@@ -82,7 +91,11 @@ $subscriptions | ForEach-Object {
         $dnsZones = Get-AzDnsZone -ErrorAction Continue
         $allDnsZones += $dnsZones
         $dnsZones | ForEach-Object {
-            $allNsRecords += Get-AzDnsRecordSet -Zone $_ -RecordType NS | Where-Object { $_.Name -ne '@' }
+            $zonesNsRecords = Get-AzDnsRecordSet -Zone $_ -RecordType NS | Where-Object { $_.Name -ne '@' }
+            $allNsRecords += $zonesNsRecords
+            if ($ZoneName -eq 'All' -or $_.Name -eq $ZoneName) {
+                $nsRecordsToProcess += $zonesNsRecords
+            }
         }
     }
     catch {
@@ -92,7 +105,7 @@ $subscriptions | ForEach-Object {
 }
 
 
-$allNsRecords | ForEach-Object {    
+$nsRecordsToProcess | ForEach-Object {    
     $rec = $_
     $dnsZoneForNsRecord = $allDnsZones | Where-Object { $_.Name -eq "$($rec.Name).$($sZoneName)" }
     $dangling = $null -eq $dnsZoneForNsRecord
@@ -123,9 +136,9 @@ Write-Progress -Activity $ProgessActivity -Completed
 
 Write-Host "Total records processed $TotalRecCount"
 $invalidMeasure = $InvalidItems | Measure-Object
-Write-Host "Invalid Count  $($invalidMeasure.Count)"
+Write-Host "Suspicious Count  $($invalidMeasure.Count)"
 
-Write-Host "Invalid Records "
+Write-Host "Suspicious Records "
 Write-Host "==============="
 
 $InvalidItems | Format-Table
