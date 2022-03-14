@@ -26,7 +26,10 @@ Welcome to the Azure Network Security community repository. This repo is designe
 - [Azure Networking Feedback](https://feedback.azure.com/forums/217313-networking)
 
 # What's new?
-Please find the latest artifacts in this repo on our [What's New Page](https://github.com/Azure/Azure-Network-Security/wiki/What's-New)
+Please find the latest artifacts in this repo on our [What's New Page](https://github.com/Azure/Azure-Network-Security/wiki/What's-New)  
+
+# Support
+All automations within this repository are provided as is, without SLA or official support. However, if you have an issue please fill out a [bug report](https://github.com/Azure/Azure-Network-Security/issues/new?assignees=&labels=&template=bug_report.md&title=) and reference the automation artifact, so the community can try to solve it.
 
 # Wiki
 This project has its own [Wiki](https://github.com/Azure/Azure-Network-Security/wiki) which will provide you with further information about the Azure Network Security community, how to contribute, templates to use and other resources.
@@ -63,4 +66,4 @@ provided by the bot. You will only need to do this once across all repos using o
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.  
