@@ -1,7 +1,7 @@
 <#
     1.	Install Pre requisites Az PowerShell modules  (https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-5.7.0)
     2.	From PowerShell prompt navigate to folder where the script is saved and run the following command
-        .\ Get-AzDNSUnhealthyRecords.ps1 -SubscriptionId <subscription id> -ZoneName <zonename>
+        .\Get-AzDNSDanglingNsRecords.ps1 -SubscriptionId <subscription id> -ZoneName <zonename>
         Replace subscription id with subscription id of interest.
         ZoneName with actual zone name.
 #>
