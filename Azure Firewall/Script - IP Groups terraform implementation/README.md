@@ -1,5 +1,5 @@
 # Azure-Firewall-IPGroup
-
+Author: [JChancellor](https://github.com/jchancellor-ms)
 <!-- Project description -->
 I created this project to enable the implementation of Azure Firewall IP Groups and rules in batch.  The goal was to minimize the writing of additional terraform code while being able to add new elements using JSON input files. 
 
