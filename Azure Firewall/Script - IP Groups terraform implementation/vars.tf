@@ -1,0 +1,2 @@
+variable "input_filename" {
+}
