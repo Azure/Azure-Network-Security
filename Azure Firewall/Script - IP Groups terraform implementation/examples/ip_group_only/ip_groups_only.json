@@ -8,29 +8,19 @@
             "resource_group_location": "<replace with resource group location of firewall>",
             "ip_groups": [
                 {
-                    "comment": "ipg group 1 of 5",
+                    "comment": "ipg group 1 of 3",
                     "ip_group_name": "ipg_part_1",           
                     "csv_filename": "../../ip_group_csvs/ipg_part_1.csv"
                 },
                 {
-                    "comment": "ipg group 2 of 5",
+                    "comment": "ipg group 2 of 3",
                     "ip_group_name": "ipg_part_2",         
                     "csv_filename": "../../ip_group_csvs/ipg_part_2.csv"
                 },
                 {
-                    "comment": "ipg group 3 of 5",
+                    "comment": "ipg group 3 of 3",
                     "ip_group_name": "ipg_part_3",          
                     "csv_filename": "../../ip_group_csvs/ipg_part_3.csv"
-                },
-                {
-                    "comment": "ipg group 4 of 5",
-                    "ip_group_name": "ipg_part_4",            
-                    "csv_filename": "../../ip_group_csvs/ipg_part_4.csv"
-                },
-                {
-                    "comment": "ipg group 5 of 5",
-                    "ip_group_name": "ipg_part_5",     
-                    "csv_filename": "../../ip_group_csvs/ipg_part_5.csv"
                 }
             ]
         }
