@@ -53,26 +53,6 @@
                                             "destination_fqdns": []
                                         },
                                         {
-                                            "name": "Region_Block_Source_IPG_4",
-                                            "protocols": ["Any"],
-                                            "destination_ports": ["*"],
-                                            "source_addresses": [],
-                                            "source_ip_groups": ["ipg_part_4"],
-                                            "destination_addresses": ["*"],
-                                            "destination_ip_groups": [],
-                                            "destination_fqdns": []
-                                        },
-                                        {
-                                            "name": "Region_Block_Source_IPG_5",
-                                            "protocols": ["Any"],
-                                            "destination_ports": ["*"],
-                                            "source_addresses": [],
-                                            "source_ip_groups": ["ipg_part_5"],
-                                            "destination_addresses": ["*"],
-                                            "destination_ip_groups": [],
-                                            "destination_fqdns": []
-                                        },
-                                        {
                                             "name": "Region_Block_Destination_IPG_1",
                                             "protocols": ["Any"],
                                             "destination_ports": ["*"],
@@ -101,26 +81,6 @@
                                             "destination_addresses": [],
                                             "destination_ip_groups": ["ipg_part_3"],
                                             "destination_fqdns": []
-                                        },
-                                        {
-                                            "name": "Region_Block_Destination_IPG_4",
-                                            "protocols": ["Any"],
-                                            "destination_ports": ["*"],
-                                            "source_addresses": ["*"],
-                                            "source_ip_groups": [],
-                                            "destination_addresses": [],
-                                            "destination_ip_groups": ["ipg_part_4"],
-                                            "destination_fqdns": []
-                                        },
-                                        {
-                                            "name": "Region_Block_Destination_IPG_5",
-                                            "protocols": ["Any"],
-                                            "destination_ports": ["*"],
-                                            "source_addresses": ["*"],
-                                            "source_ip_groups": [],
-                                            "destination_addresses": [],
-                                            "destination_ip_groups": ["ipg_part_5"],
-                                            "destination_fqdns": []
                                         }
                                     ]
                                 }
@@ -131,29 +91,19 @@
             ],
             "ip_groups": [
                 {
-                    "comment": "ipg group 1 of 5",
+                    "comment": "ipg group 1 of 3",
                     "ip_group_name": "ipg_part_1",           
                     "csv_filename": "../../ip_group_csvs/ipg_part_1.csv"
                 },
                 {
-                    "comment": "ipg group 2 of 5",
+                    "comment": "ipg group 2 of 3",
                     "ip_group_name": "ipg_part_2",         
                     "csv_filename": "../../ip_group_csvs/ipg_part_2.csv"
                 },
                 {
-                    "comment": "ipg group 3 of 5",
+                    "comment": "ipg group 3 of 3",
                     "ip_group_name": "ipg_part_3",          
                     "csv_filename": "../../ip_group_csvs/ipg_part_3.csv"
-                },
-                {
-                    "comment": "ipg group 4 of 5",
-                    "ip_group_name": "ipg_part_4",            
-                    "csv_filename": "../../ip_group_csvs/ipg_part_4.csv"
-                },
-                {
-                    "comment": "ipg group 5 of 5",
-                    "ip_group_name": "ipg_part_5",     
-                    "csv_filename": "../../ip_group_csvs/ipg_part_5.csv"
                 }
             ]
         }
