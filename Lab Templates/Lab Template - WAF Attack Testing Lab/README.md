@@ -11,7 +11,7 @@ This ARM deployment includes everything needed to test Azure WAF Security compon
 
 https://github.com/Azure/Azure-Network-Security/tree/master/Cross%20Product/Network%20Security%20Lab%20Template  
 
-This [blogpost](https://techcommunity.microsoft.com/t5/azure-network-security-blog/part-1-lab-setup-azure-waf-security-protection-and-detection-lab/ba-p/2030469) is provides additional guidance into using this lab and testing out WAF attack scenarios.  
+This [blogpost](https://techcommunity.microsoft.com/t5/azure-network-security-blog/part-1-lab-setup-azure-waf-security-protection-and-detection-lab/ba-p/2030469) provides additional guidance into how this lab works and testing out WAF attack scenarios.  
 
 ## PowerShell Deployment Example:
 
