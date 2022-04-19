@@ -27,7 +27,7 @@ Adding some `samples` to give context
 - Subscription ID : "12345678-1234-1234-1234-b826eef6c592"
 - Log Analyitcs Workspace name: "TestWorkspace"
 - Resource Group Log Analytics workspace is in: "TestResourceGroup"  
-- 
+
 
 <p align="center">
 <img src="https://github.com/Azure/Azure-Network-Security/blob/master/Cross%20Product/MediaFiles/Cross-Product/demo_image.png">
