@@ -67,6 +67,9 @@ For more information on POC scenarios, visit our [TechCommunity blog](https://te
 
 > This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace  
 
+<p align="center">
+<img src="https://github.com/Azure/Azure-Network-Security/blob/master/Cross%20Product/MediaFiles/Cross-Product/demo_image.png">
+</p>
 
 ## Contributing
 
