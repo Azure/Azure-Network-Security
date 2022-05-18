@@ -13,7 +13,7 @@ Gain insights into Azure Firewall events. You can learn about your application a
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FWorkbook%2520-%2520Azure%2520Firewall%2520Monitor%2520Workbook%2FAzure%2520Firewall_ARM.json)
 
 &nbsp;
-When deploying via ARM Template, please make sure you know what Resource ID (Log Analytics Workgroup) you're wanting to use.
+When deploying via ARM Template, please make sure you know what Resource ID (Log Analytics Workspace) you're wanting to use.
 
 >Example of a value: /subscriptions/'GUID'/resourcegroups/'RG Name'/providers/microsoft.operationalinsights/workspaces/'Workspace Name'
 
