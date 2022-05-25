@@ -1,8 +1,8 @@
 # AppGW Web App Firewall Policy Sample
-author: Nathan Swift  
+Author: [Nathan Swift](https://github.com/swiftsolves-msft)  
 
 
-This Web App Firewall policy can be deployed and used with Application Gateway to block Geos in a sanctioned and embargoed list, in addition a 2nd rule captures and records the countries of the client ip requests to WAF by using a Log Only across all countries in a higher priority.
+This Web App Firewall policy can be deployed and used with Application Gateway to block geolocations in a sanctioned or embargoed list. In addition,  a second rule captures and records the countries of the client IP requests to WAF by using a Log Only across all countries in a higher priority.
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%20WAF%2FTemplate%20-%20AppGW%20WebAppFirewall%20Policy%20for%20Logging%20Countries%2Fazuredeploy.json" target="_blank">
     <img src="https://aka.ms/deploytoazurebutton"/>
