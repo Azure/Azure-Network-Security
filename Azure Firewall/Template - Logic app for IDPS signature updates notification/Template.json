@@ -344,7 +344,7 @@
                             "office365": {
                                 "connectionId": "[parameters('connections_office365_1_externalid')]",
                                 "connectionName": "office365-1",
-                                "id": "/subscriptions/1c61ccbf-70b3-45a3-a1fb-848ce46d70a6/providers/Microsoft.Web/locations/centralus/managedApis/office365"
+                                "id": "/subscriptions/****/providers/Microsoft.Web/locations/centralus/managedApis/office365"
                             }
                         }
                     }
