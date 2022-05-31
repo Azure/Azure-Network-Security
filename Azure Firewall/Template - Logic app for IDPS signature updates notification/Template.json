@@ -9,7 +9,23 @@
         "connections_office365_1_externalid": {
             "defaultValue": "/subscriptions/****/resourceGroups/****/providers/Microsoft.Web/connections/office365-1",
             "type": "String"
-        }
+        },
+		"Email": {
+            "defaultValue": "",
+            "type": "String"
+        },
+		"Subscription_ID": {
+            "defaultValue": "",
+            "type": "String"
+        },
+		"Resource_Group_Name": {
+            "defaultValue": "",
+            "type": "String"
+        },
+		"Policy_Name": {
+            "defaultValue": "",
+            "type": "String"
+        }	
     },
     "variables": {},
     "resources": [
@@ -174,7 +190,7 @@
                                     {
                                         "name": "email",
                                         "type": "string",
-                                        "value": "****"
+                                        "value": "[parameters('Email')]"
                                     }
                                 ]
                             }
@@ -191,7 +207,7 @@
                                     {
                                         "name": "policyName",
                                         "type": "string",
-                                        "value": "****"
+                                        "value": "[parameters('Policy_Name')]"
                                     }
                                 ]
                             }
@@ -208,7 +224,7 @@
                                     {
                                         "name": "resourceGroup",
                                         "type": "string",
-                                        "value": "****"
+                                        "value": "[parameters('Resource_Group_Name')]"
                                     }
                                 ]
                             }
@@ -225,7 +241,7 @@
                                     {
                                         "name": "subscriptionId",
                                         "type": "string",
-                                        "value": "****"
+                                        "value": "[parameters('Subscription_ID')]"
                                     }
                                 ]
                             }
@@ -328,7 +344,7 @@
                             "office365": {
                                 "connectionId": "[parameters('connections_office365_1_externalid')]",
                                 "connectionName": "office365-1",
-                                "id": "/subscriptions/****/providers/Microsoft.Web/locations/centralus/managedApis/office365"
+                                "id": "/subscriptions/1c61ccbf-70b3-45a3-a1fb-848ce46d70a6/providers/Microsoft.Web/locations/centralus/managedApis/office365"
                             }
                         }
                     }
