@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "workflows_IDPSRules_Test1_name": {
+        "Logic_App_Name": {
             "defaultValue": "IDPSRules-Test1",
             "type": "String"
         },
@@ -32,7 +32,7 @@
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
-            "name": "[parameters('workflows_IDPSRules_Test1_name')]",
+            "name": "[parameters('Logic_App_Name')]",
             "location": "centralus",
             "tags": {
                 "createddate": "05/24/2022",
@@ -141,7 +141,7 @@
                             "type": "Expression",
                             "kind": "GetPastTime",
                             "inputs": {
-                                "interval": 2,
+                                "interval": 1,
                                 "timeUnit": "Day"
                             }
                         },
