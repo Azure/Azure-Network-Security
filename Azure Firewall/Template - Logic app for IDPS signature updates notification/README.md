@@ -1,4 +1,4 @@
-Author : [Lara Goldstein]()
+Author : [Lara Goldstein](https://github.com/laragoldstein13)
 
 Use this template to create Logic App that sends notification for new Azure Firewall Premium IDPS signature updates.
 
