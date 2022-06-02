@@ -3,41 +3,74 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "Logic_App_Name": {
-            "defaultValue": "IDPSRules-Test1",
+            "defaultValue": "IDPSRulesNotification",
             "type": "String"
         },
-        "connections_office365_1_externalid": {
-            "defaultValue": "/subscriptions/****/resourceGroups/****/providers/Microsoft.Web/connections/office365-1",
-            "type": "String"
-        },
-		"Email": {
+"Sender_Address": {
             "defaultValue": "",
-            "type": "String"
+            "type": "String",
+  "metadata": {
+                "displayName": "Enter the sender's email address to form the connection to O365 Outlook",
+                "description": "Enter the sender's email address to form the connection to O365 Outlook"
+                }
+        },
+		"Recipient_Address": {
+            "defaultValue": "",
+            "type": "String",
+ "metadata": {
+                "displayName": "Enter the email address to send the IDPS Rules update notification to",
+                "description": "Enter the email address to send the IDPS Rules update notification to"
+                }
         },
 		"Subscription_ID": {
             "defaultValue": "",
-            "type": "String"
+            "type": "String",
+ "metadata": {
+                "displayName": "Enter the Subscription Id of where the Firewall Policy is located",
+                "description": "Enter the Subscription Id of where the Firewall Policy is located"
+                }
         },
 		"Resource_Group_Name": {
             "defaultValue": "",
-            "type": "String"
+            "type": "String",
+ "metadata": {
+                "displayName": "Enter the Resource Group name of where the Firewall Policy is located",
+                "description": "Enter the Resource Group name of where the Firewall Policy is located"
+                }
         },
 		"Policy_Name": {
             "defaultValue": "",
-            "type": "String"
-        }	
+            "type": "String",
+ "metadata": {
+                "displayName": "Enter the name of the Azure Firewall Policy with IDPS Rules",
+                "description": "Enter the name of the Azure Firewall Policy with IDPS Rules"
+                }
+        }
+	
     },
-    "variables": {},
+    "variables": {
+        "o365ConnectionName" : "office365"
+    },
     "resources": [
+        {
+              "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('o365ConnectionName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "V1",
+            "properties": {
+                "displayName": "[parameters('Sender_Address')]",
+                "customParameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/', variables('o365ConnectionName'))]"
+                }
+            }
+        },
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
             "name": "[parameters('Logic_App_Name')]",
-            "location": "centralus",
-            "tags": {
-                "createddate": "05/24/2022",
-                "owner": "LGoldstein"
-            },
+            "location": "[resourceGroup().location]",
             "identity": {
                 "type": "SystemAssigned"
             },
@@ -141,7 +174,7 @@
                             "type": "Expression",
                             "kind": "GetPastTime",
                             "inputs": {
-                                "interval": 1,
+                                "interval": 2,
                                 "timeUnit": "Day"
                             }
                         },
@@ -175,7 +208,7 @@
                                     "skip": 0
                                 },
                                 "method": "POST",
-                                "uri": "https://management.azure.com/subscriptions/@{variables('subscriptionId')}/resourceGroups/@{variables('resourceGroup')}/providers/Microsoft.Network/firewallPolicies/@{variables('policyName')}/listIdpsSignatures?api-version=2021-08-01"
+                                "uri": "https://management.azure.com/subscriptions/@{variables('subscriptionId')}/resourceGroups/@{variables('resourceGroup')}/providers/Microsoft.Network/firewallPolicies/@{variables('policyName')}/listIdpsSignatures?api-version=2021-05-01"
                             }
                         },
                         "Initialize_variable_-_email": {
@@ -190,7 +223,7 @@
                                     {
                                         "name": "email",
                                         "type": "string",
-                                        "value": "[parameters('Email')]"
+                                        "value": "[parameters('Recipient_Address')]"
                                     }
                                 ]
                             }
@@ -341,10 +374,10 @@
                 "parameters": {
                     "$connections": {
                         "value": {
-                            "office365": {
-                                "connectionId": "[parameters('connections_office365_1_externalid')]",
-                                "connectionName": "office365-1",
-                                "id": "/subscriptions/****/providers/Microsoft.Web/locations/centralus/managedApis/office365"
+                           "office365": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('o365ConnectionName'))]",
+                                "connectionName": "office365",
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/office365')]"
                             }
                         }
                     }
