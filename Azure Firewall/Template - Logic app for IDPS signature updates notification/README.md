@@ -4,7 +4,7 @@ Use this template to create Logic App that sends notification for new Azure Fire
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FTemplate%2520-%2520Logic%2520app%2520for%2520IDPS%2520signature%2520updates%2520notification%2FTemplate.json)
 
-To view more information, see [this blog](https%3A%2F%2Ftechcommunity.microsoft.com%2Ft5%2Fazure-network-security-blog%2Freceive-email-notification-when-new-idps-rules-get-created-via%2Fba-p%2F3499588)  posted on Microsoft Tech Community.
+To view more information, see [this blog](https://techcommunity.microsoft.com/t5/azure-network-security-blog/receive-email-notification-when-new-idps-rules-get-created-via/ba-p/3499588) posted on Microsoft Tech Community.
 
 ## Deployment
 
@@ -24,7 +24,7 @@ During the deployment, you must specify some details, including the subscription
 4. Make sure to authenticate against Azure AD. 
 5. Press save. 
  
-The Logic App must have the necessary permissions to query the IDPS rules on the Firewall Policy via the REST API.  This can be obtained via assigning the Logic App a system-assigned Managed Identity with Contributor permissions on the Firewall Policy resource or the Resource Group hosting the Firewall Policy resource. Note that you can assign permissions only if your account has been assigned Owner or User Access Administrator roles to the underlying resource. 
+The Logic App must have the necessary permissions to query the IDPS rules on the Firewall Policy via [the REST API](https://docs.microsoft.com/en-us/rest/api/firewall/azure-firewalls/list#code-try-0). This can be obtained via assigning the Logic App a system-assigned Managed Identity with Contributor permissions on the Firewall Policy resource or the Resource Group hosting the Firewall Policy resource. Note that you can assign permissions only if your account has been assigned Owner or User Access Administrator roles to the underlying resource. 
 
 **To assign Managed Identity to specific scope:** 
 
@@ -38,6 +38,7 @@ The Logic App must have the necessary permissions to query the IDPS rules on the
 8. Select IDPSRulesNotification Logic App. 
 9. Press save. 
  
+For more info, go [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) for assigning Managing Identity to specific scope
 
 ## Contributing
 
