@@ -5,7 +5,6 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/azure/Azure-Network-Security?color=white&logo=Microsoft%20azure&logoColor=blue&style=plastic)
 ![GitHub last commit](https://img.shields.io/github/last-commit/azure/Azure-Network-Security)
 ![GitHub issues](https://img.shields.io/github/issues-raw/azure/Azure-Network-Security)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/azure/Azure-Network-Security)
 ![GitHub repo size](https://img.shields.io/github/repo-size/azure/Azure-Network-Security?color=white&logo=Microsoft%20azure&logoColor=blue)
 
 
