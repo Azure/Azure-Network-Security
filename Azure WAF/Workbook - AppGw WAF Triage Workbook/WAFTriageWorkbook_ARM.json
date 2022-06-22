@@ -10,7 +10,7 @@
     },
     "workbookSourceId": {
       "type": "string",
-      "defaultValue": "/subscriptions/651dc44c-5d8e-48da-8cd3-cd79224ac290/resourcegroups/xstof-appgw/providers/microsoft.operationalinsights/workspaces/xstof-appgw",
+      "defaultValue": "",
       "metadata": {
         "description": "The id of resource instance to which the workbook will be associated"
       }
