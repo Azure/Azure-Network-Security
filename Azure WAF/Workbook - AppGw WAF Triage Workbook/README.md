@@ -25,7 +25,7 @@ To deploy this workbook, click the button "Deploy to Azure".  Fill in the reques
 Then click "Review + create".
 
 
-_Note: If you need to use the transaction ID in the ApplicationGatewayAccessLog, then replace "host_s" with "originalHost_s" in the join between ApplicationGatewayAccessLog and ApplicationGatewayFirewallLog_
+_**Note**: If you need to use the transaction ID in the ApplicationGatewayAccessLog, then replace "host_s" with "originalHost_s" in the join between ApplicationGatewayAccessLog and ApplicationGatewayFirewallLog_
 
 ## Contributing
 
