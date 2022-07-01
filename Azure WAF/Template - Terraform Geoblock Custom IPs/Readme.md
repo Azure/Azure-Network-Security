@@ -1,6 +1,11 @@
 Create a custom rule and apply it to deny or allow an IP list using Terraform
 
+This Terraform module  will create a custom WAF rule blocking a list of IP's from a CSV file formatted with the CIDR name at the top
+It includes a tfvars sample.
+Currently, there is a limit on the number of CIDR ranges that can be included (600 per rule). See [here](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits) for WAF limits  
 
+
+For more information: [Deploy an Azure Application Gateway v2 using Terraform to direct web traffic](https://docs.microsoft.com/en-us/azure/developer/terraform/deploy-application-gateway-v2?toc=%2Fazure%2Fapplication-gateway%2Ftoc.json&bc=%2Fazure%2Fapplication-gateway%2Fbreadcrumb%2Ftoc.json)
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
