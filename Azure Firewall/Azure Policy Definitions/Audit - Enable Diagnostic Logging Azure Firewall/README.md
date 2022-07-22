@@ -1,4 +1,4 @@
-# Enable Diagnostic Logs for AZFW - JSON
+# Enable Diagnostic Logs for Azure Firewall - JSON
 
 This is the Azure Policy Definition script to find all AZFWs and flag as non-compliant if logs, metrics and workspace is not configured in diagnostic settings.
 
