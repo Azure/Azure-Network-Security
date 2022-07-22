@@ -1,4 +1,4 @@
-This repository contains Azure Policy Definition scripts for Azure  resources.
+This repository contains Azure Policy Definition scripts for Azure Firewall.
 
 ## Contributing
 
