@@ -31,7 +31,7 @@ During the deployment, you must specify some details, including the subscription
 
 **8. Policy_SKU:** SKU of the Firewall that you would like to add the O365 rule collection group to or create for the purpose of including this rule collection group (accepted inputs are Standard or Premium).
 
-**To authorize the API connection:** 
+## Authorize API Connections for the Logic App
 
 1. Go to the Resource Group you used to deploy the template resources. 
 2. Select the Office365 API connection and press Edit API connection. 
