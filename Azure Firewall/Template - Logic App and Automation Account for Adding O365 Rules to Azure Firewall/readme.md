@@ -2,7 +2,7 @@ Author : [Lara Goldstein](https://github.com/laragoldstein13)
 
 Use this template to create an Azure Logic App and an Azure Automation Account to update an Azure Firewall Policy to allow traffic to Office 365 endpoints.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2Flaragoldstein13%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FTemplate%2520-%2520Logic%2520App%2520and%2520Automation%2520Account%2520for%2520Adding%2520O365%2520Rules%2520to%2520Azure%2520Firewall%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Flaragoldstein13%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FTemplate%2520-%2520Logic%2520App%2520and%2520Automation%2520Account%2520for%2520Adding%2520O365%2520Rules%2520to%2520Azure%2520Firewall%2Fazuredeploy.json)
 
 ## Overview of Resources Deployed
 **1. Automation Account and Runbook:** The Azure Automation Account and Runbook will run the Python script `o365_rules.py` to download the JSON found at `https://endpoints.office.com/endpoints/worldwide?clientrequestid=b10c5ed1-bad1-445f-b386-b919946339a7` and generate an ARM template for an Azure Firewall Policy that can be imported to Azure. More information regarding the script can be found [here](https://blog.cloudtrooper.net/2022/05/06/azure-firewall-rules-for-office-365/).
