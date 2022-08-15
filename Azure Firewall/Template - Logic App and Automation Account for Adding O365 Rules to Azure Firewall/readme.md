@@ -6,7 +6,9 @@ Use this template to create an Azure Logic App and an Azure Automation Account t
 
 ## Overview of Resources Deployed
 **1. Automation Account and Runbook:** The Azure Automation Account and Runbook will run the Python script `o365_rules.py` to download the JSON found at `https://endpoints.office.com/endpoints/worldwide?clientrequestid=b10c5ed1-bad1-445f-b386-b919946339a7` and generate an ARM template for an Azure Firewall Policy that can be imported to Azure. More information regarding the script can be found [here](https://blog.cloudtrooper.net/2022/05/06/azure-firewall-rules-for-office-365/).
+
 **2. Logic App:** The Logic App is scheduled to run every two weeks to trigger the Automation Account's Runbook with the `o365_rules.py` script, store the ARM template output in a variable, update the ARM template deployment with the updated O365 endpoints, and send an email to notify you upon completion.
+
 **3. Connections:** Many API connections to different Azure services are created for the Logic App to run as expected.
 
 
