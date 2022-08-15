@@ -1,10 +1,8 @@
 Author : [Lara Goldstein](https://github.com/laragoldstein13)
 
-Use this template to create Logic App that sends notification for new Azure Firewall Premium IDPS signature updates.
+Use this template to create Logic App and Azure Automation Account to create an O365 Rule Collection Group.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FTemplate%2520-%2520Logic%2520app%2520for%2520IDPS%2520signature%2520updates%2520notification%2FTemplate.json)
-
-To view more information, see [this blog](https://techcommunity.microsoft.com/t5/azure-network-security-blog/receive-email-notification-when-new-idps-rules-get-created-via/ba-p/3499588) posted on Microsoft Tech Community.
 
 ## Deployment
 
