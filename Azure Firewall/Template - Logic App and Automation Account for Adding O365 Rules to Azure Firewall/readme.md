@@ -10,12 +10,14 @@ To view more information, see [this blog](https://techcommunity.microsoft.com/t5
 
 During the deployment, you must specify some details, including the subscription, resource group, name, and region to host this automation. You must also configure the following: 
 
-1. Sender_Address: email address from which the automation will send notifications to when the run is finished and the new O365 rules have been added to the Firewall Policy (this address is also used to form the connection to Office 365 Outlook, meaning the user deploying the automation must have access to the email account). 
-2. Recipient_Address: email address to which the automation will send notifications to when the run is finished and the new O365 rules have been added to the Firewall Policy.
-3. Subscription_ID: name of the subscription that hosts the Firewall Policy that you would like to add the O365 rule collection group to  or create for the purpose of including this rule collection group.. 
-4. Resource_Group_Name: name of the resource group that hosts the Firewall Policy Firewall Policy that you would like to add the O365 rule collection group to  or create for the purpose of including this rule collection group..
-5. Policy_Name: name of the Firewall Policy that you would like to add the O365 rule collection group to or create for the purpose of including this rule collection group.
-6. Policy_Name: SKU of the Firewall that you would like to add the O365 rule collection group to or create for the purpose of including this rule collection group (accepted inputs are Standard or Premium).
+1.Playbook_Name: 
+2. Sender_Address: email address from which the automation will send notifications to when the run is finished and the new O365 rules have been added to the Firewall Policy (this address is also used to form the connection to Office 365 Outlook, meaning the user deploying the automation must have access to the email account). 
+3. Recipient_Address: email address to which the automation will send notifications to when the run is finished and the new O365 rules have been added to the Firewall Policy.
+4. Subscription_ID: name of the subscription that hosts the Firewall Policy that you would like to add the O365 rule collection group to  or create for the purpose of including this rule collection group.. 
+5. Resource_Group_Name: name of the resource group that hosts the Firewall Policy Firewall Policy that you would like to add the O365 rule collection group to  or create for the purpose of including this rule collection group..
+6. Policy_Name: name of the Firewall Policy that you would like to add the O365 rule collection group to or create for the purpose of including this rule collection group.
+7. Policy_Name: SKU of the Firewall that you would like to add the O365 rule collection group to or create for the purpose of including this rule collection group (accepted inputs are Standard or Premium).
+8. Deployment_Name: Name of the Azure Resource Manager deployment with the O365 rule collection group.
 
 **To authorize the API connection:** 
 
