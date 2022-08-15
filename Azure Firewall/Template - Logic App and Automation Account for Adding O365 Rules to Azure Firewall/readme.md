@@ -5,7 +5,7 @@ Use this template to create Logic App and Azure Automation Account to create a R
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FTemplate%2520-%2520Logic%2520app%2520for%2520IDPS%2520signature%2520updates%2520notification%2FTemplate.json)
 
 ## Overview of Resources Deployed
-1. Automation Account and Runbook: The Azure Automation Account and Runbook will run a script `o365_rules.py to download the JSON in `https://endpoints.office.com/endpoints/worldwide?clientrequestid=b10c5ed1-bad1-445f-b386-b919946339a7` and generate an ARM template for an Azure Firewall Policy that can be imported to Azure.
+1. Automation Account and Runbook: The Azure Automation Account and Runbook will run the Python script `o365_rules.py' to download the JSON in `https://endpoints.office.com/endpoints/worldwide?clientrequestid=b10c5ed1-bad1-445f-b386-b919946339a7` and generate an ARM template for an Azure Firewall Policy that can be imported to Azure.
 2. Logic App: The Logic App is scheduled to run every two weeks to trigger the Automation Account's Runbook, store the ARM template in a variable, update the ARM template deployment with the updated O365 endpoints, and send an email to notify you upon completion.
 3. Connections: Many API connections to different Azure services are created for the Logic App to run as expected.
 
