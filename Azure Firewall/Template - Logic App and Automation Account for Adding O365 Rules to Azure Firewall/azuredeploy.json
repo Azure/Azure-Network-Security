@@ -139,7 +139,11 @@
                 "runbookType": "Python3",
                 "logVerbose": false,
                 "logProgress": false,
-                "logActivityTrace": 0
+                "logActivityTrace": 0,
+			  "publishContentLink": {
+                    "uri": "https://raw.githubusercontent.com/laragoldstein13/Azure-Network-Security/master/Azure%20Firewall/Template%20-%20Logic%20App%20and%20Automation%20Account%20for%20Adding%20O365%20Rules%20to%20Azure%20Firewall/o365rules.py",
+                    "version": "v1"
+                }
             }
         },
         {
