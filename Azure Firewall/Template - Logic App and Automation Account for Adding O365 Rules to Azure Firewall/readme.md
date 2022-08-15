@@ -16,7 +16,6 @@ During the deployment, you must specify some details, including the subscription
 4. Resource_Group_Name: name of the resource group that hosts the Firewall Policy Firewall Policy that you would like to add the O365 rule collection group to  or create for the purpose of including this rule collection group..
 5. Policy_Name: name of the Firewall Policy that you would like to add the O365 rule collection group to or create for the purpose of including this rule collection group.
 6. Policy_Name: SKU of the Firewall that you would like to add the O365 rule collection group to or create for the purpose of including this rule collection group (accepted inputs are Standard or Premium).
-7. 
 
 **To authorize the API connection:** 
 
