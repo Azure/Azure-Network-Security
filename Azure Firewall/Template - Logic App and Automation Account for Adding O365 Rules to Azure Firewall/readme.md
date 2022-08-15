@@ -9,7 +9,7 @@ Use this template to create an Azure Logic App and an Azure Automation Account t
 
 **2. Logic App:** The Logic App is scheduled to run every two weeks to trigger the Automation Account's Runbook with the `o365_rules.py` script, store the ARM template output in a variable, update the ARM template deployment with the updated O365 endpoints, and send an email to notify you upon completion.
 
-**3. Connections:** Many API connections to different Azure services are created for the Logic App to run as expected.
+**3. Connections:** API connections to Azure Resource Manager, Azure Automation, and Office 365 services are created for the Logic App to run as expected. Learn more about Logic App connectors [here](https://docs.microsoft.com/en-us/azure/connectors/apis-list).
 
 ## Deployment
 
