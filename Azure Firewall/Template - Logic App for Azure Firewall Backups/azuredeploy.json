@@ -1,0 +1,462 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Playbook_Name": {
+            "defaultValue": "BackUp-AzFW-Test",
+            "type": "String",
+            "metadata": {
+                "displayName": "Enter name of the Logic App that will be used to run the Azure Firewall backup process",
+                "description": "Enter name of the Logic App that will be used to run the Azure Firewall backup proces"
+            }
+        },
+        "Storage_Account_Name": {
+            "defaultValue": "fwbackups",
+            "type": "String",
+            "metadata": {
+                "displayName": "Enter name of the Storage Account that will be used to store backups",
+                "description": "Enter name of the Storage Account that will be used to store backups"
+            }
+        },
+        "Firewall_Name": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "displayName": "Enter the name of the Azure Firewall to backup",
+                "description": "Enter the name of the Azure Firewall to backup"
+            }
+        },
+        "Firewall_Policy_Name": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "displayName": "Enter the name of the Azure Firewall Policy to backup",
+                "description": "Enter the name of the Azure Firewall Policy to backup"
+            }
+        },
+        "Subscription_Id": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "displayName": "Enter the Subscription ID that hosts the Azure Firewall and Azure Firewall Policy",
+                "description": "Enter the Subscription ID that hosts the Azure Firewall and Azure Firewall Policy"
+            }
+        },
+        "Resource_Group_Name": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "displayName": "Enter the name of the Resource Group that hosts the Azure Firewall and Azure Firewall Policy",
+                "description": "Enter the name of the Resource Group that hosts the Azure Firewall and Azure Firewall Policy"
+            }
+        },
+        "azureFirewalls___variables__firewallName____externalid": {
+            "defaultValue": "/subscriptions/@{variables('subscriptionID')}/resourceGroups/@{variables('resourceGroupName')}/providers/Microsoft.Network/azureFirewalls/@{variables('firewallName')}",
+            "type": "String",
+			"metadata": {
+                "displayName": "Do not modify",
+                "description": "Do not modify"
+            }
+        },
+        "firewallPolicies___variables__firewallPolicyName____externalid": {
+            "defaultValue": "/subscriptions/@{variables('subscriptionID')}/resourceGroups/@{variables('resourceGroupName')}/providers/Microsoft.Network/firewallPolicies/@{variables('firewallPolicyName')}",
+            "type": "String",
+			"metadata": {
+                "displayName": "Do not modify",
+                "description": "Do not modify"
+            }
+        }
+    },
+    "variables": {
+        "connections_azureblob_name": "azureblob"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-09-01",
+            "name": "[parameters('Storage_Account_Name')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_RAGRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "dnsEndpointType": "Standard",
+                "defaultToOAuthAuthentication": true,
+                "publicNetworkAccess": "Enabled",
+                "allowCrossTenantReplication": true,
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": true,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "requireInfrastructureEncryption": false,
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('connections_azureblob_name')]",
+            "location": "[resourceGroup().location]",
+            "kind": "V1",
+            "properties": {
+                "displayName": "azureblob",
+                "customParameterValues": {},
+                "api": {
+                    "name": "[variables('connections_azureblob_name')]",
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureblob')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('Playbook_Name')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', variables('connections_azureblob_name'))]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "Day",
+                                "interval": 3
+                            },
+                            "evaluatedRecurrence": {
+                                "frequency": "Day",
+                                "interval": 3
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "Compose_-_get_length_of_template": {
+                            "runAfter": {
+                                "Initialize_variable_-_firewallBackupContent": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Compose",
+                            "inputs": "@length(variables('firewallBackupContent'))"
+                        },
+                        "Compose_-_template_in_string_format": {
+                            "runAfter": {
+                                "Initialize_variable_-_store_integer_length_of_needed_parts_from_template": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Compose",
+                            "inputs": "@variables('firewallBackupContent')"
+                        },
+                        "Create_blob_(V2)_-_store_backup": {
+                            "runAfter": {
+                                "Set_variable_-_firewallBackupContent_with_correct_format": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": "@variables('firewallBackupContent')",
+                                "headers": {
+                                    "ReadFileMetadataFromServer": true
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureblob']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(variables('storageAccountName')))}/files",
+                                "queries": {
+                                    "folderPath": "/@{variables('blobPath')}",
+                                    "name": "backup-@{utcNow()}",
+                                    "queryParametersSingleEncoded": true
+                                }
+                            },
+                            "runtimeConfiguration": {
+                                "contentTransfer": {
+                                    "transferMode": "Chunked"
+                                }
+                            }
+                        },
+                        "HTTP_-_export_template": {
+                            "runAfter": {
+                                "Initialize_variable_-_blobPath": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Http",
+                            "inputs": {
+                                "authentication": {
+                                    "type": "ManagedServiceIdentity"
+                                },
+                                "body": {
+                                    "options": "SkipResourceNameParameterization",
+                                    "resources": [
+                                        "[parameters('azureFirewalls___variables__firewallName____externalid')]",
+                                        "[parameters('firewallPolicies___variables__firewallPolicyName____externalid')]"
+                                    ]
+                                },
+                                "method": "POST",
+                                "uri": "https://management.azure.com/subscriptions/@{variables('subscriptionID')}/resourcegroups/@{variables('resourceGroupName')}/exportTemplate?api-version=2021-04-01"
+                            }
+                        },
+                        "Initialize_variable_-_blobPath": {
+                            "runAfter": {
+                                "Initialize_variable_-_storageAccountName": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "blobPath",
+                                        "type": "string",
+                                        "value": "backups"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_variable_-_firewallBackupContent": {
+                            "runAfter": {
+                                "HTTP_-_export_template": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "firewallBackupContent",
+                                        "type": "string",
+                                        "value": "@{body('HTTP_-_export_template')}"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_variable_-_firewallName": {
+                            "runAfter": {
+                                "Initialize_variable_-_resourceGroupName": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "firewallName",
+                                        "type": "string",
+                                        "value": "[parameters('Firewall_Name')]"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_variable_-_firewallPolicyName": {
+                            "runAfter": {
+                                "Initialize_variable_-_firewallName": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "firewallPolicyName",
+                                        "type": "string",
+                                        "value": "[parameters('Firewall_Policy_Name')]"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_variable_-_resourceGroupName": {
+                            "runAfter": {
+                                "Initialize_variable_-_subscriptionId": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "resourceGroupName",
+                                        "type": "string",
+                                        "value": "[parameters('Resource_Group_Name')]"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_variable_-_storageAccountName": {
+                            "runAfter": {
+                                "Initialize_variable_-_firewallPolicyName": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "storageAccountName",
+                                        "type": "string",
+                                        "value": "[parameters('Storage_Account_Name')]"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_variable_-_store_integer_length_of_needed_parts_from_template": {
+                            "runAfter": {
+                                "Compose_-_get_length_of_template": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "length",
+                                        "type": "integer",
+                                        "value": "@sub(outputs('Compose_-_get_length_of_template'),13)"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_variable_-_subscriptionId": {
+                            "runAfter": {},
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "subscriptionID",
+                                        "type": "string",
+                                        "value": "[parameters('Subscription_Id')]"
+                                    }
+                                ]
+                            }
+                        },
+                        "Set_variable_-_firewallBackupContent_with_correct_format": {
+                            "runAfter": {
+                                "Compose_-_template_in_string_format": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                                "name": "firewallBackupContent",
+                                "value": "@{substring(outputs('Compose_-_template_in_string_format'),12,variables('length'))}"
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "azureblob": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('connections_azureblob_name'))]",
+                                "connectionName": "azureblob",
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureblob')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(parameters('Storage_Account_Name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage_Account_Name'))]"
+            ],
+            "sku": {
+                "name": "Standard_RAGRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "changeFeed": {
+                    "enabled": false
+                },
+                "restorePolicy": {
+                    "enabled": false
+                },
+                "containerDeleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                },
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "allowPermanentDelete": false,
+                    "enabled": true,
+                    "days": 7
+                },
+                "isVersioningEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/queueServices",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(parameters('Storage_Account_Name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage_Account_Name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(parameters('Storage_Account_Name'), '/default/backups')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('Storage_Account_Name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage_Account_Name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        }
+    ]
+}
