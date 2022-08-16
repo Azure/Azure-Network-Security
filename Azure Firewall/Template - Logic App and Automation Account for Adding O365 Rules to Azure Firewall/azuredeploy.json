@@ -4,35 +4,67 @@
     "parameters": {
         "Playbook_Name": {
             "defaultValue": "O365-RCG-AzFW",
-            "type": "String"
+            "type": "String",
+			"metadata": {
+                "displayName": "Name of Logic App used to create backup",
+                "description": "Name of Logic App used to create backup"
+             }
         },
         "Automation_Account_Name": {
             "defaultValue": "O365FWRules",
-            "type": "String"
+            "type": "String",
+			"metadata": {
+                "displayName": "Name of Automation Account used to run python script",
+                "description": "Name of Automation Account used to run python script"
+             }
         },
         "Username": {
             "defaultValue": "<username>@<domain>",
-            "type": "String"
+            "type": "String",
+			"metadata": {
+                "displayName": "Enter your username to create Office 365, Azure Resource Manager, and Azure Automation connections",
+                "description": "Enter your username to create Office 365, Azure Resource Manager, and Azure Automation connections"
+             }
         },
         "Recipient_Address": {
             "defaultValue": "<username>@<domain>",
-            "type": "String"
+            "type": "String",
+			"metadata": {
+                "displayName": "Enter email address to receive notification upon successful completion of Logic App",
+                "description": "Enter email address to receive notification upon successful completion of Logic App"
+             }
         },
         "Subscription_ID": {
             "defaultValue": "",
-            "type": "String"
+            "type": "String",
+			"metadata": {
+                "displayName": "Enter the Subscription Id hosting the Azure Firewall Policy",
+                "description": "Enter the Subscription Id hosting the Azure Firewall Policy"
+               }
         },
         "Resource_Group_Name": {
             "defaultValue": "",
-            "type": "String"
-        },
+            "type": "String",
+			"metadata": {
+                "displayName": "Enter the name of the Resource Group hosting the Azure Firewall Policy",
+                "description": "Enter the name of the Resource Group hosting the Azure Firewall Policy"
+               }
+		},
         "Policy_Name": {
             "defaultValue": "",
-            "type": "String"
+            "type": "String",
+			"metadata": {
+                "displayName": "Enter the name of the Azure Firewall Policy to create or update with the O365 Allow Rules",
+                "description": "Enter the name of the Azure Firewall Policy to create or update with the O365 Allow Rules"
+               }
         },
         "Policy_SKU": {
             "defaultValue": "Premium",
-            "type": "String"
+            "type": "String",
+			"metadata": {
+                "displayName": "Enter the SKU of the Azure Firewall Policy to create or update with the O365 Allow Rules. Allowed values are Premium or Standard.",
+                "description": "Enter the SKU of the Azure Firewall Policy to create or update with the O365 Allow Rules. Allowed values are Premium or Standard."
+               }
         },
         "deployments___encodeURIComponent__o365fwRules____externalid": {
             "defaultValue": "/subscriptions/@{encodeURIComponent(variables('subscriptionId'))}/resourceGroups/@{encodeURIComponent(variables('resourceGroupName'))}/providers/Microsoft.Resources/deployments/@{encodeURIComponent('o365fwRules')}",
