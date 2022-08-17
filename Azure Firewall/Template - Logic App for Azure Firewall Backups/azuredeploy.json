@@ -7,7 +7,7 @@
             "type": "String",
             "metadata": {
                 "displayName": "Enter name of the Logic App that will be used to run the Azure Firewall backup process",
-                "description": "Enter name of the Logic App that will be used to run the Azure Firewall backup proces"
+                "description": "Enter name of the Logic App that will be used to run the Azure Firewall backup process"
             }
         },
         "Storage_Account_Name": {
