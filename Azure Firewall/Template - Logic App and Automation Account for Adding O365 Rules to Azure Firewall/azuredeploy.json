@@ -38,8 +38,8 @@
             "defaultValue": "",
             "type": "String",
 			"metadata": {
-                "displayName": "Enter the Subscription Id hosting the Azure Firewall Policy",
-                "description": "Enter the Subscription Id hosting the Azure Firewall Policy"
+                "displayName": "Enter the Subscription ID hosting the Azure Firewall Policy",
+                "description": "Enter the Subscription ID hosting the Azure Firewall Policy"
                }
         },
         "Resource_Group_Name": {
