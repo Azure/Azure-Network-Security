@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "PlaybookName": {
@@ -15,10 +15,31 @@
             "metadata": {
                 "description": "Azure AD account to be used to create Logic App connections."
             }
+        },
+        "roleNameGuid": {
+            "type": "string",
+            "defaultValue": "[newGuid()]",
+            "metadata": {
+                "description": "A new GUID used to identify the role assignment"
+            }
+        },
+        "appgatewayName":{
+            "type":"string",
+            "defaultValue":"SOC-NS-AG-WAFv2",
+            "metadata": {
+                "description": "Name of the application gateway that has the WAF policy deployed with it"
+            }
+        },
+        "frontdoorName":{
+            "type":"string",
+            "metadata": {
+                "description": "Name of the frontdoor instance that has the WAF policy deployed with it"
+            }
         }
     },
     "variables": {
-        "AzureSentinelConnectionName": "[concat('azuresentinel-', parameters('PlaybookName'))]"
+        "AzureSentinelConnectionName": "[concat('azuresentinel-', parameters('PlaybookName'))]",
+        "NetworkContributorRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4d97b98b-1d4f-4787-a291-c67834d212e7')]"
     },
     "resources": [
         {
@@ -34,6 +55,32 @@
                     "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azuresentinel')]"
                 }
             }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "dependsOn": [
+                "[resourceId('Microsoft.Logic/workflows', parameters('PlaybookName'))]"
+            ],
+            "apiVersion": "2018-09-01-preview",
+            "name": "[parameters('roleNameGuid')]",            
+            "properties": {
+                "roleDefinitionId": "[variables('NetworkContributorRole')]",
+                "principalId": "[reference(resourceId('Microsoft.Logic/workflows', parameters('PlaybookName')),'2019-05-01', 'full').identity.principalId]"
+            },
+            "scope": "[concat('Microsoft.Network/applicationgateways', '/', parameters('appgatewayName'))]"
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "dependsOn": [
+                "[resourceId('Microsoft.Logic/workflows', parameters('PlaybookName'))]"
+            ],
+            "apiVersion": "2018-09-01-preview",
+            "name": "[parameters('roleNameGuid')]",            
+            "properties": {
+                "roleDefinitionId": "[variables('NetworkContributorRole')]",
+                "principalId": "[reference(resourceId('Microsoft.Logic/workflows', parameters('PlaybookName')),'2019-05-01', 'full').identity.principalId]"
+            },
+            "scope": "[concat('Microsoft.Network/frontDoors', '/', parameters('frontdoorName'))]"
         },
         {
             "type": "Microsoft.Logic/workflows",
