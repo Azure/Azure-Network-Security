@@ -3,8 +3,28 @@
 This ARM deployment includes everything needed to test Azure Firewall in a Forced Tunnel configuration. The environment will also allow testing scenarios where Split Tunneling may need to be applied for internet dependent connections.
 
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdavid-frazee%2FLinkedTemplates%2Fmain%2FAzureFirewall%2FForceTunnel%2FazfwForceTunnelTemplate.json)  
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FLab%2520Templates%2FLab%2520Template%2520-%2520Azure%2520Firewall%2520Forced%2520Tunnel%2520Lab%2FTemplates%2FazfwForceTunnelTemplate.json)  
 
+
+## What is included with the Azure Firewall Forced Tunnel Deployment Template  
+
+<p align="center">
+<img src="https://github.com/Azure/Azure-Network-Security/blob/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Media/AzFwForceTunnel.png">
+</p>
+
+The resources seen above will be created in your environment, separated within 2 Resource Groups. These resources include but are not limited to: 2 Azure Firewalls (Standard) with Firewall Policies, 2 Virtual Network Gateways (VpnGw1) with Connections, 2 Virtual Machines (Standard_D2s_v3), log analytics workspace, etc. Time of deployment is estimated to be 39 minutes.
+
+| Resource |  Purpose |
+|----------|---------|
+| Resource Group 1 |  Resource Group named rg-fw-azure to hold Azure environment resources |
+| Resource Group 2 |  Resource Group named rg-fw-onprem to hold on-premises environment resources|
+| Role Assignment |  Contributor role assignment for User Assigned Managed Identity with scope set to Subscription |
+| Linked Template 1 |  azureLinkedTemplate.json which will deploy the bulk of the Azure environment resources |
+| Linked Template 2 |  onPremLinkedTemplate.json which will deploy the on-premises environment resources |
+| Linked Template 3 |  azfwConnectionLinkedTemplate.json will create the connection objects between the Virtual Network Gateways and configure the Gateway Default Site |
+| Linked Template 4 |  diagnosticsLinkedTemplate.json will create a diagnostic settings for the on-premises firewall |
+
+> This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace  
 
 
 ## PowerShell Deployment:
@@ -24,7 +44,7 @@ Please use this location as a reference on how this powershell commandlet works:
 - SharedKey : "$3cuR3MyvpN!78"  
 
 **Example Powershell command with some parameters configured:**  
-```New-AzSubscriptionDeployment -Name demoSubDeployment -Location centralus -TemplateUri "https://raw.githubusercontent.com/david-frazee/LinkedTemplates/main/AzureFirewall/ForceTunnel/azfwForceTunnelTemplate.json" -AdminPassword "@$tr0NGp@sswOrb22" -SharedKey "$3cuR3MyvpN!78" ```  
+```New-AzSubscriptionDeployment -Name demoSubDeployment -Location centralus -TemplateUri "https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Templates/azfwForceTunnelTemplate.json" -AdminPassword "@$tr0NGp@sswOrb22" -SharedKey "$3cuR3MyvpN!78" ```  
 
 
 ## Step-by-step documentation:
@@ -79,7 +99,7 @@ For this environment, we'll need to make 2 separate Resource Groups with the fol
 ***Note: Creating Azure Firewall with Availability Zones that use newly created Public IPs is currently not supported. Zonal Public IPs created beforehand may be used without issue or you can use Azure PowerShell, CLI, and ARM Templates for the deployment. For more information about these known issues, see Known Issues.***
 
 <p align="center">
-<img src="https://github.com/david-frazee/LinkedTemplates/blob/main/AzureFirewall/Media/AzFWv2.gif">
+<img src="https://github.com/Azure/Azure-Network-Security/blob/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Media/AzFWv2.gif">
 </p>
 
 #### Configure the Azure Firewall Policy
@@ -117,7 +137,7 @@ For the on-premises virtual network gateway, follow the steps from the previous 
 3.	For Public IP address, select Create new and use pip-vgw-vnet-onprem for the Public IP address name.
 
 <p align="center">
-<img src="https://github.com/david-frazee/LinkedTemplates/blob/main/AzureFirewall/Media/VNGv1.gif">
+<img src="https://github.com/Azure/Azure-Network-Security/blob/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Media/VNGv1.gif">
 </p>
 
 #### Create Connection between the 2 Virtual Network Gateways
@@ -146,7 +166,7 @@ For the on-premises virtual network gateway, follow the steps from the previous 
 > **Set-AzVirtualNetworkGatewayDefaultSite -GatewayDefaultSite $LocalGateway -VirtualNetworkGateway $VirtualGateway**
 
 <p align="center">
-<img src="https://github.com/david-frazee/LinkedTemplates/blob/main/AzureFirewall/Media/DefaultSite.png">
+<img src="https://github.com/Azure/Azure-Network-Security/blob/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Media/DefaultSite.png">
 </p>
 
 We should then see that the gateway vgw-vnet-hub-secured has learned a 0.0.0.0/0 route. It will not show that the Next hop is the BGP peer IP of the vgw-vnet-onprem, but if we defined the correct Local network gateway in the above command, the traffic will traverse the tunnel.
@@ -188,7 +208,7 @@ For the on-premises firewall, we’ll use the same steps from configuring the Az
 ***Note: When Forced Tunneling is enabled, DNAT rules are no longer supported due to asymmetric routing. This can be resolved with a User-Defined Route on the AzureFirewallSubnet Route Table configuration. This will be covered in the following sections.***
 
 <p align="center">
-<img src="https://github.com/david-frazee/LinkedTemplates/blob/main/AzureFirewall/Media/PeeringV1.gif">
+<img src="https://github.com/Azure/Azure-Network-Security/blob/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Media/PeeringV1.gif">
 </p>
 
 #### Create Route Tables for environment  
@@ -246,26 +266,6 @@ We’ll be creating 4 Route Tables in this step. 1 for the Spoke Network to forc
 7.	Repeat steps 4-6 for azfw-vnet-onprem, using diagnosticSettings-onprem for the Name.
 
 Now that we’ve created the necessary resources and configured the environment, we can now deploy 2 Virtual Machines to their respective virtual networks/subnets. Deploy 1 Windows virtual machine in the vnet-spoke-workers/snet-trust-workers environment, and 1 Windows virtual machine in the vnet-onprem/snet-onprem-workers environment. You’ll be able to use the DNAT rule created in the pol-azfw-vnet-hub policy to remote into the VM in the snet-trust-workers environment to test the routing.
-
-
-
-## What is included with the Azure Firewall Forced Tunnel Deployment Template  
-
-<p align="center">
-<img src="https://github.com/david-frazee/LinkedTemplates/blob/main/AzureFirewall/Media/AzFwForceTunnel.png">
-</p>
-
-| Resource |  Purpose |
-|----------|---------|
-| Resource Group 1 |  Resource Group named rg-fw-azure to hold Azure environment resources |
-| Resource Group 2 |  Resource Group named rg-fw-onprem to hold on-premises environment resources|
-| Role Assignment |  Contributor role assignment for User Assigned Managed Identity with scope set to Subscription |
-| Linked Template 1 |  azureLinkedTemplate.json which will deploy the bulk of the Azure environment resources |
-| Linked Template 2 |  onPremLinkedTemplate.json which will deploy the on-premises environment resources |
-| Linked Template 3 |  azfwConnectionLinkedTemplate.json will create the connection objects between the Virtual Network Gateways and configure the Gateway Default Site |
-| Linked Template 4 |  diagnosticsLinkedTemplate.json will create a diagnostic settings for the on-premises firewall |
-
-> This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace  
 
 
 ## Contributing

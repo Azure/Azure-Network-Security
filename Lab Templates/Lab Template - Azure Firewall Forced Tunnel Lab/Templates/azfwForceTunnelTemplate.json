@@ -85,7 +85,7 @@
                     }
                 },
                 "templateLink": {
-                    "uri":"https://raw.githubusercontent.com/david-frazee/LinkedTemplates/main/AzureFirewall/ForceTunnel/azureLinkedTemplate.json",
+                    "uri":"https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Templates/Linked%20Templates/azureLinkedTemplate.json",
                     "contentVersion": "1.0.0.0"
                 }
             }
@@ -109,7 +109,7 @@
                     }
                 },
                 "templateLink": {
-                    "uri":"https://raw.githubusercontent.com/david-frazee/LinkedTemplates/main/AzureFirewall/ForceTunnel/onPremLinkedTemplate.json",
+                    "uri":"https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Templates/Linked%20Templates/onPremLinkedTemplate.json",
                     "contentVersion":"1.0.0.0"
                 }
             }
@@ -147,7 +147,7 @@
                     }
                 },
                 "templateLink": {
-                "uri":"https://raw.githubusercontent.com/david-frazee/LinkedTemplates/main/AzureFirewall/ForceTunnel/azfwConnectionsLinkedTemplate.json",
+                "uri":"https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Templates/Linked%20Templates/azfwConnectionsLinkedTemplate.json",
                 "contentVersion":"1.0.0.0"
                 }
             }
@@ -173,7 +173,7 @@
                     }
                 },
                 "templateLink": {
-                    "uri":"https://raw.githubusercontent.com/david-frazee/LinkedTemplates/main/AzureFirewall/ForceTunnel/diagnosticLinkedTemplate.json",
+                    "uri":"https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Templates/Linked%20Templates/diagnosticLinkedTemplate.json",
                     "contentVersion":"1.0.0.0"
                 }
             }
