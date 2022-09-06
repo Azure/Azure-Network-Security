@@ -18,6 +18,7 @@ function connectdb($database = "inject_demodb")
     $username = isset($_ENV['SQL_INJECTION_DB_USERNAME']) ? $_ENV['SQL_INJECTION_DB_USERNAME'] : 'sql_injection';
     $password = isset($_ENV['SQL_INJECTION_DB_PASSWORD']) ? $_ENV['SQL_INJECTION_DB_PASSWORD'] : 'foobar';
   }
+  // update the cloud sql instace and region  
   $db = mysqli_connect(null, $username, $password, $database, null,"/cloudsql/sampleappgcp:us-west2:coffeeshop");
   if (!$db) {
     echo ("Connection failed: " . mysqli_connect_error());
