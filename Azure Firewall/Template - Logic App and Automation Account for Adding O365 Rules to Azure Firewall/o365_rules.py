@@ -141,7 +141,7 @@ for endpoint in o365_data:
                 print('DEBUG: endpoint:', str(endpoint))
 
     # App Rule
-    elif ('tcpPorts' in endpoint) and ((endpoint['tcpPorts'] == "80,443") or (endpoint['tcpPorts'] == "443") or (endpoint['tcpPorts'] == "80")):
+    elif ('tcpPorts' in endpoint) and ((endpoint['tcpPorts'] == "80,443") or (endpoint['tcpPorts'] == "443,80") or (endpoint['tcpPorts'] == "443") or (endpoint['tcpPorts'] == "80")):
         cnt_apprules += 1
         if 'urls' in endpoint:
             new_rule = {
