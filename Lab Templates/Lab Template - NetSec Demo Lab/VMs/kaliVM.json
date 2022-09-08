@@ -57,7 +57,7 @@
       "plan": {
         "name": "kali",
         "publisher": "kali-linux",
-        "product": "kali-linux"
+        "product": "kali"
       },
       "properties": {
         "hardwareProfile": {
@@ -73,9 +73,9 @@
           },
           "imageReference": {
             "publisher": "kali-linux",
-            "offer": "kali-linux",
+            "offer": "kali",
             "sku": "kali",
-            "version": "2019.2.0"
+            "version": "latest"
           }
         },
         "networkProfile": {
