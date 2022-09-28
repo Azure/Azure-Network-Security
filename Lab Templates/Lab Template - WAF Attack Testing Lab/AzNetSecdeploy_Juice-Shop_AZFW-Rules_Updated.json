@@ -110,7 +110,7 @@
     "NIC-Name2Ipaddress": "10.0.27.68",
     "NIC-Name3Ipaddress": "10.0.28.4",
     "DDoSPlanName": "SOCNSDDOSPLAN",
-    "VM-Name1": "VM-Win10",
+    "VM-Name1": "VM-Win11",
     "VM-Name2": "VM-Kali",
     "VM-Name3": "VM-Win2019",
     "workspaceid": "[concat('/subscriptions/',parameters('DiagnosticsWorkspaceSubscription'),'/resourcegroups/', parameters('DiagnosticsWorkspaceResourceGroup'), '/providers/Microsoft.OperationalInsights/workspaces/',parameters('DiagnosticsWorkspaceName'))]"
@@ -1674,7 +1674,7 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B2s"
+          "vmSize": "Standard_D2s_v3"
         },
         "storageProfile": {
           "osDisk": {
@@ -1686,8 +1686,8 @@
           },
           "imageReference": {
             "publisher": "MicrosoftWindowsDesktop",
-            "offer": "Windows-10",
-            "sku": "20h2-pro",
+            "offer": "Windows-11",
+            "sku": "win11-21h2-pro",
             "version": "latest"
           }
         },
@@ -1720,11 +1720,11 @@
       "plan": {
         "name": "kali",
         "publisher": "kali-linux",
-        "product": "kali-linux"
+        "product": "kali"
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B2s"
+          "vmSize": "Standard_D2s_v3"
         },
         "storageProfile": {
           "osDisk": {
@@ -1736,9 +1736,9 @@
           },
           "imageReference": {
             "publisher": "kali-linux",
-            "offer": "kali-linux",
+            "offer": "kali",
             "sku": "kali",
-            "version": "2019.2.0"
+            "version": "latest"
           }
         },
         "networkProfile": {
@@ -1765,7 +1765,7 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B2s"
+          "vmSize": "Standard_D2s_v3"
         },
         "storageProfile": {
           "osDisk": {

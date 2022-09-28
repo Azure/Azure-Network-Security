@@ -61,7 +61,7 @@
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B4ms"
+          "vmSize": "Standard_D2s_v3"
         },
         "storageProfile": {
           "osDisk": {
