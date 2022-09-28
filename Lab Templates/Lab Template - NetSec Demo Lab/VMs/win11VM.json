@@ -5,7 +5,7 @@
     "resourceNames": {
       "type": "object"
     },
-    "win10VmIpAddress": {
+    "win11VmIpAddress": {
       "type": "string"
     },
     "defaultUserName": {
@@ -29,14 +29,14 @@
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2019-07-01",
-      "name": "[concat(parameters('resourceNames').win10Vm, '-nic')]",
+      "name": "[concat(parameters('resourceNames').win11Vm, '-nic')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "ipConfigurations": [
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAddress": "[parameters('win10VmIpAddress')]",
+              "privateIPAddress": "[parameters('win11VmIpAddress')]",
               "subnet": {
                 "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('resourceNames').vnet2), '/subnets/',parameters('resourceNames').vnet2subnet1)]"
               },
@@ -49,18 +49,18 @@
     {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2019-07-01",
-      "name": "[parameters('resourceNames').win10Vm]",
+      "name": "[parameters('resourceNames').win11Vm]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', parameters('resourceNames').win10Vm, '-nic')]"
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('resourceNames').win11Vm, '-nic')]"
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B4ms"
+          "vmSize": "Standard_D2s_v3"
         },
         "storageProfile": {
           "osDisk": {
-            "name": "[concat(parameters('resourceNames').win10Vm,'-datadisk1')]",
+            "name": "[concat(parameters('resourceNames').win11Vm,'-datadisk1')]",
             "createOption": "fromImage",
             "managedDisk": {
               "storageAccountType": "Standard_LRS"
@@ -68,20 +68,20 @@
           },
           "imageReference": {
             "publisher": "MicrosoftWindowsDesktop",
-            "offer": "Windows-10",
-            "sku": "20h2-pro",
+            "offer": "Windows-11",
+            "sku": "win11-21h2-pro",
             "version": "latest"
           }
         },
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('resourceNames').win10Vm, '-nic'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('resourceNames').win11Vm, '-nic'))]"
             }
           ]
         },
         "osProfile": {
-          "computerName": "[parameters('resourceNames').win10Vm]",
+          "computerName": "[parameters('resourceNames').win11Vm]",
           "adminUsername": "[parameters('defaultUserName')]",
           "adminPassword": "[parameters('defaultPassword')]",
           "windowsConfiguration": {
