@@ -420,7 +420,7 @@
       "condition": "[parameters('deployVirtualMachines')]",
       "dependsOn": [
         "VMs_win2019",
-        "VMs_win10",
+        "VMs_win11",
         "Networking_keyVault"
       ],
       "properties": {
