@@ -8,7 +8,7 @@
     "resourceNames": {
       "type": "object"
     },
-    "win10VmIpAddress": {
+    "win11VmIpAddress": {
       "type": "string"
     },
     "kaliVmIpAddress": {
@@ -186,12 +186,12 @@
                     "sourceAddresses": [
                       "[parameters('kaliVmIpAddress')]",
                       "[parameters('win2019VmIpAddress')]",
-                      "[parameters('win10VmIpAddress')]"
+                      "[parameters('win11VmIpAddress')]"
                     ],
                     "destinationAddresses": [
                       "[parameters('kaliVmIpAddress')]",
                       "[parameters('win2019VmIpAddress')]",
-                      "[parameters('win10VmIpAddress')]"
+                      "[parameters('win11VmIpAddress')]"
                     ]
                   },
                   {
@@ -206,12 +206,12 @@
                     "sourceAddresses": [
                       "[parameters('kaliVmIpAddress')]",
                       "[parameters('win2019VmIpAddress')]",
-                      "[parameters('win10VmIpAddress')]"
+                      "[parameters('win11VmIpAddress')]"
                     ],
                     "destinationAddresses": [
                       "[parameters('kaliVmIpAddress')]",
                       "[parameters('win2019VmIpAddress')]",
-                      "[parameters('win10VmIpAddress')]"
+                      "[parameters('win11VmIpAddress')]"
                     ]
                   },
                   {
@@ -224,7 +224,7 @@
                       "22"
                     ],
                     "sourceAddresses": [
-                      "[parameters('win10VmIpAddress')]",
+                      "[parameters('win11VmIpAddress')]",
                       "[parameters('win2019VmIpAddress')]"
                     ],
                     "destinationAddresses": [
