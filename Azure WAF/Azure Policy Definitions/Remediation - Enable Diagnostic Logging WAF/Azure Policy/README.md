@@ -1,8 +1,8 @@
 # Enable Diagnostic Logs - Azure Policy
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FPolicy%2520-%2520WAF%2520Enable%2520Diagnostic%2520Logging%2FAzure%2520Policy%2FWAFLogs-AppGateway.json) (Azure WAF on Application Gateway)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Azure%20WAF/Azure%20Policy%20Definitions/Remediation%20-%20Enable%20Diagnostic%20Logging%20WAF/Azure%20Policy/WAFLogs-AppGateway.json) (Azure WAF on Application Gateway)
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FPolicy%2520-%2520WAF%2520Enable%2520Diagnostic%2520Logging%2FAzure%2520Policy%2FWAFLogs-FrontDoor.json) (Azure WAF on Front Door)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Azure%20WAF/Azure%20Policy%20Definitions/Remediation%20-%20Enable%20Diagnostic%20Logging%20WAF/Azure%20Policy/WAFLogs-FrontDoor.json) (Azure WAF on Front Door)
 
 This template will create an Azure Policy definition to enable diagnostic logging. The result of the policy is deployIfNotExists, and a remediation task will create a diagnostic setting for Log Analytics. Follow the procedure below to assign the policy:
 
