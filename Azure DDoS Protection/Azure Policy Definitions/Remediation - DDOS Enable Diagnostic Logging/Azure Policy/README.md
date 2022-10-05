@@ -1,6 +1,6 @@
 # Enable Diagnostic Logs - Azure Policy
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%20DDoS%20Protection%2FPolicy%20-%20DDOS%20Enable%20Diagnostic%20Logging%2FAzure%20Policy%2FDDoSLogs.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20DDoS%20Protection/Azure%20Policy%20Definitions/Remediation%20-%20DDOS%20Enable%20Diagnostic%20Logging/Azure%20Policy/DDoSLogs.json)
 
 This template will create an Azure Policy definition to enable diagnostic logging. The result of the policy is deployIfNotExists, and a remediation task will create a diagnostic setting for Log Analytics. Follow the procedure below to assign the policy:
 
