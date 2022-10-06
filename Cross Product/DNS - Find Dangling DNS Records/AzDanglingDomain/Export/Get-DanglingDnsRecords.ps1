@@ -754,7 +754,7 @@ Function Get-DanglingDnsRecords {
 
         if ($null -eq $inputCNameList) {
             Write-Warning "No Records found in input file, please check the file.."
-            exit
+            return
         }
         else {
             Add-ResourceProvider $inputCNameList
