@@ -57,11 +57,11 @@
       "plan": {
         "name": "kali",
         "publisher": "kali-linux",
-        "product": "kali-linux"
+        "product": "kali"
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B4ms"
+          "vmSize": "Standard_D2s_v3"
         },
         "storageProfile": {
           "osDisk": {
@@ -73,9 +73,9 @@
           },
           "imageReference": {
             "publisher": "kali-linux",
-            "offer": "kali-linux",
+            "offer": "kali",
             "sku": "kali",
-            "version": "2019.2.0"
+            "version": "latest"
           }
         },
         "networkProfile": {

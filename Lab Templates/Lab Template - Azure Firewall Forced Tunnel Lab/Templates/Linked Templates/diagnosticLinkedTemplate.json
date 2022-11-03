@@ -1,0 +1,130 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "onPremFirewall": {
+            "type": "string"
+        },
+        "workspace": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Insights/diagnosticSettings",
+            "apiVersion": "2021-05-01-preview",
+            "scope": "[parameters('onPremFirewall')]",
+            "name": "diagnosticSettings-onprem",
+            "properties": {
+                "workspaceId": "[parameters('workspace')]",
+                "logs": [
+                    {
+                        "category": "AzureFirewallNetworkRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AzureFirewallApplicationRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AzureFirewallDnsProxy",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWNetworkRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWApplicationRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWNatRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWThreatIntel",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWIdpsSignature",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWDnsQuery",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWFqdnResolveFailure",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWApplicationRuleAggregation",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWNetworkRuleAggregation",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWNatRuleAggregation",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

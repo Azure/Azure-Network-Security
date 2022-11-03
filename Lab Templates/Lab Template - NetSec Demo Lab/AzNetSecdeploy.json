@@ -56,7 +56,7 @@
         "description": "Predefined resource names. Should be set to default. The resourse names are generated using the prefix and the suffix. The value is passed when the template is integrated into a complex pipeline."
       }
     },
-    "win10VmIpAddress": {
+    "win11VmIpAddress": {
       "type": "string",
       "defaultValue": "10.0.27.4"
     },
@@ -131,7 +131,7 @@
 
       "kaliVm": "[concat(parameters('resourceNamePrefix'), '-Kali', variables('resourceNameSuffix'))]",
       "win2019Vm": "[concat(parameters('resourceNamePrefix'), '-W2019', variables('resourceNameSuffix'))]",
-      "win10Vm": "[concat(parameters('resourceNamePrefix'), '-W10', variables('resourceNameSuffix'))]",
+      "win11Vm": "[concat(parameters('resourceNamePrefix'), '-W11', variables('resourceNameSuffix'))]",
 
       "fdProfileName": "[concat(parameters('resourceNamePrefix'), '-NS-FD', variables('resourceNameSuffix'))]",
       "fdEndpointName": "[concat(parameters('resourceNamePrefix'), '-NS-FD-EP', variables('resourceNameSuffix'))]",
@@ -225,8 +225,8 @@
           "location": {
             "value": "[parameters('location')]"
           },
-          "win10VmIpAddress": {
-            "value": "[parameters('win10VmIpAddress')]"
+          "win11VmIpAddress": {
+            "value": "[parameters('win11VmIpAddress')]"
           },
           "kaliVmIpAddress": {
             "value": "[parameters('kaliVmIpAddress')]"
@@ -356,7 +356,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
-      "name": "VMs_win10",
+      "name": "VMs_win11",
       "condition": "[parameters('deployVirtualMachines')]",
       "dependsOn": [
         "Networking_vNets"
@@ -364,15 +364,15 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('artifactsLocation'), '/VMs/win10VM.json' , parameters('_sasToken'))]",
+          "uri": "[concat(parameters('artifactsLocation'), '/VMs/win11VM.json' , parameters('_sasToken'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "resourceNames": {
             "value": "[variables('resourceNames')]"
           },
-          "win10VmIpAddress": {
-            "value": "[parameters('win10VmIpAddress')]"
+          "win11VmIpAddress": {
+            "value": "[parameters('win11VmIpAddress')]"
           },
           "defaultUserName": {
             "value": "[parameters('defaultUserName')]"
@@ -420,7 +420,7 @@
       "condition": "[parameters('deployVirtualMachines')]",
       "dependsOn": [
         "VMs_win2019",
-        "VMs_win10",
+        "VMs_win11",
         "Networking_keyVault"
       ],
       "properties": {
@@ -438,8 +438,8 @@
           },
           "vmNames": {
             "value": [
-              "[variables('resourceNames').win2019Vm]",
-              "[variables('resourceNames').win10Vm]"
+              "[variables('combinedresourceNames').win2019Vm]",
+              "[variables('combinedresourceNames').win11Vm]"
             ]
           }
         }
