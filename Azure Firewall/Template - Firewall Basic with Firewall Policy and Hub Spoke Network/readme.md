@@ -1,4 +1,5 @@
 *WARNING*
+
 Username and passowrd to log into the Windows VM are hard coded within the template at lines 231 and 232.
 Please, consider changing the password in the template or after the VM is deployed.
 
