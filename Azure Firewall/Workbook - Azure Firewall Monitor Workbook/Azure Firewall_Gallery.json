@@ -80,7 +80,7 @@
             "isRequired": true,
             "isGlobal": true,
             "value": {
-              "durationMs": 86400000
+              "durationMs": 1800000
             },
             "typeSettings": {
               "selectableValues": [
@@ -611,9 +611,6 @@
         "title": "Events, by time: Query Time({$queryTime})",
         "noDataMessage": "There are no firewall events being feed within the selected workspaces. If you believe the selection is correct, confirm logging has been enabled for the Azure Firewall and feeding into the selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 4,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -639,9 +636,6 @@
         "title": "Events, by firewall over time: Query Time({$queryTime})",
         "noDataMessage": "There are no firewall events being feed within the selected workspaces. If you believe the selection is correct, confirm logging has been enabled for the Azure Firewall and feeding into the selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 4,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportParameterName": "TopEvent",
         "exportDefaultValue": "{\"Resource\":\"*\",\"ResourceGroup\":\"*\"}",
@@ -690,9 +684,6 @@
         "title": "Events, by category: Query Time({$queryTime})",
         "noDataMessage": "There are no firewall events being feed within the selected workspaces. If you believe the selection is correct, confirm logging has been enabled for the Azure Firewall and feeding into the selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 4,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "Category",
         "exportParameterName": "SelectedCategory",
@@ -742,9 +733,6 @@
         "title": "Events categories, by time: Query Time({$queryTime})",
         "noDataMessage": "There are no firewall events being feed within the selected workspaces. If you believe the selection is correct, confirm logging has been enabled for the Azure Firewall and feeding into the selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 4,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -948,9 +936,6 @@
         "title": "Unique Source IP addresses, filterable by SelectedSourceIP: Query Time ({$queryTime})",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "SourceIP",
         "exportParameterName": "SelectedSourceIP",
@@ -998,14 +983,11 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s !has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s !has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". \" RuleCollection \". \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \"TLS extension was missing\"\r\n| where msg_s has \" Reason:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \". Action: \" Action \". Reason: \" Rule \".\"\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has  \"TLS extension was missing\" and msg_s !has \"No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| where msg_s has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| summarize Count = count(), last_log = datetime_diff(\"second\", now(), max(TimeGenerated)) by RuleCollection, Rule, WebCategory",
+        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s !has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s !has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". \" RuleCollection \". \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \"TLS extension was missing\"\r\n| where msg_s has \" Reason:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \". Action: \" Action \". Reason: \" Rule \".\"\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has  \"TLS extension was missing\" and msg_s !has \"No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| where msg_s has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where RuleCollection matches regex \".*\" \r\n| summarize Count = count(), last_log = datetime_diff(\"second\", now(), max(TimeGenerated)) by RuleCollection, Rule, WebCategory",
         "size": 1,
         "title": "Application Rule Usage : Query Time ({$queryTime})",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1075,9 +1057,6 @@
         "title": "Denied FQDN's over time",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1107,9 +1086,6 @@
         "title": "Denied FQDN's by count",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "showExportToExcel": true,
         "queryType": 0,
@@ -1167,9 +1143,6 @@
         "title": "Allowed FQDN's over time",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1196,9 +1169,6 @@
         "title": "Allowed FQDN's by count",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "showExportToExcel": true,
         "queryType": 0,
@@ -1245,9 +1215,6 @@
         "title": "Allowed Web Categories over time",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1276,9 +1243,6 @@
         "title": "Allowed Web Categories by count",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1325,9 +1289,6 @@
         "title": "Denied Web Categories over time",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1357,9 +1318,6 @@
         "title": "Denied Web Catgories by count",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "showExportToExcel": true,
         "queryType": 0,
@@ -1401,15 +1359,12 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project ResourceId,ResourceGroup,SubscriptionId, msg_s, Resource, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s !has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s !has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". \" RuleCollection \". \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \"TLS extension was missing\"\r\n| where msg_s has \" Reason:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \". Action: \" Action \". Reason: \" Rule \".\"\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has  \"TLS extension was missing\" and msg_s !has \"No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| where msg_s has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where '{SelectedSourceIP}' == SourceIP or '{SelectedSourceIP}' == \"*\"  \r\n| summarize by TimeGenerated, FQDN, Protocol, Action, SourceIP, SourcePort, DestinationPort , ResourceId , ResourceGroup , RuleCollection, Rule, WebCategory, SubscriptionId\r\n",
+        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project ResourceId,ResourceGroup,SubscriptionId, msg_s, Resource, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s !has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s !has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". \" RuleCollection \". \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \"TLS extension was missing\"\r\n| where msg_s has \" Reason:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \". Action: \" Action \". Reason: \" Rule \".\"\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has  \"TLS extension was missing\" and msg_s !has \"No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| where msg_s has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where '{SelectedSourceIP}' == SourceIP or '{SelectedSourceIP}' == \"*\"  \r\n| summarize by TimeGenerated, FQDN, Protocol, Action, SourceIP, SourcePort, DestinationPort , ResourceId , ResourceGroup , RuleCollection, Rule, WebCategory, SubscriptionId\r\n",
         "size": 0,
         "showAnalytics": true,
         "title": "All IP addresses events: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "noDataMessage": "There are no Application Rule logs within the selected workspaces. If you believe the selection is correct, confirm Application Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "showExportToExcel": true,
         "queryType": 0,
@@ -1445,14 +1400,11 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n)\r\n| summarize count() by Action",
+        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\" and  msg_s has \"Action\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \".. Policy: \" Policy \". Rule Collection Group: \" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| summarize count() by Action",
         "size": 3,
         "title": "Rule actions, filterable by RuleAction",
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "series",
         "exportParameterName": "RuleAction",
@@ -1476,14 +1428,11 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n)\r\n| summarize Count=count() by DestinationPort",
+        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| summarize Count=count() by DestinationPort",
         "size": 3,
         "title": "Target ports, filterable by TargetPort",
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "series",
         "exportParameterName": "DestinationPort",
@@ -1512,9 +1461,6 @@
         "title": "DNAT actions, filterable by NatDestination",
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "series",
         "exportParameterName": "NatDestination",
@@ -1541,9 +1487,6 @@
         "query": "//reference list posted here : https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/ipv4-lookup-plugin\r\nlet geoData = externaldata\r\n(network:string,geoname_id:string,continent_code:string,continent_name:string,\r\ncountry_iso_code:string,country_name:string,is_anonymous_proxy:string,is_satellite_provider:string)\r\n[@\"{GeoLocation}\"] with (ignoreFirstRecord=true, format=\"csv\");\r\nlet materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n)\r\n| project DestinationIP\r\n| evaluate ipv4_lookup (geoData, DestinationIP,  network, false)\r\n| summarize count() by continent_name\r\n",
         "size": 2,
         "title": "GeoLocation",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "showRefreshButton": true,
         "exportFieldName": "series",
@@ -1568,14 +1511,11 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n)\r\n| where '{DestinationPort}' == DestinationPort or '{DestinationPort}' == \"*\"\r\n| where \"{RuleAction}\" == Action or \"{RuleAction}\" == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"\r\n| summarize amount = count() by Action , SourceIP\r\n| sort by amount desc",
+        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\" and  msg_s has \"Action\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \".. Policy: \" Policy \". Rule Collection Group: \" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where '{DestinationPort}' == DestinationPort or '{DestinationPort}' == \"*\"\r\n| where \"{RuleAction}\" == Action or \"{RuleAction}\" == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"\r\n| summarize amount = count() by Action , SourceIP\r\n| sort by amount desc",
         "size": 0,
         "title": "Rule actions, by IP addresses",
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1636,14 +1576,11 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n)\r\n| where '{DestinationPort}' == DestinationPort or '{DestinationPort}' == \"*\"\r\n| where \"{RuleAction}\" == Action or \"{RuleAction}\" == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"   \r\n| summarize AMOUNT=count() by DestinationPort, SourceIP\r\n| sort by AMOUNT desc",
+        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\" and  msg_s has \"Action\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \".. Policy: \" Policy \". Rule Collection Group: \" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where '{DestinationPort}' == DestinationPort or '{DestinationPort}' == \"*\"\r\n| where \"{RuleAction}\" == Action or \"{RuleAction}\" == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"   \r\n| summarize AMOUNT=count() by DestinationPort, SourceIP\r\n| sort by AMOUNT desc",
         "size": 0,
         "title": "Target ports, by Source IP: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1701,9 +1638,6 @@
         "title": "DNAT'ed over time",
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1729,9 +1663,6 @@
         "title": "GeoLocation over time",
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1752,14 +1683,11 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n)\r\n| where '{DestinationPort}' == DestinationPort or '{DestinationPort}' == \"*\"\r\n| where \"{RuleAction}\" == Action or \"{RuleAction}\" == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"\r\n| summarize count() by Action, bin(TimeGenerated, {TimeRange:grain})\r\n",
+        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallNetworkRule\"\r\n| where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n| where OperationName <> \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project msg_s, Resource, TimeGenerated,ResourceId , ResourceGroup , SubscriptionId);\r\nunion\r\n(\r\n// Azure Firewall Networking - Standard Log\r\nmaterializedData\r\n| where msg_s !has \"Type=\" and msg_s !has \"DNAT'ed\" and msg_s !has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking with ICMP\r\nmaterializedData\r\n| where msg_s has \"Type=\"\r\n| parse msg_s with Protocol \" Type=\" ICMPType \" request from \" SourceIP \" to \" DestinationIP \". Action: \" Action\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule - Standard\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s !has \". Rule Collection:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Networking DNAT rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"DNAT'ed\" and msg_s has \". Rule Collection:\" and msg_s has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \" was \" Action \" to \" NatDestination \". Policy: \" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall not using policy)\r\nmaterializedData\r\n| where msg_s has \"Rule Collection:\" and msg_s !has \"Policy:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule Name: \" Rule\r\n),\r\n(\r\n// Azure Firewall Network rule (firewall using policy)\r\nmaterializedData\r\n| where msg_s has \"Policy:\" and  msg_s has \"Action\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestinationIP \":\" DestinationPort \". Action: \" Action \".. Policy: \" Policy \". Rule Collection Group: \" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where '{DestinationPort}' == DestinationPort or '{DestinationPort}' == \"*\"\r\n| where \"{RuleAction}\" == Action or \"{RuleAction}\" == \"*\"\r\n| where '{NatDestination}' == NatDestination or '{NatDestination}' == \"*\"\r\n| summarize count() by Action, bin(TimeGenerated, {TimeRange:grain})\r\n",
         "size": 0,
         "title": "Actions, by time",
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "timeBrushParameterName": "ActionsByTimeBrush",
         "queryType": 0,
@@ -1786,9 +1714,6 @@
         "title": "All IP addresses events with GeoLocation: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "noDataMessage": "There are no Network Rule logs within the selected workspaces. If you believe the selection is correct, confirm Network Rule logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 0
-        },
         "timeContextFromParameter": "ActionsByTimeBrush",
         "showExportToExcel": true,
         "queryType": 0,
@@ -1829,9 +1754,6 @@
         "title": "DNSProxy Traffic by count per Firewall: Query Time({$queryTime}) ",
         "noDataMessage": "There are no DNS Proxy logs within the selected workspaces. If you believe the selection is correct, confirm DNS Proxy logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "timeBrushParameterName": "DNSTimeBrush",
         "queryType": 0,
@@ -1876,9 +1798,6 @@
         "title": "DNSProxy count by Request Name, filterable by Request_Name",
         "noDataMessage": "There are no DNS Proxy logs within the selected workspaces. If you believe the selection is correct, confirm DNS Proxy logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 0
-        },
         "timeContextFromParameter": "DNSTimeBrush",
         "exportFieldName": "Request_Name",
         "exportParameterName": "DNSRequestName",
@@ -1925,9 +1844,6 @@
         "title": "DNSProxy Request count by ClientIP, filterable by ClientIP",
         "noDataMessage": "There are no DNS Proxy logs within the selected workspaces. If you believe the selection is correct, confirm DNS Proxy logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 0
-        },
         "timeContextFromParameter": "DNSTimeBrush",
         "exportFieldName": "ClientIP",
         "exportParameterName": "DNSClientIP",
@@ -1974,9 +1890,6 @@
         "title": "DNS Proxy Request over time by ClientIP",
         "noDataMessage": "There are no DNS Proxy logs within the selected workspaces. If you believe the selection is correct, confirm DNS Proxy logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 0
-        },
         "timeContextFromParameter": "DNSTimeBrush",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -2003,9 +1916,6 @@
         "title": "DNS Proxy Information: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "noDataMessage": "There are no DNS Proxy logs within the selected workspaces. If you believe the selection is correct, confirm DNS Proxy logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 0
-        },
         "timeContextFromParameter": "DNSTimeBrush",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -2045,9 +1955,6 @@
         "title": "IDPS Actions Count, filterable by Action",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
         "noDataMessageStyle": 2,
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "series",
         "exportParameterName": "IDSIPSAction",
@@ -2075,9 +1982,6 @@
         "size": 2,
         "title": "IDPS Protocol Count, filterable by Protocol",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "series",
         "exportParameterName": "IDSIPSProtocol",
@@ -2105,9 +2009,6 @@
         "size": 2,
         "title": "IDPS SignatureID Count, filterable by SignatureID",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "series",
         "exportParameterName": "IDSIPSSignatureID",
@@ -2135,9 +2036,6 @@
         "size": 2,
         "title": "IDPS SourceIP Count, filterable by SourceIP",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "series",
         "exportParameterName": "IDSIPSSourceIP",
@@ -2180,9 +2078,6 @@
         "size": 0,
         "title": "Filtered IDPS Actions by Count",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -2217,9 +2112,6 @@
         "size": 0,
         "title": "Filtered IDPS Protocols by Count",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -2254,9 +2146,6 @@
         "size": 0,
         "title": "Filtered IDPS SignatureIDs by Count",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -2291,9 +2180,6 @@
         "size": 0,
         "title": "Filtered SourceIP, filterable by DestIP",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "DestIP",
         "exportParameterName": "IDSIPSDestIP",
@@ -2382,9 +2268,6 @@
         "size": 0,
         "title": "Azure Firewall IDPS count over time",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "timeBrushParameterName": "AFIDSIPSBrush",
         "queryType": 0,
@@ -2425,9 +2308,6 @@
         "showAnalytics": true,
         "title": "Azure Firewall IDPS logs with GeoLocation: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
-        "timeContext": {
-          "durationMs": 0
-        },
         "timeContextFromParameter": "AFIDSIPSBrush",
         "timeBrushParameterName": "AFIDSIPSBrush",
         "showExportToExcel": true,
@@ -2473,9 +2353,6 @@
         "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project ResourceId,ResourceGroup,SubscriptionId, msg_s, Resource, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s !has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s !has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". \" RuleCollection \". \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \"TLS extension was missing\"\r\n| where msg_s has \" Reason:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \". Action: \" Action \". Reason: \" Rule \".\"\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has  \"TLS extension was missing\" and msg_s !has \"No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| where msg_s has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| summarize count() by FQDN, Action\r\n| sort by count_ desc",
         "size": 0,
         "title": "FQDN Traffic by Count, filterable by FQDN: Query Time({$queryTime}) : Total Rows({$rowCount})",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportFieldName": "FQDN",
         "exportParameterName": "FullName",
@@ -2536,9 +2413,6 @@
         "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project ResourceId,ResourceGroup,SubscriptionId, msg_s, Resource, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s !has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s !has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". \" RuleCollection \". \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \"TLS extension was missing\"\r\n| where msg_s has \" Reason:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \". Action: \" Action \". Reason: \" Rule \".\"\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has  \"TLS extension was missing\" and msg_s !has \"No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| where msg_s has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where SourceIP <> \"\"\r\n| where FQDN == \"{FullName:label}\" or '{FullName}' == \"*\"\r\n| summarize count() by SourceIP, SubscriptionId\r\n| sort by count_",
         "size": 0,
         "title": "SourceIP Address, filterable: Query Time({$queryTime})",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "exportedParameters": [
           {
@@ -2674,9 +2548,6 @@
         "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project ResourceId,ResourceGroup,SubscriptionId, msg_s, Resource, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s !has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s !has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". \" RuleCollection \". \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \"TLS extension was missing\"\r\n| where msg_s has \" Reason:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \". Action: \" Action \". Reason: \" Rule \".\"\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has  \"TLS extension was missing\" and msg_s !has \"No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| where msg_s has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where SourceIP == \"{InvestigateIPWC:label}\" or '{InvestigateIPWC}' == \"*\"\r\n| where FQDN == \"{FullName:label}\" or '{FullName}' == \"*\"\r\n| summarize by TimeGenerated, FQDN, Protocol, Action, SourceIP, SourcePort, DestinationPort , ResourceId , ResourceGroup , RuleCollection, Rule, WebCategory, SubscriptionId\r\n\r\n\r\n",
         "size": 0,
         "title": "FQDN Lookup logs: Query Time({$queryTime}) : Total Rows({$rowCount})",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -2704,9 +2575,6 @@
         "size": 0,
         "title": "Azure Firewall Threat Intel: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "noDataMessage": "There is no Azure Firewall Threat Intel for your filtered results",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "showExportToExcel": true,
         "queryType": 0,
@@ -2733,9 +2601,6 @@
         "query": "//reference list posted here : https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/ipv4-lookup-plugin\r\nlet geoData = externaldata\r\n(network:string,geoname_id:string,continent_code:string,continent_name:string,\r\ncountry_iso_code:string,country_name:string,is_anonymous_proxy:string,is_satellite_provider:string)\r\n[@\"{GeoLocation}\"] with (ignoreFirstRecord=true, format=\"csv\");\r\nAzureDiagnostics\r\n| where ResourceType == \"AZUREFIREWALLS\"\r\n| where OperationName == \"AzureFirewallIDSLog\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| where msg_s contains \"{InvestigateIPWC:label}\" or '{InvestigateIPWC}' == \"*\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" DestIP \":\" DestPort \". Action: \" Action \". Signature: \" SignatureID \". IDS:\" Message \". Priority:\" Priority \". Classification:\" Classification\r\n| summarize by TimeGenerated, SignatureID, Message, Priority, Classification, Protocol, SourceIP, SourcePort, DestIP, DestPort, Action, Resource\r\n| evaluate ipv4_lookup (geoData, DestIP,  network, false)\r\n",
         "size": 0,
         "title": "Azure Firewall Premium with GeoLocation- IDPS: Query Time({$queryTime}) : Total Rows({$rowCount})",
-        "timeContext": {
-          "durationMs": 86400000
-        },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
