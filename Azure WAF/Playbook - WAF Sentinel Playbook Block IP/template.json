@@ -625,7 +625,7 @@
                                             "type": "ManagedServiceIdentity"
                                         },
                                         "method": "GET",
-                                        "uri": "https://management.azure.com@{variables('ResourceID1')}.@{variables('ResourceID2')}?api-version=2019-05-01"
+                                        "uri": "https://management.azure.com@{variables('ResourceID2')}?api-version=2019-05-01"
                                     }
                                 },
                                 "Parse_Front_Door": {
@@ -1208,7 +1208,7 @@
                                                 "type": "ManagedServiceIdentity"
                                             },
                                             "method": "GET",
-                                            "uri": "https://management.azure.com@{variables('ResourceID1')}.@{variables('ResourceID2')}?api-version=2020-05-01"
+                                            "uri": "https://management.azure.com@{variables('ResourceID1')}?api-version=2020-05-01"
                                         }
                                     },
                                     "HTTP": {
