@@ -1,6 +1,6 @@
 # Azure Network security lab templates  
 
-More information and complete write-ups in forms of blogposts and video demonstrations for these labs are mostly available in our TechCommunity [page](aka.ms/aznetsecblog) 
+More information and complete write-ups in forms of blogposts and video demonstrations for these labs are mostly available in our TechCommunity [page](https://techcommunity.microsoft.com/t5/azure-network-security-blog/bg-p/AzureNetworkSecurityBlog) 
 
 These labs represent common P.O.C scenarios that may be used to validate Azure Network Security products/concepts. 
 
