@@ -1,6 +1,6 @@
 on:
   schedule: 
-    # runs every sunday @23:00PM but currently testing at every 20mins
+    # runs every tuesday @ 2:00pm
     - cron: "0 14 * * 2"
     
 jobs:
