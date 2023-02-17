@@ -1,5 +1,5 @@
 {
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "3.0.0.0",
   "parameters": {
     "workbookDisplayName": {
       "type": "string",
