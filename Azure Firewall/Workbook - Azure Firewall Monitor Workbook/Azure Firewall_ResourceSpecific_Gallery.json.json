@@ -80,7 +80,7 @@
             "isRequired": true,
             "isGlobal": true,
             "value": {
-              "durationMs": 7776000000
+              "durationMs": 604800000
             },
             "typeSettings": {
               "selectableValues": [
@@ -778,7 +778,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 7776000000
+          "durationMs": 604800000
         },
         "metrics": [
           {
@@ -817,7 +817,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 7776000000
+          "durationMs": 604800000
         },
         "metrics": [
           {
@@ -855,7 +855,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 7776000000
+          "durationMs": 604800000
         },
         "metrics": [
           {
@@ -893,7 +893,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 7776000000
+          "durationMs": 604800000
         },
         "metrics": [
           {
@@ -1750,7 +1750,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| project Resource, TimeGenerated\r\n| summarize count() by Resource, bin(TimeGenerated,{TimeRange:grain})",
+        "query": "AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project Resource, TimeGenerated\r\n| summarize count() by Resource, bin(TimeGenerated,{TimeRange:grain})",
         "size": 0,
         "title": "DNSProxy Traffic by count per Firewall: Query Time({$queryTime}) ",
         "noDataMessage": "There are no DNS Proxy logs within the selected workspaces. If you believe the selection is correct, confirm DNS Proxy logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
@@ -1794,7 +1794,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| summarize count() by QueryName\r\n| sort by count_ desc",
+        "query": "AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by QueryName\r\n| sort by count_ desc",
         "size": 0,
         "title": "DNSProxy count by Request Name, filterable by Request_Name",
         "noDataMessage": "There are no DNS Proxy logs within the selected workspaces. If you believe the selection is correct, confirm DNS Proxy logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
@@ -1840,7 +1840,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| summarize count() by SourceIp\r\n| sort by count_ desc",
+        "query": "AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by SourceIp\r\n| sort by count_ desc",
         "size": 0,
         "title": "DNSProxy Request count by ClientIP, filterable by ClientIP",
         "noDataMessage": "There are no DNS Proxy logs within the selected workspaces. If you believe the selection is correct, confirm DNS Proxy logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
@@ -1886,7 +1886,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| summarize count() by SourceIp, bin(TimeGenerated, {TimeRange:grain})",
+        "query": "AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by SourceIp, bin(TimeGenerated, {TimeRange:grain})",
         "size": 0,
         "title": "DNS Proxy Request over time by ClientIP",
         "noDataMessage": "There are no DNS Proxy logs within the selected workspaces. If you believe the selection is correct, confirm DNS Proxy logs are enabled for the Azure Firewall and feeding into this selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
@@ -1911,7 +1911,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWDnsQuery\r\n| summarize by TimeGenerated, _ResourceId, SourceIp, SourcePort, QueryId, QueryType, QueryClass, QueryName, Protocol, RequestSize, DnssecOkBit, EDNS0BufferSize, ResponseCode, ResponseFlags, ResponseSize, RequestDurationSecs, ErrorNumber, ErrorMessage, SourceSystem, Type",
+        "query": "AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize by TimeGenerated, _ResourceId, SourceIp, SourcePort, QueryId, QueryType, QueryClass, QueryName, Protocol, RequestSize, DnssecOkBit, EDNS0BufferSize, ResponseCode, ResponseFlags, ResponseSize, RequestDurationSecs, ErrorNumber, ErrorMessage, SourceSystem, Type",
         "size": 0,
         "showAnalytics": true,
         "title": "DNS Proxy Information: Query Time({$queryTime}) : Total Rows({$rowCount})",
@@ -1951,7 +1951,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWIdpsSignature\r\n| summarize count() by Action",
+        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by Action",
         "size": 2,
         "title": "IDPS Actions Count, filterable by Action",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
@@ -1979,7 +1979,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWIdpsSignature\r\n| summarize count() by Protocol",
+        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by Protocol",
         "size": 2,
         "title": "IDPS Protocol Count, filterable by Protocol",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
@@ -2006,7 +2006,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWIdpsSignature\r\n| summarize count() by SignatureId",
+        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by SignatureId",
         "size": 2,
         "title": "IDPS SignatureID Count, filterable by SignatureID",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
@@ -2033,7 +2033,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWIdpsSignature\r\n| summarize count() by SourceIp, DestinationIp\r\n| sort by count_ desc\r\n",
+        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by SourceIp, DestinationIp\r\n| sort by count_ desc\r\n",
         "size": 2,
         "title": "IDPS SourceIP Count, filterable by SourceIP",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
@@ -2075,7 +2075,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWIdpsSignature\r\n| summarize count() by Action",
+        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by Action",
         "size": 0,
         "title": "Filtered IDPS Actions by Count",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
@@ -2109,7 +2109,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWIdpsSignature\r\n| summarize count() by Protocol",
+        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by Protocol",
         "size": 0,
         "title": "Filtered IDPS Protocols by Count",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
@@ -2143,7 +2143,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWIdpsSignature\r\n| summarize count() by SignatureId",
+        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize count() by SignatureId",
         "size": 0,
         "title": "Filtered IDPS SignatureIDs by Count",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
@@ -2177,7 +2177,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWIdpsSignature\r\n| summarize Volume=count() by DestinationIp, SourceIp\r\n| sort by Volume desc",
+        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize Volume=count() by DestinationIp, SourceIp\r\n| sort by Volume desc",
         "size": 0,
         "title": "Filtered SourceIP, filterable by DestIP",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
@@ -2265,7 +2265,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| project Resource, TimeGenerated\r\n| summarize count() by Resource, bin(TimeGenerated,{TimeRange:grain})",
+        "query": "AZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project Resource, TimeGenerated\r\n| summarize count() by Resource, bin(TimeGenerated,{TimeRange:grain})",
         "size": 0,
         "title": "Azure Firewall IDPS count over time",
         "noDataMessage": "This feature is in Azure Firewall Premium; For more information go to https://docs.microsoft.com/en-us/azure/firewall/premium-features",
@@ -2318,10 +2318,16 @@
           "{Workspaces}"
         ],
         "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "Group",
+              "formatter": 1
+            }
+          ],
           "hierarchySettings": {
             "treeType": 1,
             "groupBy": [
-              "Message",
+              "continent_code",
               "country_name"
             ],
             "expandTopLevel": true
