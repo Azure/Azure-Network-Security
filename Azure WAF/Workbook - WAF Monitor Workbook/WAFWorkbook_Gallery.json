@@ -59,7 +59,7 @@
                     "durationMs": 1209600000
                   }
                 ],
-                "allowCustom": false
+                "allowCustom": true
               },
               "resourceType": "microsoft.insights/components"
             },
