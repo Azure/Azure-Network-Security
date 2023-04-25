@@ -80,7 +80,7 @@
             "isRequired": true,
             "isGlobal": true,
             "value": {
-              "durationMs": 604800000
+              "durationMs": 86400000
             },
             "typeSettings": {
               "selectableValues": [
@@ -147,7 +147,7 @@
               "value::selected"
             ],
             "value": [
-              "value::100"
+              "/subscriptions/1c61ccbf-70b3-45a3-a1fb-848ce46d70a6/resourceGroups/Exempt/providers/Microsoft.OperationalInsights/workspaces/NetworkSecurityCxeLogs"
             ],
             "typeSettings": {
               "additionalResourceOptions": [
@@ -606,7 +606,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AzureDiagnostics \r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| where ResourceType == \"AZUREFIREWALLS\" \r\n| summarize Volume=count() by bin(TimeGenerated, {TimeRange:grain})",
+        "query": "AZFWNetworkRule\r\n| union AZFWApplicationRule, AZFWNatRule, AZFWThreatIntel, AZFWIdpsSignature, AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize Volume=count() by bin(TimeGenerated, {TimeRange:grain})\r\n",
         "size": 0,
         "title": "Events, by time: Query Time({$queryTime})",
         "noDataMessage": "There are no firewall events being feed within the selected workspaces. If you believe the selection is correct, confirm logging has been enabled for the Azure Firewall and feeding into the selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
@@ -631,7 +631,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AzureDiagnostics\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| where ResourceType == \"AZUREFIREWALLS\" \r\n| summarize Volume=count() by Resource, bin(TimeGenerated, {TimeRange:grain})",
+        "query": "AZFWNetworkRule\r\n| union AZFWApplicationRule, AZFWNatRule, AZFWThreatIntel, AZFWIdpsSignature, AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize Volume=count() by Resource, bin(TimeGenerated, {TimeRange:grain})\r\n",
         "size": 0,
         "title": "Events, by firewall over time: Query Time({$queryTime})",
         "noDataMessage": "There are no firewall events being feed within the selected workspaces. If you believe the selection is correct, confirm logging has been enabled for the Azure Firewall and feeding into the selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
@@ -679,7 +679,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where ResourceType == \"AZUREFIREWALLS\"\r\n| project Category, ResourceType, OperationName);\r\nunion\r\n(\r\nmaterializedData\r\n    | where OperationName == \"AzureFirewallIDSLog\"\r\n    | summarize Volume=count() by OperationName\r\n    | project Category=OperationName, Volume\r\n),\r\n(\r\nmaterializedData\r\n    | where OperationName == \"AzureFirewallThreatIntelLog\"\r\n    | summarize Volume=count() by OperationName\r\n    | project Category=OperationName, Volume\r\n),\r\n(\r\nmaterializedData\r\n    | where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n    | where OperationName <> \"AzureFirewallIDSLog\"\r\n    | summarize Volume=count() by Category\r\n)\r\n| sort by Volume desc",
+        "query": "AZFWNetworkRule\r\n| union AZFWApplicationRule, AZFWNatRule, AZFWThreatIntel, AZFWIdpsSignature, AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize Volume=count() by Type\r\n| project Category=Type, Volume\r\n| sort by Volume desc",
         "size": 0,
         "title": "Events, by category: Query Time({$queryTime})",
         "noDataMessage": "There are no firewall events being feed within the selected workspaces. If you believe the selection is correct, confirm logging has been enabled for the Azure Firewall and feeding into the selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
@@ -728,7 +728,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where ResourceType == \"AZUREFIREWALLS\"\r\n| project Category, ResourceType, OperationName, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n    | where OperationName == \"AzureFirewallIDSLog\"\r\n    | summarize Volume=count() by OperationName, bin(TimeGenerated, {TimeRange:grain})\r\n    | project Category=OperationName, Volume, TimeGenerated\r\n),\r\n(\r\nmaterializedData\r\n    | where OperationName == \"AzureFirewallThreatIntelLog\"\r\n    | summarize Volume=count() by OperationName, bin(TimeGenerated, {TimeRange:grain})\r\n    | project Category=OperationName, Volume, TimeGenerated\r\n),\r\n(\r\nmaterializedData\r\n    | where OperationName <> \"AzureFirewallThreatIntelLog\"\r\n    | where OperationName <> \"AzureFirewallIDSLog\"\r\n    | summarize Volume=count() by Category, bin(TimeGenerated, {TimeRange:grain})\r\n)\r\n| sort by Volume desc",
+        "query": "AZFWNetworkRule\r\n| union AZFWApplicationRule, AZFWNatRule, AZFWThreatIntel, AZFWIdpsSignature, AZFWDnsQuery\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize Volume=count() by Type, bin(TimeGenerated, {TimeRange:grain})\r\n| project Category=Type, Volume, TimeGenerated\r\n| sort by Volume desc",
         "size": 0,
         "title": "Events categories, by time: Query Time({$queryTime})",
         "noDataMessage": "There are no firewall events being feed within the selected workspaces. If you believe the selection is correct, confirm logging has been enabled for the Azure Firewall and feeding into the selected workspace. Reference Docs: https://docs.microsoft.com/en-us/azure/firewall/",
@@ -777,7 +777,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 604800000
+          "durationMs": 86400000
         },
         "metrics": [
           {
@@ -816,7 +816,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 604800000
+          "durationMs": 86400000
         },
         "metrics": [
           {
@@ -854,7 +854,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 604800000
+          "durationMs": 86400000
         },
         "metrics": [
           {
@@ -892,7 +892,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 604800000
+          "durationMs": 86400000
         },
         "metrics": [
           {
@@ -2666,6 +2666,6 @@
   "fallbackResourceIds": [
     "azure monitor"
   ],
-  "fromTemplateId": "sentinel-AzureFirewallStructuredLogs",
+  "fromTemplateId": "sentinel-UserWorkbook",
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
