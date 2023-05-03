@@ -7,7 +7,7 @@ This Logic App Playbook for Sentinel will add the source IP address passed from 
 This new playbook will now support Front Door Standard and Premium WAF policies along with the App Gateway WAF policies.
 
 ## Step-by-step documentation
-If you'd like more detailed step-by-step instructions on how to deploy this playbook, visit our Tech Community blog post https://aka.ms/wafsentinelintegration-techcommunity and check out the _Respond to Incidents with Playbooks_ section.
+If you'd like more detailed step-by-step instructions on how to deploy this playbook, visit our Tech Community blog post https://techcommunity.microsoft.com/t5/azure-network-security-blog/automated-detection-and-response-for-azure-waf-with-sentinel/ba-p/3692525 and check out the Playbook deployment section.
 
 ## Contributing
 
