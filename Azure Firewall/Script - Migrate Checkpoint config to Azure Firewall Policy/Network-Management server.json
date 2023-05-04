@@ -1,0 +1,65 @@
+[
+    {
+        "uid": "5f119fdb-a701-4f94-8d53-54f2bc274699",
+        "name": "Global services group",
+        "from": 1,
+        "to": 31,
+        "type": "access-section"
+    },
+    {
+        "source-negate": false,
+        "destination-negate": false,
+        "comments": "",
+        "destination": [
+            "8aa06da1-b205-4ce7-8fd1-3ed548e05aa1"
+        ],
+        "meta-info": {
+            "creator": "admin",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2023-03-27T20:17+0000",
+                "posix": 1679948239555
+            },
+            "creation-time": {
+                "iso-8601": "2022-02-08T15:09+0000",
+                "posix": 1644332966173
+            },
+            "lock": "unlocked",
+            "last-modifier": "admin"
+        },
+        "service-negate": false,
+        "source": [
+            "6e9a79ae-1a4a-42c2-8cd0-23fb3f682099"
+        ],
+        "type": "access-rule",
+        "content-direction": "any",
+        "content": [
+            "97aeb369-9aea-11d5-bd16-0090272ccb30"
+        ],
+        "enabled": true,
+        "uid": "d83e1c46-e4a7-4080-bb2f-5dd928c7913d",
+        "rule-number": 1,
+        "service": [
+            "97aeb46b-9aea-11d5-bd16-0090272ccb30"
+        ],
+        "domain": {
+            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "domain-type": "domain",
+            "name": "SMC User"
+        },
+        "content-negate": false,
+        "name": "Azure Application 1",
+        "action": "6c488338-8eec-4103-ad21-cd461ac2c472",
+        "time": [
+            "97aeb369-9aea-11d5-bd16-0090272ccb30"
+        ],
+        "action-settings": {
+            "enable-identity-captive-portal": false
+        },
+        "custom-fields": {
+            "field-1": "",
+            "field-2": "",
+            "field-3": ""
+        }
+    }
+]
