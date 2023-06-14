@@ -1,0 +1,1 @@
+The following terraform deployment template can be used to create Azure Front Door Web Application Firewall Policy specific to you and your exercises in the lab enviroment. 
