@@ -80,7 +80,7 @@
             "isRequired": true,
             "isGlobal": true,
             "value": {
-              "durationMs": 1800000
+              "durationMs": 7776000000
             },
             "typeSettings": {
               "selectableValues": [
@@ -777,7 +777,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 86400000
+          "durationMs": 7776000000
         },
         "metrics": [
           {
@@ -816,7 +816,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 86400000
+          "durationMs": 7776000000
         },
         "metrics": [
           {
@@ -854,7 +854,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 86400000
+          "durationMs": 7776000000
         },
         "metrics": [
           {
@@ -892,7 +892,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 86400000
+          "durationMs": 7776000000
         },
         "metrics": [
           {
@@ -2545,7 +2545,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project ResourceId,ResourceGroup,SubscriptionId, msg_s, Resource, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s !has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s !has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". \" RuleCollection \". \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \"TLS extension was missing\"\r\n| where msg_s has \" Reason:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \". Action: \" Action \". Reason: \" Rule \".\"\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has  \"TLS extension was missing\" and msg_s !has \"No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| where msg_s has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy:\" Policy \". Rule Collection Group:\" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where SourceIP == \"{InvestigateIPWC:label}\" or '{InvestigateIPWC}' == \"*\"\r\n| where FQDN == \"{FullName:label}\" or '{FullName}' == \"*\"\r\n| summarize by TimeGenerated, FQDN, Protocol, Action, SourceIP, SourcePort, DestinationPort , ResourceId , ResourceGroup , RuleCollection, Rule, WebCategory, SubscriptionId\r\n\r\n\r\n",
+        "query": "let materializedData =\r\nmaterialize(\r\nAzureDiagnostics\r\n| where Category == \"AzureFirewallApplicationRule\"\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| project ResourceId,ResourceGroup,SubscriptionId, msg_s, Resource, TimeGenerated);\r\nunion\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Url:\" Url \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and msg_s !has \". Url\" and msg_s has \". No rule matched\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". No rule matched\" *\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s has \"Web Category:\" and msg_s !has \". Url\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection:\" RuleCollection \". Rule:\" Rule \". Web Category:\" WebCategory\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \" Reason: \"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". \" RuleCollection \". \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \"Rule Collection\" and msg_s !has \"TLS extension was missing\"\r\n| where msg_s has \" Reason:\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \". Action: \" Action \". Reason: \" Rule \".\"\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has  \"TLS extension was missing\" and msg_s !has \"No rule matched\" and msg_s !has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n),\r\n(\r\nmaterializedData\r\n| where msg_s !has \"Web Category:\" and  msg_s !has \". Url\" and msg_s !has \" Reason: \"\r\n| where msg_s has \"Rule Collection Group\"\r\n| parse msg_s with Protocol \" request from \" SourceIP \":\" SourcePort \" to \" FQDN \":\" DestinationPort \". Action: \" Action \". Policy: \" Policy \". Rule Collection Group: \" RuleCollectionGroup \". Rule Collection: \" RuleCollection \". Rule: \" Rule\r\n)\r\n| where SourceIP == \"{InvestigateIPWC:label}\" or '{InvestigateIPWC}' == \"*\"\r\n| where FQDN == \"{FullName:label}\" or '{FullName}' == \"*\"\r\n| summarize by TimeGenerated, FQDN, Protocol, Action, SourceIP, SourcePort, DestinationPort , ResourceId , ResourceGroup , RuleCollection, Rule, WebCategory, SubscriptionId\r\n\r\n\r\n",
         "size": 0,
         "title": "FQDN Lookup logs: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "timeContextFromParameter": "TimeRange",
@@ -2584,8 +2584,20 @@
         ],
         "gridSettings": {
           "rowLimit": 2000,
-          "filter": true
-        }
+          "filter": true,
+          "sortBy": [
+            {
+              "itemKey": "TimeGenerated",
+              "sortOrder": 1
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "TimeGenerated",
+            "sortOrder": 1
+          }
+        ]
       },
       "conditionalVisibility": {
         "parameterName": "selectedTab",
