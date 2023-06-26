@@ -80,7 +80,7 @@
             "isRequired": true,
             "isGlobal": true,
             "value": {
-              "durationMs": 86400000
+              "durationMs": 7776000000
             },
             "typeSettings": {
               "selectableValues": [
@@ -777,7 +777,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 86400000
+          "durationMs": 7776000000
         },
         "metrics": [
           {
@@ -816,7 +816,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 86400000
+          "durationMs": 7776000000
         },
         "metrics": [
           {
@@ -854,7 +854,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 86400000
+          "durationMs": 7776000000
         },
         "metrics": [
           {
@@ -892,7 +892,7 @@
         ],
         "timeContextFromParameter": "TimeRange",
         "timeContext": {
-          "durationMs": 86400000
+          "durationMs": 7776000000
         },
         "metrics": [
           {
@@ -2360,7 +2360,7 @@
         "size": 0,
         "title": "FQDN Traffic by Count, filterable by FQDN: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "timeContextFromParameter": "TimeRange",
-        "exportFieldName": "FQDN",
+        "exportFieldName": "Fqdn",
         "exportParameterName": "FullName",
         "exportDefaultValue": "*",
         "showExportToExcel": true,
@@ -2372,8 +2372,8 @@
         "gridSettings": {
           "formatters": [
             {
-              "columnMatch": "Group",
-              "formatter": 1
+              "columnMatch": "Fqdn",
+              "formatter": 5
             },
             {
               "columnMatch": "count_",
@@ -2391,14 +2391,17 @@
                   "maximumSignificantDigits": 4
                 }
               }
-            },
-            {
-              "columnMatch": "FQDN",
-              "formatter": 1
             }
           ],
           "rowLimit": 2000,
-          "filter": true
+          "filter": true,
+          "hierarchySettings": {
+            "treeType": 1,
+            "groupBy": [
+              "Fqdn"
+            ],
+            "expandTopLevel": true
+          }
         }
       },
       "conditionalVisibility": {
@@ -2413,19 +2416,19 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWApplicationRule\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n//| where Action contains \"Deny\"\r\n| where isnotempty(Fqdn)\r\n| summarize count() by SourceIp\r\n| sort by count_ desc",
+        "query": "AZFWApplicationRule\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n//| where Action contains \"Deny\"\r\n| where isnotempty(Fqdn)\r\n| where SourceIp <> \"\"\r\n| where Fqdn == \"{FullName:label}\" or '{FullName}' == \"*\"\r\n| summarize count() by SourceIp\r\n| sort by count_",
         "size": 0,
         "title": "SourceIP Address, filterable: Query Time({$queryTime})",
         "timeContextFromParameter": "TimeRange",
         "exportedParameters": [
           {
-            "fieldName": "SourceIP",
+            "fieldName": "SourceIp",
             "parameterName": "InvestigateIP",
             "parameterType": 1,
             "defaultValue": "privateIPAddress"
           },
           {
-            "fieldName": "SourceIP",
+            "fieldName": "SourceIp",
             "parameterName": "InvestigateIPWC",
             "parameterType": 1,
             "defaultValue": "*"
@@ -2468,7 +2471,7 @@
         },
         "tileSettings": {
           "titleContent": {
-            "columnMatch": "SourceIP",
+            "columnMatch": "SourceIp",
             "formatter": 4,
             "formatOptions": {
               "palette": "orange"
@@ -2519,7 +2522,7 @@
         },
         "tileSettings": {
           "titleContent": {
-            "columnMatch": "SourceIP",
+            "columnMatch": "SourceIp",
             "formatter": 4,
             "formatOptions": {
               "palette": "orange"
@@ -2574,7 +2577,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "AZFWThreatIntel\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize by TimeGenerated, Protocol, SourceIp, SourcePort, Fqdn, DestinationPort, TargetUrl, Action, ThreatDescription",
+        "query": "AZFWThreatIntel\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| where SourceIp contains \"{InvestigateIPWC:label}\" or '{InvestigateIPWC}' == \"*\"\r\n| summarize by TimeGenerated, Protocol, SourceIp, SourcePort, Fqdn, DestinationPort, TargetUrl, Action, ThreatDescription",
         "size": 0,
         "title": "Azure Firewall Threat Intel: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "noDataMessage": "There is no Azure Firewall Threat Intel for your filtered results",
@@ -2601,7 +2604,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "//reference list posted here : https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/ipv4-lookup-plugin\r\nlet geoData = externaldata\r\n(network:string,geoname_id:string,continent_code:string,continent_name:string,\r\ncountry_iso_code:string,country_name:string,is_anonymous_proxy:string,is_satellite_provider:string)\r\n[@\"{GeoLocation}\"] with (ignoreFirstRecord=true, format=\"csv\");\r\nAZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| summarize by TimeGenerated, SignatureId, Category, Description, Severity, Protocol, SourceIp, SourcePort, DestinationIp, DestinationPort, Action, _ResourceId\r\n| evaluate ipv4_lookup (geoData, DestinationIp,  network, false)\r\n",
+        "query": "//reference list posted here : https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/ipv4-lookup-plugin\r\nlet geoData = externaldata\r\n(network:string,geoname_id:string,continent_code:string,continent_name:string,\r\ncountry_iso_code:string,country_name:string,is_anonymous_proxy:string,is_satellite_provider:string)\r\n[@\"{GeoLocation}\"] with (ignoreFirstRecord=true, format=\"csv\");\r\nAZFWIdpsSignature\r\n| parse _ResourceId with * \"azurefirewalls/\" Resource\r\n| where Resource in~ (split(\"{Resource:label}\", \", \"))\r\n| where SourceIp contains \"{InvestigateIPWC:label}\" or '{InvestigateIPWC}' == \"*\"\r\n| summarize by TimeGenerated, SignatureId, Category, Description, Severity, Protocol, SourceIp, SourcePort, DestinationIp, DestinationPort, Action, _ResourceId\r\n| evaluate ipv4_lookup (geoData, DestinationIp,  network, false)\r\n",
         "size": 0,
         "title": "Azure Firewall Premium with GeoLocation- IDPS: Query Time({$queryTime}) : Total Rows({$rowCount})",
         "timeContextFromParameter": "TimeRange",
@@ -2631,7 +2634,7 @@
               "formatter": 5
             },
             {
-              "columnMatch": "-- Group By --",
+              "columnMatch": "$gen_group",
               "formatter": 0,
               "formatOptions": {
                 "customColumnWidthSetting": "60ch"
