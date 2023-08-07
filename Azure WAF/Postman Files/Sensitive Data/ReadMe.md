@@ -2,6 +2,11 @@
 
 The Sensitive data lab is to be used to become familiar with the Azure WAF Sensitive data (log scrubbing) feature and how to use it to hide potentially sensitive information from logs. 
 
+## How to import the Postman collection
+
+![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-Import.png?raw=true "Select Import on your Workspace")
+
+
 ## Azure WAF - Sensitive Data Lab Template
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdavid-frazee%2FAzure-Network-Security-Frazee%2Fmaster%2FAzure%2520WAF%2FPostman%2520Files%2FSensitive%2520Data%2FLab%2520Templates%2FAzureWAF-SensitiveData-ARM.json)
 
