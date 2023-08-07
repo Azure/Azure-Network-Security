@@ -13,7 +13,7 @@ The ARM & Bicep lab template files include everything needed to test Azure WAF's
 | Web App |  owasp-uniqueString | Web App with OWASP Juice Shop installed. |
 | WAF Policy |  waf-appgw-uniqueString | Application Gateway WAF Policy using CRS 3.2 and Bot Manager Ruleset 1.0 with a single custom rule. WAF is enabled and set to Prevention mode. Log Scrubbing has been enabled and rules defined. |
 | Application Gateway | appgw-uniqueString-waf | WAF_v2 SKU Application Gateway with settings pre-configured. |
-| Log Analytics Workspace | waf-workspace-uniqueString | Pas-as-you-go tier Log Analytics Workspace for ingesting WAF logs from Application Gateway resource. |
+| Log Analytics Workspace | waf-workspace-uniqueString | Pay-as-you-go tier Log Analytics Workspace for ingesting WAF logs from Application Gateway resource. |
 
 ## Contributing
 
