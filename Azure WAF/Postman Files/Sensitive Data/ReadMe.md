@@ -2,10 +2,18 @@
 
 The Sensitive data lab is to be used to become familiar with the Azure WAF Sensitive data (log scrubbing) feature and how to use it to hide potentially sensitive information from logs. 
 
-## How to import the Postman collection
+## How to import and use the Postman collection
 ### 1. Select Import on your workspace
-You can either download the file locally and import from file selection, or you can use the raw url in GitHub and paste the url in the prompt.
+
 ![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-Import.png?raw=true "Import")
+
+You can either download the file locally and import from file selection, or you can use the raw url in GitHub and paste the url in the prompt.
+
+![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-Import-Step.png?raw=true "Import Step")
+
+### 2. Input Variables on the collection
+Once the collection has been imported, select the collection called 'Azure WAF - Sensitive Fields' and select the Variables tab. Input the domain that is associated to the Public IP resource from the deployment template under Current value. It should start with 'owasp-' and end with 'cloudapp.azure.com'. 
+![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-DomainVariable.png?raw=true "Variables")
 
 
 
