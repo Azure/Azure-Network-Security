@@ -12,10 +12,20 @@ You can either download the file locally and import from file selection, or you 
 ![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-Import-Step.png?raw=true "Import Step")
 
 ### 2. Input Variables on the collection
-Once the collection has been imported, select the collection called 'Azure WAF - Sensitive Fields' and select the Variables tab. Input the domain that is associated to the Public IP resource from the deployment template under Current value. It should start with 'owasp-' and end with 'cloudapp.azure.com'. 
+Once the collection has been imported, select the collection called **Azure WAF - Sensitive Fields** and select the **Variables** tab. Input the domain that is associated to the Public IP resource from the deployment template under Current value. It should start with **owasp-** and end with **cloudapp.azure.com**. 
+
 ![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-DomainVariable.png?raw=true "Variables")
 
+### 3. Add a malicious cookie
+Next, we'll create a malicious cookie to add to the request. This cookie will append itself to all requests for the domain until you remove it. Select any request under the collection, like **Request Header Names - Scanner Detection** and select **Cookies** on the far right. 
 
+![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-Cookie.png?raw=true "Cookie")
+
+With the prompt open, input the domain from previous step and select **Add domain**. You'll see the domain appear in the list but with no cookies. Select **Add Cookie** and replace *value* with **my!@#$%^&Cookie**. This value matches what will be created in the Custom rule in the deployment template.
+
+![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-Cookie-Value.png?raw=true "Cookie Add")
+
+![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-DomainVariable.png?raw=true "Variables")
 
 
 ## Azure WAF - Sensitive Data Lab Template
