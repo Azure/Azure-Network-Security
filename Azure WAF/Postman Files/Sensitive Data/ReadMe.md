@@ -3,7 +3,7 @@
 The Sensitive data lab is to be used to become familiar with the Azure WAF Sensitive data (log scrubbing) feature and how to use it to hide potentially sensitive information from logs. 
 
 ## How to import and use the Postman collection
-You'll need to deploy the template before finishing the steps for Postman. The domain for the Application Gateway is not created until after completion. This is needed to send the requests.
+You'll need to deploy the template before finishing the steps for Postman. The domain for the Application Gateway is not created until after template deployment completion. This is needed to send the requests.
 ### 1. Select Import on your workspace
 
 ![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-Import.png?raw=true "Import")
@@ -26,7 +26,10 @@ With the prompt open, input the domain from previous step and select **Add domai
 
 ![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-Cookie-Value.png?raw=true "Cookie Add")
 
-![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-DomainVariable.png?raw=true "Variables")
+### 4. Send the request
+Now our Postman collection is prepared, we can send a malicious request to our Azure WAF and check the logs for the sensitive fields we've defined in our Azure WAF policy.
+
+![alt text](https://github.com/david-frazee/Azure-Network-Security-Frazee/blob/master/Azure%20WAF/Postman%20Files/Images/Postman-RequestSent.png?raw=true "Request")
 
 
 ## Azure WAF - Sensitive Data Lab Template
