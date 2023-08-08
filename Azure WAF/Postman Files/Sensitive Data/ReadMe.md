@@ -1,6 +1,6 @@
 # Sensitive Data Lab - Postman collection & Deployment template
 
-The Sensitive data lab is to be used to become familiar with the Azure WAF Sensitive data (log scrubbing) feature and how to use it to hide potentially sensitive information from logs. 
+This Sensitive data lab demonstrates how to use the Azure WAF Sensitive data (log scrubbing) feature to hide potentially sensitive information from logs.
 
 ## How to import and use the Postman collection
 You'll need to deploy the template before finishing the steps for Postman. The domain for the Application Gateway is not created until after template deployment completion. This is needed to send the requests.
