@@ -1,5 +1,9 @@
 # Sentinel Playbook - Block IP - New
 
+# New template V2 deployment button (Fixes multiple IP adding and IP duplicates)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FPlaybook%2520-%2520WAF%2520Sentinel%2520Playbook%2520Block%2520IP%2520-%2520New%2FtemplateV2.json)
+
+# New template V1 deployment button
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FPlaybook%2520-%2520WAF%2520Sentinel%2520Playbook%2520Block%2520IP%2520-%2520New%2Ftemplate.json)
 
 This Logic App Playbook for Sentinel will add the source IP address passed from the Sentinel Incident to a custom WAF rule blocking the IP. 
