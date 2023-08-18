@@ -1,7 +1,9 @@
+## Artifacts for improved Azure WAF security experience  
+
 
 Azure Web Application Firewall protects your web applications from bot attacks and common web vulnerabilities such as SQL injection and cross-site scripting.
 
-This repository contains useful templates, artifacts and queries to improve the Azure Web Application Firewall experience.
+This repository contains useful templates, artifacts and queries to improve the Azure Web Application Firewall experience. Contributions are encouraged from the technical community
 
 ## Contributing
 
