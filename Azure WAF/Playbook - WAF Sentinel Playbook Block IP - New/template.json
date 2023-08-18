@@ -2,31 +2,64 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "workflows_Block_IPAzureWAF_name": {
+        "PlaybookName": {
             "defaultValue": "Block-IPAzureWAF",
-            "type": "String"
+            "type": "string",
+            "metadata": {
+                "description": "Name of the playbook."
+            }
         },
-        "applicationGateways_WAFBlock_AppGW_externalid": {
-            "defaultValue": "/subscriptions/1c61ccbf-70b3-45a3-a1fb-848ce46d70a6/resourceGroups/Saleem-CxE/providers/Microsoft.Network/applicationGateways/WAFBlock-AppGW",
-            "type": "String"
+        "UserName": {
+            "defaultValue": "<username>@<domain>",
+            "type": "string",
+            "metadata": {
+                "description": "Azure AD account to be used to create Logic App connections."
+            }
         },
-        "connections_azuresentinel_Block_IPAzureWAF_externalid": {
-            "defaultValue": "/subscriptions/1c61ccbf-70b3-45a3-a1fb-848ce46d70a6/resourceGroups/Saleem-CxE/providers/Microsoft.Web/connections/azuresentinel-Block-IPAzureWAF",
-            "type": "String"
+        "appgatewayID":{
+            "type":"string",
+            "defaultValue":"Null",
+            "metadata": {
+                "description": "Resource ID of the application gateway that has the WAF policy deployed with it"
+            }
+        },
+        "frontdoorID":{
+            "type":"string",
+            "defaultValue":"Null",
+            "metadata": {
+                "description": "Resource ID of the frontdoor standard/premium instance that has the WAF policy deployed with it"
+            }
         }
     },
-    "variables": {},
+    "variables": {
+        "AzureSentinelConnectionName": "[concat('azuresentinel-', parameters('PlaybookName'))]"
+    },
     "resources": [
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('AzureSentinelConnectionName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "displayName": "[parameters('UserName')]",
+                "customParameterValues": {
+                },
+                "api": {
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azuresentinel')]"
+                }
+            }
+        },
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
-            "name": "[parameters('workflows_Block_IPAzureWAF_name')]",
-            "location": "westeurope",
-            "tags": {
-                "createddate": "05/27/2022",
-                "owner": "saleembseeu"
-            },
+            "name": "[parameters('PlaybookName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', variables('AzureSentinelConnectionName'))]"
+            ],
             "identity": {
+                "principalId": "",
+                "tenantId": "",
                 "type": "SystemAssigned"
             },
             "properties": {
@@ -660,9 +693,9 @@
                                         },
                                         "else": {
                                             "actions": {
-                                                "Append_to_array_variable_2": {
+                                                "Append_to_array_variable_4": {
                                                     "runAfter": {
-                                                        "For_each_4": [
+                                                        "Until": [
                                                             "Succeeded"
                                                         ]
                                                     },
@@ -673,7 +706,9 @@
                                                             "action": "Block",
                                                             "matchConditions": [
                                                                 {
-                                                                    "matchValues": "@variables('MatchValue')",
+                                                                    "matchValues": [
+                                                                        "@{variables('AttackerIP')}"
+                                                                    ],
                                                                     "matchVariables": [
                                                                         {
                                                                             "variableName": "RemoteAddr"
@@ -689,51 +724,6 @@
                                                             "ruleType": "MatchRule"
                                                         }
                                                     }
-                                                },
-                                                "For_each_4": {
-                                                    "foreach": "@body('Parse_Entities')",
-                                                    "actions": {
-                                                        "Append_to_array_variable_4": {
-                                                            "runAfter": {},
-                                                            "type": "AppendToArrayVariable",
-                                                            "inputs": {
-                                                                "name": "MatchValue",
-                                                                "value": "@items('For_each_4')?['Address']"
-                                                            }
-                                                        }
-                                                    },
-                                                    "runAfter": {
-                                                        "For_each_7": [
-                                                            "Succeeded"
-                                                        ]
-                                                    },
-                                                    "type": "Foreach"
-                                                },
-                                                "For_each_7": {
-                                                    "foreach": "@body('Parse_AppGW_Policy')?['properties']?['customRules']",
-                                                    "actions": {
-                                                        "For_each_6": {
-                                                            "foreach": "@items('For_each_7')?['matchConditions']",
-                                                            "actions": {
-                                                                "Set_variable": {
-                                                                    "runAfter": {},
-                                                                    "type": "SetVariable",
-                                                                    "inputs": {
-                                                                        "name": "MatchValue",
-                                                                        "value": "@items('For_each_6')?['matchValues']"
-                                                                    }
-                                                                }
-                                                            },
-                                                            "runAfter": {},
-                                                            "type": "Foreach"
-                                                        }
-                                                    },
-                                                    "runAfter": {
-                                                        "Until": [
-                                                            "Succeeded"
-                                                        ]
-                                                    },
-                                                    "type": "Foreach"
                                                 },
                                                 "Until": {
                                                     "actions": {
@@ -776,9 +766,21 @@
                                                     "For_each_2": {
                                                         "foreach": "@items('For_each')['matchConditions']",
                                                         "actions": {
+                                                            "Append_to_array_variable_2": {
+                                                                "runAfter": {
+                                                                    "Set_variable_4": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                },
+                                                                "type": "AppendToArrayVariable",
+                                                                "inputs": {
+                                                                    "name": "MatchValue",
+                                                                    "value": "@variables('AttackerIP')"
+                                                                }
+                                                            },
                                                             "Append_to_array_variable_3": {
                                                                 "runAfter": {
-                                                                    "Set_variable_5": [
+                                                                    "Append_to_array_variable_2": [
                                                                         "Succeeded"
                                                                     ]
                                                                 },
@@ -789,7 +791,7 @@
                                                                         "action": "@{items('For_each')?['action']}",
                                                                         "matchConditions": [
                                                                             {
-                                                                                "matchValues": "@variables('MatchValue-NoDuplicate')",
+                                                                                "matchValues": "@variables('MatchValue')",
                                                                                 "matchVariables": [
                                                                                     {
                                                                                         "variableName": "RemoteAddr"
@@ -806,43 +808,12 @@
                                                                     }
                                                                 }
                                                             },
-                                                            "For_each_3": {
-                                                                "foreach": "@body('Parse_Entities')",
-                                                                "actions": {
-                                                                    "Append_to_array_variable_6": {
-                                                                        "runAfter": {},
-                                                                        "type": "AppendToArrayVariable",
-                                                                        "inputs": {
-                                                                            "name": "MatchValue",
-                                                                            "value": "@items('For_each_3')?['Address']"
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "runAfter": {
-                                                                    "Set_variable_4": [
-                                                                        "Succeeded"
-                                                                    ]
-                                                                },
-                                                                "type": "Foreach"
-                                                            },
                                                             "Set_variable_4": {
                                                                 "runAfter": {},
                                                                 "type": "SetVariable",
                                                                 "inputs": {
                                                                     "name": "MatchValue",
                                                                     "value": "@items('For_each_2')?['matchValues']"
-                                                                }
-                                                            },
-                                                            "Set_variable_5": {
-                                                                "runAfter": {
-                                                                    "For_each_3": [
-                                                                        "Succeeded"
-                                                                    ]
-                                                                },
-                                                                "type": "SetVariable",
-                                                                "inputs": {
-                                                                    "name": "MatchValue-NoDuplicate",
-                                                                    "value": "@union(variables('MatchValue'),variables('MatchValue'))"
                                                                 }
                                                             }
                                                         },
@@ -1932,7 +1903,7 @@
                                     {
                                         "name": "ResourceID1",
                                         "type": "string",
-                                        "value": "[parameters('applicationGateways_WAFBlock_AppGW_externalid')]"
+                                        "value": "[parameters('appgatewayID')]"
                                     }
                                 ]
                             }
@@ -1949,7 +1920,7 @@
                                     {
                                         "name": "ResourceID2",
                                         "type": "string",
-                                        "value": "1c61ccbf-70b3-45a3-a1fb-848ce46d70a6"
+                                        "value": "[parameters('frontdoorID')]"
                                     }
                                 ]
                             }
@@ -1970,25 +1941,9 @@
                                 ]
                             }
                         },
-                        "Initialize_variable": {
-                            "runAfter": {
-                                "Initialize_MatchValue_variable": [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type": "InitializeVariable",
-                            "inputs": {
-                                "variables": [
-                                    {
-                                        "name": "MatchValue-NoDuplicate",
-                                        "type": "array"
-                                    }
-                                ]
-                            }
-                        },
                         "Parse_Entities": {
                             "runAfter": {
-                                "Initialize_variable": [
+                                "Initialize_MatchValue_variable": [
                                     "Succeeded"
                                 ]
                             },
@@ -2058,9 +2013,9 @@
                                         "actions": {
                                             "Condition_2": {
                                                 "actions": {
-                                                    "Append_to_string_variable": {
+                                                    "Set_variable": {
                                                         "runAfter": {},
-                                                        "type": "AppendToStringVariable",
+                                                        "type": "SetVariable",
                                                         "inputs": {
                                                             "name": "AttackerIP",
                                                             "value": "@items('Set_Variables_from_Entities')?['Address']"
@@ -2109,9 +2064,9 @@
                     "$connections": {
                         "value": {
                             "azuresentinel": {
-                                "connectionId": "[parameters('connections_azuresentinel_Block_IPAzureWAF_externalid')]",
-                                "connectionName": "[concat('azuresentinel-', parameters('workflows_Block_IPAzureWAF_name'))]",
-                                "id": "/subscriptions/1c61ccbf-70b3-45a3-a1fb-848ce46d70a6/providers/Microsoft.Web/locations/westeurope/managedApis/azuresentinel"
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('AzureSentinelConnectionName'))]",
+                                "connectionName": "[variables('AzureSentinelConnectionName')]",
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azuresentinel')]"
                             }
                         }
                     }
