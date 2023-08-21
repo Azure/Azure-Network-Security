@@ -1,0 +1,44 @@
+{
+    "properties": {
+      "displayName": "Deploy your Azure Firewall to span multiple Availability Zones",
+      "policyType": "BuiltIn",
+      "mode": "Indexed",
+      "description": "For increased availability we recommend deploying your Azure Firewall to span multiple Availability Zones. This ensures that your Azure Firewall will remain available in the event of a zone failure.",
+      "metadata": {
+        "version": "1.0.0",
+        "category": "Network"
+      },
+      "parameters": {
+        "effect": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Effect",
+            "description": "Enable or disable the execution of the policy"
+          },
+          "allowedValues": [
+            "Audit",
+            "Deny",
+            "Disabled"
+          ],
+          "defaultValue": "Audit"
+        }
+      },
+      "policyRule": {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Network/azureFirewalls"
+            },
+            {
+              "field": "Microsoft.Network/azureFirewalls/zones",
+              "exists": false
+            }
+          ]
+        },
+        "then": {
+          "effect": "[parameters('effect')]"
+        }
+      }
+    }
+}
