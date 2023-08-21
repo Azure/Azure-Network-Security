@@ -1,4 +1,7 @@
-This repository contains Azure Policy Definition scripts for Azure Firewall.
+*This repository contains Azure Policy Definition scripts for Azure Firewall*  
+
+There are usually compliance obligations while utilizing Azure services including Azure Firewall and Azure Firewall Manager, the extent of which depends on the sensitivity of your data, your company's compliance goals, and the relevant legal and regulatory requirements. Azure provides [built in policies]https://learn.microsoft.com/en-us/azure/governance/policy/samples/built-in-policies) and platform to create [custom policies](https://learn.microsoft.com/en-us/azure/governance/policy/tutorials/create-custom-policy-definition) to improve utilization of Azure Firewall services
+
 
 ## Contributing
 
