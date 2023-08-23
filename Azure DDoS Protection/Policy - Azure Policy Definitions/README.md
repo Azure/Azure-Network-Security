@@ -1,7 +1,7 @@
 *This repository contains Azure Policy Definition scripts for Public IPs with Azure DDoS Protection Plan enabled*  
 
 
-There are often compliance obligations required while utilizing Azure services including protection against volumetric attacks by using Azure DDOS protection. The extent of this requirement depends on the sensitivity of your data, your company's compliance goals, and the relevant legal and regulatory requirements. Azure provides [built in policies]https://learn.microsoft.com/en-us/azure/governance/policy/samples/built-in-policies) and platform to create [custom policies](https://learn.microsoft.com/en-us/azure/governance/policy/tutorials/create-custom-policy-definition) to improve utilization of WAF services  
+There are often compliance obligations required while utilizing Azure services including protection against volumetric attacks by using Azure DDOS protection. The extent of this requirement depends on the sensitivity of your data, your company's compliance goals, and the relevant legal and regulatory requirements. Azure provides [built in policies](https://learn.microsoft.com/en-us/azure/governance/policy/samples/built-in-policies) and platform to create [custom policies](https://learn.microsoft.com/en-us/azure/governance/policy/tutorials/create-custom-policy-definition) to improve utilization of Azure DDoS Protection services  
 
 
 ## Contributing
