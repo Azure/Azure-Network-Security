@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Azure Policy will deny the creation of Azure DDoS Protection Standard plans in any subscription in scope. This policy helps prevent unplanned or unnapproved costs associated with the creation of DDoS plans across multiple subscriptions for the same tenant.
+This Azure Policy will deny the creation of Azure DDoS Protection Standard plans in any subscription in scope. This policy helps prevent unplanned or unnapproved costs associated with the creation of DDoS plans across multiple subscriptions for the same tenant, useful when there are already existing and sufficient plans
 
 ## Use cases
 
