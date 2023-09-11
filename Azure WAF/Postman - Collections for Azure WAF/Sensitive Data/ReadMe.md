@@ -6,30 +6,30 @@ This Sensitive data lab demonstrates how to use the Azure WAF Sensitive data (lo
 You'll need to deploy the template before finishing the steps for Postman. The domain for the Application Gateway is not created until after template deployment completion. This is needed to send the requests.
 ### 1. Select Import on your workspace
 
-![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Script%20-%20Postman%20Files%20for%20WAF%20attack%20tests/Images/Postman-Import.png?raw=true "Import")
+![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-Import.png?raw=true "Import")
 
 You can either download the file locally and import from file selection, or you can use the raw url in GitHub and paste the url in the prompt.
 
-![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Script%20-%20Postman%20Files%20for%20WAF%20attack%20tests/Images/Postman-Import-Step.png?raw=true "Import Step")
+![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-Import-Step.png?raw=true "Import Step")
 
 ### 2. Input Variables on the collection
 Once the collection has been imported, select the collection called **Azure WAF - Sensitive Fields** and select the **Variables** tab. Input the domain that is associated to the Public IP resource from the deployment template under Current value. It should start with **owasp-** and end with **cloudapp.azure.com**. 
 
-![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Script%20-%20Postman%20Files%20for%20WAF%20attack%20tests/Images/Postman-DomainVariable.png?raw=true "Variables")
+![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-DomainVariable.png?raw=true "Variables")
 
 ### 3. Add a malicious cookie
 Next, we'll create a malicious cookie to add to the request. This cookie will append itself to all requests for the domain until you remove it. Select any request under the collection, like **Request Header Names - Scanner Detection** and select **Cookies** on the far right. 
 
-![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Script%20-%20Postman%20Files%20for%20WAF%20attack%20tests/Images/Postman-Cookie.png?raw=true "Cookie")
+![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-Cookie.png?raw=true "Cookie")
 
 With the prompt open, input the domain from previous step and select **Add domain**. You'll see the domain appear in the list but with no cookies. Select **Add Cookie** and replace *value* with **my!@#$%^&Cookie**. This value matches what will be created in the Custom rule in the deployment template.
 
-![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Script%20-%20Postman%20Files%20for%20WAF%20attack%20tests/Images/Postman-Cookie-Value.png?raw=true "Cookie Add")
+![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-Cookie-Value.png?raw=true "Cookie Add")
 
 ### 4. Send the request
 Now our Postman collection is prepared, we can send a malicious request to our Azure WAF and check the logs for the sensitive fields we've defined in our Azure WAF policy.
 
-![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Script%20-%20Postman%20Files%20for%20WAF%20attack%20tests/Images/Postman-RequestSent.png?raw=true "Request")
+![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-RequestSent.png?raw=true "Request")
 
 
 ## Azure WAF - Sensitive Data Lab Template
