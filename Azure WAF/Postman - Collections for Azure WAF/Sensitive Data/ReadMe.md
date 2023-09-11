@@ -33,7 +33,7 @@ Now our Postman collection is prepared, we can send a malicious request to our A
 
 
 ## Azure WAF - Sensitive Data Lab Template
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FScript%2520-%2520Postman%2520Files%2520for%2520WAF%2520attack%2520tests%2FSensitive%2520Data%2FLab%2520Templates%2FAzureWAF-SensitiveData-ARM.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FPostman%2520-%2520Collections%2520for%2520Azure%2520WAF%2FSensitive%2520Data%2FLab%2520Templates%2FAzureWAF-SensitiveData-ARM.json)
 
 The ARM & Bicep lab template files include everything needed to test Azure WAF's Sensitive Data feature.
 
