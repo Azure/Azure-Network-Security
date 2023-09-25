@@ -9,7 +9,7 @@ These Postman collections demonstrate a high-level overview of understanding Azu
 | REQUEST_COOKIES_NAMES | Request Cookie Keys |
 | REQUEST_COOKIES | Request Cookie Values/Request Cookie Names |
 | ARGS_NAMES | Request Arg Keys |
-| ARGS | RequestArgValues/Request Arg Names |
+| ARGS | Request Arg Values/Request Arg Names |
 | REQUEST_URI | Custom Rule |
 | REQUEST_BODY | Custom Rule |
 
