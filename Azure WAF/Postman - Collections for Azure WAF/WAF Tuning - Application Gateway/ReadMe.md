@@ -13,7 +13,7 @@ You can either download the file locally and import from file selection, or you 
 ![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-Import-Step.png?raw=true "Import Step")
 
 ### 2. Input Variables on the collection
-Once the collection has been imported, select the collection called **Azure WAF Tuning – Application Gateway** or **Azure WAF Tuning – Front Door** and select the **Variables** tab. Input the domain that is associated to your Application Gateway WAF_v2 or to the Front Door profile.
+Once the collection has been imported, select the collection called **Azure WAF Tuning – Application Gateway** and select the **Variables** tab. Input the domain that is associated to your Application Gateway WAF_v2.
 
 ![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-DomainVariable.png?raw=true "Variables")
 
