@@ -1,6 +1,6 @@
 # Azure WAF Tuning - Postman collections & Deployment templates
 
-These Postman collections demonstrate a high-level overview of understanding Azure WAF diagnostic logs to help identify how to create exclusions and custom rules for the Azure WAF on Azure Application Gateway and Azure Front Door.
+These Postman collections demonstrate a high-level overview of understanding Azure WAF diagnostic logs to help identify how to create exclusions and custom rules for the Azure WAF on Azure Application Gateway.
 
 ## How to import and use the Postman collection
 
