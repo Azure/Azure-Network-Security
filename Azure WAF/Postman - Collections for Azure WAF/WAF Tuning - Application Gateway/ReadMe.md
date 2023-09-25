@@ -2,7 +2,7 @@
 
 These Postman collections demonstrate a high-level overview of understanding Azure WAF diagnostic logs to help identify how to create exclusions and custom rules for the Azure WAF on Azure Application Gateway. Using the collection, you'll be able to trigger different attacks that generate easy-to-follow logs to learn how to create Exclusions and Custom rules for false positives. For example, if you see in the log that there is a match for REQUEST_HEADERS, then you will create an exclusion using the Match variable of Request Header Values or Request Header Names, Request Header Values being the recommended approach.
 
-| Log category | Exclusion category |
+| Log category | Match Variable |
 |--------------|--------------------|
 | REQUEST_HEADERS_NAMES | Request Header Keys |
 | REQUEST_HEADERS | Request Header Values/Request Header Names |
