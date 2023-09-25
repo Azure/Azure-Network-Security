@@ -39,7 +39,7 @@ With the prompt open, input the domain from the previous step and select **Add d
 ![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-Cookie-Value.png?raw=true "Cookie Add")
 
 ### 4. Send the request
-Now our Postman collection is prepared, we can send a malicious request to our Azure WAF and check the logs for the sensitive fields we've defined in our Azure WAF policy.
+Now our Postman collection is prepared, we can send a malicious request to our Azure WAF.
 
 ![alt text](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20WAF/Postman%20-%20Collections%20for%20Azure%20WAF/Images/Postman-RequestSent.png?raw=true "Request")
 
