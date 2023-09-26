@@ -5,13 +5,11 @@
 
 | Resource Type | Resource Name | Purpose |
 |---------------|---------------|---------|
-| Virtual Network |  vnet-uniqueString-waf | Virtual Network with a 192.168.0.0/24 address space with 1 subnet with a 192.168.0.0/26 address space. |
-| Public IP |  pip-appgw-uniqueString-waf | Static Standard SKU Public IP associated with the Application Gateway. |
 | App Service Plan |  asf-uniqueString | Free tier (F1) App Service Plan for Linux OS |
 | Web App |  owasp-uniqueString | Web App with OWASP Juice Shop installed. |
-| WAF Policy |  waf-appgw-uniqueString | Application Gateway WAF Policy using DRS 2.1 WAF is enabled and set to Prevention mode. Log Scrubbing has been enabled and Client IP rule defined. |
-| Application Gateway | appgw-uniqueString-waf | WAF_v2 SKU Application Gateway with settings pre-configured. |
-| Log Analytics Workspace | waf-workspace-uniqueString | Pay-as-you-go tier Log Analytics Workspace for ingesting WAF logs from Application Gateway resource. |
+| WAF Policy |  wafafduniqueString | Front Door WAF Policy using DRS 2.1. WAF is enabled and set to Prevention mode. |
+| Front Door | afd-owasp-uniqueString | Premium Front Door Profile with settings pre-configured. |
+| Log Analytics Workspace | waf-workspace-uniqueString | Pay-as-you-go tier Log Analytics Workspace for ingesting WAF logs from Front Door resource. |
 
 ## Contributing
 
