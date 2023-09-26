@@ -1,17 +1,15 @@
 # Azure WAF Tuning - Postman collections & Deployment templates
 
-These Postman collections demonstrate a high-level overview of understanding Azure WAF diagnostic logs to help identify how to create exclusions and custom rules for the Azure WAF on Azure Front Door. Using the collection, you'll be able to trigger different attacks that generate easy-to-follow logs to learn how to create Exclusions and Custom rules for false positives. For example, if you see in the log that there is a match for REQUEST_HEADERS, then you will create an exclusion using the Match variable of Request Header Values or Request Header Names, Request Header Values being the recommended approach.
+This Postman collection demonstrates a high-level overview of understanding Azure WAF diagnostic logs to help identify how to create exclusions and custom rules for the Azure WAF on Azure Front Door. Using the collection, you'll be able to trigger different attacks that generate easy-to-follow logs to learn how to create Exclusions and Custom rules for false positives. For example, if you see in the log that there is a match for QueryParamValue, then you will create an exclusion using the Match variable of Query string args name.
 
 | Log category | Match Variable |
 |--------------|--------------------|
-| REQUEST_HEADERS_NAMES | Request Header Keys |
-| REQUEST_HEADERS | Request Header Values/Request Header Names |
-| REQUEST_COOKIES_NAMES | Request Cookie Keys |
-| REQUEST_COOKIES | Request Cookie Values/Request Cookie Names |
-| ARGS_NAMES | Request Arg Keys |
-| ARGS | Request Arg Values/Request Arg Names |
-| REQUEST_URI | Custom Rule |
-| REQUEST_BODY | Custom Rule |
+| HeaderValue | Request header name |
+| CookieValue | Request cookie name |
+| QueryParamValue | Query string args name |
+| MultipartParamValue | Request body post args name |
+| JsonValue | Request body JSON args name |
+| URI | Custom Rule |
 
 
 ## How to import and use the Postman collection
