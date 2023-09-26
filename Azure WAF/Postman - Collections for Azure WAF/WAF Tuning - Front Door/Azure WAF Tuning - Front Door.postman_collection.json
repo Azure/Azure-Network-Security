@@ -117,7 +117,7 @@
 			"response": []
 		},
 		{
-			"name": "Protocol Enforcement - 920270/920271",
+			"name": "Request Header Name",
 			"request": {
 				"method": "GET",
 				"header": [
