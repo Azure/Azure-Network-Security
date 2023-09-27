@@ -43,7 +43,7 @@ Now our Postman collection is prepared, we can send a malicious request to our A
 
 
 ## Azure WAF Tuning - Front Door Template
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdavid-frazee%2FAzure-Network-Security-Frazee%2Fmaster%2FAzure%2520WAF%2FPostman%2520-%2520Collections%2520for%2520Azure%2520WAF%2FWAF%2520Tuning%2520-%2520Front%2520Door%2FLab%2520Templates%2FAzureWAF-Quick-Tune-AFD.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FPostman%2520-%2520Collections%2520for%2520Azure%2520WAF%2FWAF%2520Tuning%2520-%2520Front%2520Door%2FLab%2520Templates%2FAzureWAF-Quick-Tune-AFD.json)
 
 ## What is included:
 
