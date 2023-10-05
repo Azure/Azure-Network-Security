@@ -1,0 +1,62 @@
+{
+  "properties": {
+    "displayName": "Public IPs Should Be Protected from DDoS Attacks With DDoS IP Protection",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "Ensure that Public IPs are secured from DDoS attacks using DDoS IP Protection if DDoS Network Protection is not enabled in the environment.",
+    "metadata": {
+      "version": "1.0.0",
+      "category": "Network",
+      "createdBy": "84b808d9-1446-4c59-9547-956c92894574",
+      "createdOn": "2022-12-16T23:11:35.7782326Z",
+      "updatedBy": null,
+      "updatedOn": null
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "Audit",
+          "Deny"
+        ],
+        "defaultValue": "Audit"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "anyOf": [
+          {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Network/publicIPAddresses"
+              },
+              {
+                "field": "Microsoft.Network/publicIPAddresses/ddosSettings.protectionMode",
+                "notEquals": "Enabled"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  },
+  "id": "/subscriptions/1c61ccbf-70b3-45a3-a1fb-848ce46d70a6/providers/Microsoft.Authorization/policyDefinitions/c9355703-169e-413f-9f7a-04cb48043d76",
+  "type": "Microsoft.Authorization/policyDefinitions",
+  "name": "c9355703-169e-413f-9f7a-04cb48043d76",
+  "systemData": {
+    "createdBy": "dafrazee@buildseccxpninja.onmicrosoft.com",
+    "createdByType": "User",
+    "createdAt": "2022-12-16T23:11:35.7381857Z",
+    "lastModifiedBy": "dafrazee@buildseccxpninja.onmicrosoft.com",
+    "lastModifiedByType": "User",
+    "lastModifiedAt": "2022-12-16T23:11:35.7381857Z"
+  }
+}
