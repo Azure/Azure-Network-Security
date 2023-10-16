@@ -14,17 +14,65 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_client_config" "current" {}
+
 resource "random_string" "random" {
   length = 6
   special = false
   upper = false
 }
 
-//Resource Group AzureFWLab1
+resource "random_password" "password" {
+  length = 12
+  lower = true
+  numeric = true
+  special = true
+  upper = true
+}
+
+//Resource Group FwPeHubAndSpokeLab10
 
 resource "azurerm_resource_group" "rg" {
   name      = "FwPeHubAndSpokeLab10"
   location  = "eastus2"
+}
+
+//Keyvault
+
+resource "azurerm_key_vault" "mykeyvault" {
+    name = "${random_string.random.result}-kv"
+    location = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    sku_name = "standard"
+    purge_protection_enabled = false
+
+    access_policy {
+        tenant_id = data.azurerm_client_config.current.tenant_id
+        object_id = data.azurerm_client_config.current.object_id
+
+        secret_permissions = [
+            "List",
+            "Set",
+            "Get",
+        ]
+    }
+}
+
+//VM Secret
+
+resource "azurerm_key_vault_secret" "vmsecret" {
+    name = "AzureUser"
+    value = "${random_password.password.result}"
+    key_vault_id = azurerm_key_vault.mykeyvault.id
+}
+
+//MySql Secret
+
+resource "azurerm_key_vault_secret" "mysqlsecret" {
+    name = "mysqladmin"
+    value = "${random_password.password.result}"
+    key_vault_id = azurerm_key_vault.mykeyvault.id
 }
 
 //MySQL PaaS Service
@@ -35,7 +83,7 @@ resource "azurerm_mysql_server" "mysql" {
   resource_group_name = azurerm_resource_group.rg.name
   version = "8.0"
   administrator_login = "mysqladmin"
-  administrator_login_password = "H@Sh1CoR3!"
+  administrator_login_password = "${random_password.password.result}"
   ssl_enforcement_enabled = "true"
   sku_name = "GP_Gen5_2"
 }
@@ -289,8 +337,8 @@ resource "azurerm_virtual_machine" "AppVm1" {
 
   os_profile {
     computer_name = "appvm1"
-    admin_username = "fwbasicadmin"
-    admin_password = "Password1234!"
+    admin_username = "AzureUser"
+    admin_password = "${random_password.password.result}"
   }
 
   os_profile_windows_config {
