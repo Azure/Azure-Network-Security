@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@azure/avocado": "^0.8.14",
-    "@types/js-yaml": "^4.0.6",
+    "@types/js-yaml": "^4.0.8",
     "@types/mocha": "^10.0.2",
     "mocha": "^10.2.0",
     "prettier": "^3.0.3",
