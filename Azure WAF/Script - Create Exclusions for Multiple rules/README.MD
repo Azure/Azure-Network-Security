@@ -1,6 +1,6 @@
 # generate_waf_exclusion.py
 
-This script takes an export of a log query that shows blocks and outputs a de-duped, sorted lst of arguments and what rules were found to be problematic.  It can be used to generate WAF exclusions where necessary based on what's present in the logs.
+This script takes an export of a log query that shows WAF blocks and outputs a de-duped, sorted list of arguments and what rules were found to be problematic.  It can be used to generate WAF exclusions where necessary based on what's present in the logs.
 
 ## Samply Query
 
