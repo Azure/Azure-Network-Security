@@ -1,0 +1,103 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sharedKey": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Shared key (PSK) for IPSec tunnel"
+            }
+        },
+        "azureVNG": {
+            "type": "string"
+        },
+        "azureLNG": {
+            "type": "string"
+        },
+        "onPremVNG": {
+            "type": "string"
+        },
+        "onPremLNG": {
+            "type": "string"
+        },
+        "userMI": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "gatewayHubName": "vgw-vnet-hub-secured",
+        "gatewayRemoteName": "vgw-vnet-onprem",
+        "localNetworkGatewayName1": "lgw-azure-network",
+        "localNetworkGatewayName2": "lgw-onprem-network",
+        "connectionName1": "[concat('cn-', variables('localNetworkGatewayName2'),'-to-', variables('gatewayHubName'))]",
+        "connectionName2": "[concat('cn-', variables('localNetworkGatewayName1'),'-to-', variables('gatewayRemoteName'))]",
+        "scriptName": "PowerShellDefaultSite"
+   },
+    "resources": [
+        {
+            "type": "Microsoft.Network/connections",
+            "apiVersion": "2020-08-01",
+            "name": "[variables('connectionName1')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "virtualNetworkGateway1": {
+                    "id": "[parameters('azureVNG')]"
+                },
+                "localNetworkGateway2": {
+                    "id": "[parameters('onPremLNG')]"
+                },
+                "connectionType": "IPsec",
+                "routingWeight": 0,
+                "sharedKey": "[parameters('sharedKey')]",
+                "enableBGP": true
+            }
+        },
+        {
+            "type": "Microsoft.Network/connections",
+            "apiVersion": "2020-08-01",
+            "name": "[variables('connectionName2')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "virtualNetworkGateway1": {
+                    "id": "[parameters('onPremVNG')]"
+                },
+                "localNetworkGateway2": {
+                    "id": "[parameters('azureLNG')]"
+                },
+                "connectionType": "IPsec",
+                "routingWeight": 0,
+                "sharedKey": "[parameters('sharedKey')]",
+                "enableBGP": true
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "[variables('scriptName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                    "[resourceId('Microsoft.Network/connections', variables('connectionName1'))]",
+                    "[resourceId('Microsoft.Network/connections', variables('connectionName2'))]"
+            ],
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[parameters('userMI')]": {
+                    }
+                }
+            },
+            "kind": "AzurePowerShell",
+            "properties": {
+                "forceUpdateTag": "2",
+                "azPowerShellVersion": "8.0",
+                "scriptContent": "
+                    $LocalGateway = Get-AzLocalNetworkGateway -Name 'lgw-onprem-network' -ResourceGroupName 'rg-fw-onprem'
+                    $VirtualGateway = Get-AzVirtualNetworkGateway -Name 'vgw-vnet-hub-secured' -ResourceGroupName 'rg-fw-azure'
+                    Set-AzVirtualNetworkGatewayDefaultSite -GatewayDefaultSite $LocalGateway -VirtualNetworkGateway $VirtualGateway",
+                "timeout": "PT5M",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "P1D"
+            }
+        }
+    ]
+}

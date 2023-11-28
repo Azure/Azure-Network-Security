@@ -1,0 +1,235 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceNames": {
+      "type": "object"
+    },
+    "workspaceId": {
+      "type": "string"
+    },
+    "deployFirewall": {
+      "type": "bool"
+    },
+    "deployFrontDoor": {
+      "type": "bool"
+    },
+    "deployVirtualMachines": {
+      "type": "bool"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').nsg1,'/microsoft.insights/', 'NSG1Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "NetworkSecurityGroupEvent",
+            "enabled": true
+          },
+          {
+            "category": "NetworkSecurityGroupRuleCounter",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').nsg2,'/microsoft.insights/', 'NSG2Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "NetworkSecurityGroupEvent",
+            "enabled": true
+          },
+          {
+            "category": "NetworkSecurityGroupRuleCounter",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').vnet1,'/microsoft.insights/', 'VN1Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "VMProtectionAlerts",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').vnet2,'/microsoft.insights/', 'VN2Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "VMProtectionAlerts",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').vnet3,'/microsoft.insights/', 'VN3Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "VMProtectionAlerts",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/azureFirewalls/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').firewall,'/microsoft.insights/', 'FirewallDiagnostics')]",
+      "condition": "[parameters('deployFirewall')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "AzureFirewallApplicationRule",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AzureFirewallNetworkRule",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": false,
+              "days": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIpAddresses/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').fwIpAddress,'/microsoft.insights/', 'PIP1Diagnostics')]",
+      "condition": "[parameters('deployFirewall')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "DDoSProtectionNotifications",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationFlowLogs",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationReports",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').fdProfileName,'/microsoft.insights/', 'FrontDoorDiagnostics')]",
+      "condition": "[parameters('deployFirewall')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "FrontDoorAccessLog",
+            "enabled": true
+          },
+          {
+            "category": "FrontDoorWebApplicationFirewallLog",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIpAddresses/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').agIpAddress,'/microsoft.insights/', 'PIP2Diagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "DDoSProtectionNotifications",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationFlowLogs",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationReports",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/applicationGateways/providers/diagnosticSettings",
+      "name": "[concat(parameters('resourceNames').appGateway,'/microsoft.insights/', 'AppGatewayDiagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "ApplicationGatewayAccessLog",
+            "enabled": true
+          },
+          {
+            "category": "ApplicationGatewayPerformanceLog",
+            "enabled": true
+          },
+          {
+            "category": "ApplicationGatewayFirewallLog",
+            "enabled": true
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {}
+}

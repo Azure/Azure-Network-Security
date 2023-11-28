@@ -1,0 +1,39 @@
+{  
+    "ip_groups": [
+        {
+            "comment": "ipg group 1 of 5",
+            "ip_group_name": "ipg_part_1",
+            "resource_group_name": "<enter creation resource group name>",
+            "resource_group_location": "<enter creation resource group location>",            
+            "csv_filename": "ipg_part_1.csv"
+        },
+        {
+            "comment": "ipg group 2 of 5",
+            "ip_group_name": "ipg_part_2",
+            "resource_group_name": "<enter creation resource group name>",
+            "resource_group_location": "<enter creation resource group location>",           
+            "csv_filename": "ipg_part_2.csv"
+        },
+        {
+            "comment": "ipg group 3 of 5",
+            "ip_group_name": "ipg_part_3",
+            "resource_group_name": "<enter creation resource group name>",
+            "resource_group_location": "<enter creation resource group location>",            
+            "csv_filename": "ipg_part_3.csv"
+        },
+        {
+            "comment": "ipg group 4 of 5",
+            "ip_group_name": "ipg_part_4",
+            "resource_group_name": "<enter creation resource group name>",
+            "resource_group_location": "<enter creation resource group location>",             
+            "csv_filename": "ipg_part_4.csv"
+        },
+        {
+            "comment": "ipg group 5 of 5",
+            "ip_group_name": "ipg_part_5",
+            "resource_group_name": "<enter creation resource group name>",
+            "resource_group_location": "<enter creation resource group location>",          
+            "csv_filename": "ipg_part_5.csv"
+        }
+    ]
+}

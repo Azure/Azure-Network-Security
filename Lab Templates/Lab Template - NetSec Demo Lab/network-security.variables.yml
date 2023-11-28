@@ -1,0 +1,67 @@
+variables:
+- name: resourceNames
+  value: '@{
+    nsg1 = "$(ResourceNamePrefix)-NSG1$(resourceNameSuffix)";
+    nsg2 = "$(ResourceNamePrefix)-NSG2$(resourceNameSuffix)";
+    ddosProtectionPlan = "$(ResourceNamePrefix)-DDOS-PLAN$(resourceNameSuffix)";
+    routeTable = "$(ResourceNamePrefix)-RT$(resourceNameSuffix)";
+    vnet1 = "$(ResourceNamePrefix)-VN-HUB$(resourceNameSuffix)";
+    vnet1subnet1 = "AGWAFSubnet";
+    vnet1subnet2 = "AzureFirewallSubnet";
+    vnet2 = "$(ResourceNamePrefix)-VN-SPOKE1$(resourceNameSuffix)";
+    vnet2subnet1 = "SPOKE1-SUBNET1";
+    vnet2subnet2 = "SPOKE1-SUBNET2";
+    vnet3 = "$(ResourceNamePrefix)-VN-SPOKE2$(resourceNameSuffix)";
+    vnet3subnet1 = "SPOKE2-SUBNET1";
+    vnet3subnet2 = "AzureBastionSubnet";
+
+    fwIpAddress = "$(ResourceNamePrefix)-NS-FW-PIP$(resourceNameSuffix)";
+    firewall = "$(ResourceNamePrefix)-NS-FW$(resourceNameSuffix)";
+    firewallPolicy = "$(ResourceNamePrefix)NSFWPolicy$(bareResourceNameSuffix)";
+    fwIdentityName = "$(ResourceNamePrefix)-FW-KV-TLS$(resourceNameSuffix)";
+    fwCACetificateName = "ContosoAzureCA";
+
+    kaliVm = "$(ResourceNamePrefix)-Kali$(resourceNameSuffix)";
+    win2019Vm = "$(ResourceNamePrefix)-W2019$(resourceNameSuffix)";
+    win10Vm = "$(ResourceNamePrefix)-W10$(resourceNameSuffix)";
+
+    fdProfileName = "$(ResourceNamePrefix)-NS-FD$(resourceNameSuffix)";
+    fdEndpointName = "$(ResourceNamePrefix)-NS-FD-EP$(resourceNameSuffix)";
+    fdOriginGroupName = "$(ResourceNamePrefix)-NS-FD-OWASP$(resourceNameSuffix)";
+    fdRouteName = "$(ResourceNamePrefix)-NS-FD-APPGw$(resourceNameSuffix)";
+    fdOriginName = "$(ResourceNamePrefix)-NS-FD-OWASP-APPGW$(resourceNameSuffix)";
+    fdWafName = "$(ResourceNamePrefix)NSFDWAF$(bareResourceNameSuffix)";
+    fdSecurityPolicyName = "$(ResourceNamePrefix)-NS-FD-SecPol$(resourceNameSuffix)";
+
+    appServicePlan = "$(ResourceNamePrefix)-OWASP-ASP$(resourceNameSuffix)";
+    appService = "$(ResourceNamePrefix)-owaspdirect$(resourceNameSuffix)";
+
+    agIpAddress = "$(ResourceNamePrefix)-NS-AGP-PIP$(resourceNameSuffix)";
+    appGateway = "$(ResourceNamePrefix)-NS-AG-WAFv2$(resourceNameSuffix)";
+    appGatewayPolicy = "$(ResourceNamePrefix)-NS-AGPolicy$(resourceNameSuffix)";
+
+    bastion = "$(ResourceNamePrefix)-NS-BASTION$(resourceNameSuffix)";
+    bastionIpAddress = "$(ResourceNamePrefix)-NS-BASTION-PIP$(resourceNameSuffix)";
+
+    logAnalyticsWs = "$(workspaceName)";
+    logAnalyticsWsRGName = "$(workspaceResourceGroupName)";
+    tableConnection = "$(ResourceNamePrefix)-tableconnection$(resourceNameSuffix)";
+    enableDdosProtectionApp = "$(ResourceNamePrefix)-EnbleDDoSProtection$(resourceNameSuffix)";
+    disableDdosProtectionApp = "$(ResourceNamePrefix)-DisableDDoSProtection$(resourceNameSuffix)";
+    ddosProtectionSchedulerApp = "$(ResourceNamePrefix)-DDoSProtectionScheduler$(resourceNameSuffix)";
+    storage = "$(ResourceNamePrefix)nssa$(bareresourceNameSuffix)";
+
+    keyVaultName = "$(ResourceNamePrefix)-NS-KV$(resourceNameSuffix)";
+    CAcertScript = "CreateAndDeployCertificates"
+
+  }'
+- name: "RGName"
+  value: "$(ResourceNamePrefix)-NS$(resourceNameSuffix)"
+- name: "appGatewayIpAddress"
+  value: "10.0.25.70"
+- name: "win10VmIpAddress"
+  value: "10.0.27.4"
+- name: "kaliVmIpAddress"
+  value: "10.0.27.68"
+- name: "win2019VmIpAddress"
+  value: "10.0.28.4"

@@ -1,0 +1,388 @@
+[
+    {
+        "uid": "8aa06da1-b205-4ce7-8fd1-3ed548e05aa1",
+        "comments": "",
+        "color": "black",
+        "domain": {
+            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "domain-type": "domain",
+            "name": "SMC User"
+        },
+        "members": [
+            "24063310-61b8-451a-bfb5-1a9f8acd0252",
+            "64de65c5-2638-46c4-8317-ebf52b14cae5"
+        ],
+        "name": "Application_1",
+        "icon": "General/group",
+        "meta-info": {
+            "creator": "admin",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2022-06-03T09:07+0000",
+                "posix": 1654247226282
+            },
+            "creation-time": {
+                "iso-8601": "2022-02-07T09:32+0000",
+                "posix": 1644226335314
+            },
+            "lock": "unlocked",
+            "last-modifier": "admin"
+        },
+        "type": "group",
+        "read-only": false,
+        "tags": []
+    },
+    {
+        "nat-settings": {
+            "auto-rule": false
+        },
+        "interfaces": [],
+        "comments": "",
+        "color": "black",
+        "icon": "Objects/host",
+        "meta-info": {
+            "creator": "admin",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2022-02-07T09:32+0000",
+                "posix": 1644226321358
+            },
+            "creation-time": {
+                "iso-8601": "2022-02-07T09:32+0000",
+                "posix": 1644226321358
+            },
+            "lock": "unlocked",
+            "last-modifier": "admin"
+        },
+        "type": "host",
+        "tags": [],
+        "uid": "24063310-61b8-451a-bfb5-1a9f8acd0252",
+        "ipv4-address": "10.0.1.36",
+        "domain": {
+            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "domain-type": "domain",
+            "name": "SMC User"
+        },
+        "name": "App1_VM_1",
+        "read-only": false
+    },
+    {
+        "nat-settings": {
+            "auto-rule": false
+        },
+        "interfaces": [],
+        "comments": "",
+        "color": "black",
+        "icon": "Objects/host",
+        "meta-info": {
+            "creator": "admin",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2022-03-28T12:37+0000",
+                "posix": 1648471077587
+            },
+            "creation-time": {
+                "iso-8601": "2022-03-28T12:37+0000",
+                "posix": 1648471077587
+            },
+            "lock": "unlocked",
+            "last-modifier": "admin"
+        },
+        "type": "host",
+        "tags": [],
+        "uid": "64de65c5-2638-46c4-8317-ebf52b14cae5",
+        "ipv4-address": "10.0.1.37",
+        "domain": {
+            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "domain-type": "domain",
+            "name": "SMC User"
+        },
+        "name": "App1_VM_2",
+        "read-only": false
+    },
+    {
+        "uid": "6e9a79ae-1a4a-42c2-8cd0-23fb3f682099",
+        "comments": "Azure subnets",
+        "color": "black",
+        "domain": {
+            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "domain-type": "domain",
+            "name": "SMC User"
+        },
+        "members": [
+            "00ee63dd-1d67-469d-b204-2be23f9515ce",
+            "fe5c847e-e423-4209-89df-efdf012ff678"
+        ],
+        "name": "GRP_App1",
+        "icon": "General/group",
+        "meta-info": {
+            "creator": "admin",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2022-10-11T12:36+0000",
+                "posix": 1665491813895
+            },
+            "creation-time": {
+                "iso-8601": "2022-01-27T12:44+0000",
+                "posix": 1643287471195
+            },
+            "lock": "unlocked",
+            "last-modifier": "admin"
+        },
+        "type": "group",
+        "read-only": false,
+        "tags": []
+    },
+    {
+        "broadcast": "allow",
+        "nat-settings": {
+            "auto-rule": false
+        },
+        "comments": "",
+        "color": "black",
+        "icon": "NetworkObjects/network",
+        "meta-info": {
+            "creator": "admin",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2022-04-19T14:14+0000",
+                "posix": 1650377688462
+            },
+            "creation-time": {
+                "iso-8601": "2022-04-19T14:14+0000",
+                "posix": 1650377688462
+            },
+            "lock": "unlocked",
+            "last-modifier": "admin"
+        },
+        "subnet-mask": "255.255.255.224",
+        "type": "network",
+        "tags": [],
+        "uid": "00ee63dd-1d67-469d-b204-2be23f9515ce",
+        "domain": {
+            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "domain-type": "domain",
+            "name": "SMC User"
+        },
+        "name": "Azure_subnet_01",
+        "subnet4": "10.0.1.32",
+        "mask-length4": 27,
+        "read-only": false
+    },
+    {
+        "broadcast": "allow",
+        "nat-settings": {
+            "auto-rule": false
+        },
+        "comments": "",
+        "color": "black",
+        "icon": "NetworkObjects/network",
+        "meta-info": {
+            "creator": "admin",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2022-04-19T14:16+0000",
+                "posix": 1650377796098
+            },
+            "creation-time": {
+                "iso-8601": "2022-04-19T14:16+0000",
+                "posix": 1650377786807
+            },
+            "lock": "unlocked",
+            "last-modifier": "admin"
+        },
+        "subnet-mask": "255.255.255.192",
+        "type": "network",
+        "tags": [],
+        "uid": "fe5c847e-e423-4209-89df-efdf012ff678",
+        "domain": {
+            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "domain-type": "domain",
+            "name": "SMC User"
+        },
+        "name": "Azure_subnet_02",
+        "subnet4": "10.0.1.64",
+        "mask-length4": 26,
+        "read-only": false
+    },
+    {
+        "uid": "97aeb46b-9aea-11d5-bd16-0090272ccb30",
+        "comments": "Domain Name System (TCP/UDP)",
+        "color": "black",
+        "domain": {
+            "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+            "domain-type": "data domain",
+            "name": "Check Point Data"
+        },
+        "members": [
+            "97aeb3f9-9aea-11d5-bd16-0090272ccb30",
+            "97aeb3fa-9aea-11d5-bd16-0090272ccb30"
+        ],
+        "name": "dns",
+        "icon": "General/group",
+        "meta-info": {
+            "creator": "System",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505991304
+            },
+            "creation-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505991304
+            },
+            "lock": "unlocked",
+            "last-modifier": "System"
+        },
+        "type": "service-group",
+        "read-only": false,
+        "tags": []
+    },
+    {
+        "session-timeout": 3600,
+        "use-default-session-timeout": true,
+        "comments": "Domain Name System Download",
+        "color": "black",
+        "match-for-any": true,
+        "aggressive-aging": {
+            "enable": true,
+            "default-timeout": 0,
+            "use-default-timeout": true,
+            "timeout": 600
+        },
+        "keep-connections-open-after-policy-installation": false,
+        "icon": "Services/TCPService",
+        "meta-info": {
+            "creator": "System",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505990593
+            },
+            "creation-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505990593
+            },
+            "lock": "unlocked",
+            "last-modifier": "System"
+        },
+        "sync-connections-on-cluster": true,
+        "type": "service-tcp",
+        "tags": [],
+        "uid": "97aeb3f9-9aea-11d5-bd16-0090272ccb30",
+        "protocol": "DNS_TCP",
+        "match-by-protocol-signature": false,
+        "port": "53",
+        "domain": {
+            "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+            "domain-type": "data domain",
+            "name": "Check Point Data"
+        },
+        "name": "domain-tcp",
+        "override-default-settings": false,
+        "read-only": false
+    },
+    {
+        "session-timeout": 40,
+        "use-default-session-timeout": true,
+        "comments": "Domain Name System Queries",
+        "color": "black",
+        "match-for-any": true,
+        "aggressive-aging": {
+            "enable": true,
+            "default-timeout": 0,
+            "use-default-timeout": true,
+            "timeout": 15
+        },
+        "keep-connections-open-after-policy-installation": false,
+        "icon": "Services/UDPService",
+        "meta-info": {
+            "creator": "System",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505990609
+            },
+            "creation-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505990609
+            },
+            "lock": "unlocked",
+            "last-modifier": "System"
+        },
+        "sync-connections-on-cluster": true,
+        "type": "service-udp",
+        "tags": [],
+        "uid": "97aeb3fa-9aea-11d5-bd16-0090272ccb30",
+        "protocol": "DNS_UDP",
+        "match-by-protocol-signature": false,
+        "accept-replies": true,
+        "port": "53",
+        "domain": {
+            "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+            "domain-type": "data domain",
+            "name": "Check Point Data"
+        },
+        "name": "domain-udp",
+        "override-default-settings": false,
+        "read-only": false
+    },
+    {
+        "uid": "6c488338-8eec-4103-ad21-cd461ac2c473",
+        "comments": "Drop",
+        "color": "none",
+        "display-name": "Drop",
+        "customFields": null,
+        "domain": {
+            "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+            "domain-type": "data domain",
+            "name": "Check Point Data"
+        },
+        "name": "Drop",
+        "meta-info": {
+            "creator": "System",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505996564
+            },
+            "creation-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505996564
+            },
+            "last-modifier": "System"
+        },
+        "icon": "Actions/actionsDrop",
+        "type": "RulebaseAction",
+        "tags": []
+    },
+    {
+        "uid": "6c488338-8eec-4103-ad21-cd461ac2c472",
+        "comments": "Accept",
+        "color": "none",
+        "display-name": "Accept",
+        "customFields": null,
+        "domain": {
+            "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+            "domain-type": "data domain",
+            "name": "Check Point Data"
+        },
+        "name": "Accept",
+        "meta-info": {
+            "creator": "System",
+            "validation-state": "ok",
+            "last-modify-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505996561
+            },
+            "creation-time": {
+                "iso-8601": "2020-01-20T07:39+0000",
+                "posix": 1579505996561
+            },
+            "last-modifier": "System"
+        },
+        "icon": "Actions/actionsAccept",
+        "type": "RulebaseAction",
+        "tags": []
+    }
+]

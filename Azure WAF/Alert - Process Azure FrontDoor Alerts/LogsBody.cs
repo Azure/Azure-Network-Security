@@ -1,0 +1,15 @@
+// //////////////////////////////////////////////////////////////////////////////
+// 
+//  Copyright (C) Microsoft Corporation. All rights reserved.
+// 
+// //////////////////////////////////////////////////////////////////////////////
+
+namespace processAfdAlerts
+{
+    public class Row
+    {
+        public string clientIp_s { get; set; }
+
+        public long requestCount { get; set; }
+    }
+}

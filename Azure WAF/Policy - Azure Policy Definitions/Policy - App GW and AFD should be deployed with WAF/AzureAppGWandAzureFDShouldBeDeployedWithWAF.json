@@ -1,0 +1,62 @@
+{
+  "properties": {
+    "displayName": "Azure Application Gateway and Azure Front Door should be deployed with Azure WAF",
+    "policyType": "BuiltIn",
+    "mode": "Indexed",
+    "description": "Requires Azure Application Gateway or Azure Front Door resources to be deployed with Azure WAF. ",
+    "metadata": {
+      "category": "Network",
+      "version": "1.0.0"
+    },
+    "parameters": {
+      "effectType": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Action taken when WAF is not deployed with a given resource"
+        },
+        "allowedValues": [
+          "Audit",
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Audit"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "anyOf": [
+          {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Cdn/profiles"
+              },
+              {
+                "not": {
+                  "field": "type",
+                  "equals": "Microsoft.Cdn/profiles/securitypolicies"
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Network/applicationGateways"
+              },
+              {
+                "field": "Microsoft.Network/applicationGateways/firewallPolicy.id",
+                "exists": "false"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effectType')]"
+      }
+    }
+  }
+}
