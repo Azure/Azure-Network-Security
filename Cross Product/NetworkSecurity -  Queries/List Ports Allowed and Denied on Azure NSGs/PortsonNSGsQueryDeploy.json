@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "queries_Ports_Allowed_with_User_Defined_Rules_on_NSG_name": {
+            "defaultValue": "Ports Allowed with User Defined Rules on NSG",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "microsoft.resourcegraph/queries",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[parameters('queries_Ports_Allowed_with_User_Defined_Rules_on_NSG_name')]",
+            "location": "global",
+            "properties": {
+                "query": "Resources\r\n| where type contains 'microsoft.network/Networksecuritygroups'\r\n| extend nic = properties.networkInterfaces\r\n| mv-expand bagexpansion=array nic\r\n| extend udrulenicid = nic.id\r\n| extend udrulesubnetids = properties.subnets\r\n| extend udrules = properties.securityRules\r\n| mv-expand bagexpansion=array udrules\r\n| extend udrulename = udrules.name\r\n| extend udruleprotocol = udrules.properties.protocol\r\n| extend udruledestinationport = udrules.properties.destinationPortRange\r\n| extend udruledestinationportlist = udrules.properties.destinationPortRanges\r\n| extend udruledirection = udrules.properties.direction\r\n| extend udrulesourcenetwork = udrules.properties.sourceAddressPrefix\r\n| extend udruledestinationnetwork = udrules.properties.destinationAddressPrefix\r\n| extend udruleaccess = udrules.properties.access\r\n| project-away udrules, kind, managedBy, nic, identity, zones",
+                "description": "This query lists all ports allowed through user defined rules on the NSGs."
+            }
+        }
+    ]
+}

@@ -1,0 +1,258 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.21.1.54444",
+      "templateHash": "8103699370933754793"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The Azure region where the resources should be deployed."
+      }
+    }
+  },
+  "variables": {
+    "frontDoorEndpointName": "[format('afd-owasp-{0}', uniqueString(resourceGroup().id))]",
+    "frontDoorProfileName": "[format('afd-owasp-{0}', uniqueString(resourceGroup().id))]",
+    "frontDoorOriginGroupName": "OwaspBackend",
+    "frontDoorOriginName": "OwaspJuiceShop",
+    "frontDoorRouteName": "MainRoute",
+    "frontDoorSkuName": "Premium_AzureFrontDoor",
+    "frontDoorWafName": "[format('wafafd{0}', uniqueString(resourceGroup().id))]",
+    "managedRuleSets": [
+      {
+        "ruleSetAction": "Block",
+        "ruleSetType": "Microsoft_DefaultRuleSet",
+        "ruleSetVersion": "2.1"
+      }
+    ],
+    "serverFarmName": "[format('asf-{0}', uniqueString(resourceGroup().id))]",
+    "webAppName": "[format('owasp-{0}', uniqueString(resourceGroup().id))]",
+    "linuxFxVersion": "DOCKER|bkimminich/juice-shop:latest",
+    "logAnalyticsWorkspaceName": "[format('waf-workspace-{0}', uniqueString(resourceGroup().id))]",
+    "afdDiagnosticName": "afd-diag"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Cdn/profiles",
+      "apiVersion": "2021-06-01",
+      "name": "[variables('frontDoorProfileName')]",
+      "location": "global",
+      "sku": {
+        "name": "[variables('frontDoorSkuName')]"
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/afdEndpoints",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/{1}', variables('frontDoorProfileName'), variables('frontDoorEndpointName'))]",
+      "location": "global",
+      "properties": {
+        "enabledState": "Enabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', variables('frontDoorProfileName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/originGroups",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/{1}', variables('frontDoorProfileName'), variables('frontDoorOriginGroupName'))]",
+      "properties": {
+        "loadBalancingSettings": {
+          "sampleSize": 4,
+          "successfulSamplesRequired": 3
+        },
+        "healthProbeSettings": {
+          "probePath": "/",
+          "probeRequestType": "HEAD",
+          "probeProtocol": "Https",
+          "probeIntervalInSeconds": 100
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', variables('frontDoorProfileName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/originGroups/origins",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/{1}/{2}', variables('frontDoorProfileName'), variables('frontDoorOriginGroupName'), variables('frontDoorOriginName'))]",
+      "properties": {
+        "hostName": "[reference(resourceId('Microsoft.Web/sites', variables('webAppName')), '2022-03-01').defaultHostName]",
+        "httpPort": 80,
+        "httpsPort": 443,
+        "originHostHeader": "[reference(resourceId('Microsoft.Web/sites', variables('webAppName')), '2022-03-01').defaultHostName]",
+        "priority": 1,
+        "weight": 1000
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles/originGroups', variables('frontDoorProfileName'), variables('frontDoorOriginGroupName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/afdEndpoints/routes",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/{1}/{2}', variables('frontDoorProfileName'), variables('frontDoorEndpointName'), variables('frontDoorRouteName'))]",
+      "properties": {
+        "originGroup": {
+          "id": "[resourceId('Microsoft.Cdn/profiles/originGroups', variables('frontDoorProfileName'), variables('frontDoorOriginGroupName'))]"
+        },
+        "supportedProtocols": [
+          "Http",
+          "Https"
+        ],
+        "patternsToMatch": [
+          "/*"
+        ],
+        "forwardingProtocol": "HttpsOnly",
+        "linkToDefaultDomain": "Enabled",
+        "httpsRedirect": "Enabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', variables('frontDoorProfileName'), variables('frontDoorEndpointName'))]",
+        "[resourceId('Microsoft.Cdn/profiles/originGroups/origins', variables('frontDoorProfileName'), variables('frontDoorOriginGroupName'), variables('frontDoorOriginName'))]",
+        "[resourceId('Microsoft.Cdn/profiles/originGroups', variables('frontDoorProfileName'), variables('frontDoorOriginGroupName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/securityPolicies",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/{1}', variables('frontDoorProfileName'), format('sp-{0}', variables('frontDoorProfileName')))]",
+      "properties": {
+        "parameters": {
+          "type": "WebApplicationFirewall",
+          "wafPolicy": {
+            "id": "[resourceId('Microsoft.Network/FrontDoorWebApplicationFirewallPolicies', variables('frontDoorWafName'))]"
+          },
+          "associations": [
+            {
+              "domains": [
+                {
+                  "id": "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', variables('frontDoorProfileName'), variables('frontDoorEndpointName'))]"
+                }
+              ],
+              "patternsToMatch": [
+                "/*"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', variables('frontDoorProfileName'), variables('frontDoorEndpointName'))]",
+        "[resourceId('Microsoft.Cdn/profiles', variables('frontDoorProfileName'))]",
+        "[resourceId('Microsoft.Network/FrontDoorWebApplicationFirewallPolicies', variables('frontDoorWafName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies",
+      "apiVersion": "2022-05-01",
+      "name": "[variables('frontDoorWafName')]",
+      "location": "global",
+      "sku": {
+        "name": "[variables('frontDoorSkuName')]"
+      },
+      "properties": {
+        "managedRules": {
+          "managedRuleSets": "[variables('managedRuleSets')]"
+        },
+        "policySettings": {
+          "enabledState": "Enabled",
+          "mode": "Prevention",
+          "requestBodyCheck": "Enabled"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('serverFarmName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "F1"
+      },
+      "kind": "app,linux",
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('webAppName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('serverFarmName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "[variables('linuxFxVersion')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('serverFarmName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2022-10-01",
+      "name": "[variables('logAnalyticsWorkspaceName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "retentionInDays": 30,
+        "sku": {
+          "name": "PerGB2018"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Cdn/profiles/{0}', variables('frontDoorProfileName'))]",
+      "name": "[variables('afdDiagnosticName')]",
+      "properties": {
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
+        "logs": [
+          {
+            "category": "FrontDoorAccessLog",
+            "enabled": true
+          },
+          {
+            "category": "FrontDoorHealthProbeLog",
+            "enabled": true
+          },
+          {
+            "category": "FrontDoorWebApplicationFirewallLog",
+            "enabled": true
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', variables('frontDoorProfileName'))]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "appServiceHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Web/sites', variables('webAppName')), '2022-03-01').defaultHostName]"
+    },
+    "frontDoorEndpointHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Cdn/profiles/afdEndpoints', variables('frontDoorProfileName'), variables('frontDoorEndpointName')), '2021-06-01').hostName]"
+    }
+  }
+}

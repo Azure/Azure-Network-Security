@@ -1,0 +1,50 @@
+{
+    "domain": "",
+    "policyPackages": [
+        {
+            "htmlGatewaysFileName": "Standard_gateway_objects.html",
+            "objects": {
+                "htmlObjectsFileName": "Standard_objects.html"
+            },
+            "packageName": "Standard",
+            "accessLayers": [
+                {
+                    "uid": "63b7fe60-76d2-4287-bca5-21af87337b0a",
+                    "htmlFileName": "Network-Management server.html",
+                    "domainType": "domain",
+                    "domain": "Management server",
+                    "name": "Network"
+                }
+            ],
+            "threatLayers": [
+                {
+                    "uid": "90678011-1bcb-4296-8154-fa58c23ecf3b",
+                    "htmlFileName": "IPS-Management server.html",
+                    "domainType": "domain",
+                    "domain": "Management server",
+                    "name": "IPS"
+                },
+                {
+                    "uid": "0dbe7c44-6d3f-4f28-8f2b-0e6790e57f8a",
+                    "htmlFileName": "Standard Threat Prevention-Management server.html",
+                    "domainType": "domain",
+                    "domain": "Management server",
+                    "name": "Standard Threat Prevention"
+                }
+            ],
+            "natLayer": {
+                "uid": null,
+                "htmlFileName": "Standard NAT-Management server.html",
+                "domainType": "domain",
+                "domain": "Management server",
+                "name": "NAT"
+            },
+            "gatewayAndServerList": [
+                {
+                    "uid": "8026bf1b-a6b7-4739-9cbb-2ddd432ec696",
+                    "name": "MyCheckPoint"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "deployments": [ 
+        {   
+            "mode": "ip_group_only",
+            "name": "ip_groups_1",
+            "create_policy" : "false",
+            "resource_group_name": "<replace with resource group location of firewall>",
+            "resource_group_location": "<replace with resource group location of firewall>",
+            "ip_groups": [
+                {
+                    "comment": "ipg group 1 of 3",
+                    "ip_group_name": "ipg_part_1",           
+                    "csv_filename": "../../ip_group_csvs/ipg_part_1.csv"
+                },
+                {
+                    "comment": "ipg group 2 of 3",
+                    "ip_group_name": "ipg_part_2",         
+                    "csv_filename": "../../ip_group_csvs/ipg_part_2.csv"
+                },
+                {
+                    "comment": "ipg group 3 of 3",
+                    "ip_group_name": "ipg_part_3",          
+                    "csv_filename": "../../ip_group_csvs/ipg_part_3.csv"
+                }
+            ]
+        }
+    ]
+}

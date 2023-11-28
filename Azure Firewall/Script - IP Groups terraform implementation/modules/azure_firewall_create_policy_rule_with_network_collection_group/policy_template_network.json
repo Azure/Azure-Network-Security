@@ -1,0 +1,37 @@
+{
+    "policy_rule" : "true",    
+    "firewall_policies": [
+        {
+            "comment": "<any comments for json file readability, not used by the automation>",
+            "firewall_policy_name": "<name of firewall policy this rule will be associated to>",
+            "resource_group_name": "<resource group name where policy and rules will be deployed>",
+            "resource_group_location": "<location where this policy and rules will be deployed>",            
+            "rule_collection_groups": [
+                {
+                    "comment": "<any comments for json file readability, not used by the automation>",
+                    "name": "rule_collection_group_name used as unique id",
+                    "priority": "rule_collection_group_priority",                    
+                    "network_rule_collections": [
+                        {
+                            "name": "<network_rule_collection_name>",                            
+                            "priority": "rule_collection_group_priority",
+                            "action": "<rule_collection_group_action. Allowed values are Allow, Deny>",                           
+                            "network_rules": [
+                                {
+                                    "name": "<network_rule_name>",  
+                                    "protocols": ["TCP","UDP","ICMP","ANY"],
+                                    "destination_ports": ["<destination ports as individual list items>"],
+                                    "source_addresses": ["<source addresses as individual list items of CIDR, Address or * or an empty list if no source addresses>"],
+                                    "source_ip_groups": ["<source ip_group names as individual list items or an empty list if no source ip groups>"],
+                                    "destination_addresses": ["<destination addresses as individual list items of CIDR, Address or * or an empty list if no destination addresses>"],
+                                    "destination_ip_groups": ["<destination ip_group names as individual list items or an empty list if no destination ip groups>"],
+                                    "destination_fqdns": ["<destination fqdn names as individual list items or an empty list if no destination fqdns>"]
+                                }
+                            ]    
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

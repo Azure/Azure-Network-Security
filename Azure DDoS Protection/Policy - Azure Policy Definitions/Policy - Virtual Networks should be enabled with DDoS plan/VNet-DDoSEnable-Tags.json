@@ -1,0 +1,93 @@
+{
+  "properties": {
+    "displayName": "Virtual Networks should be protected by Azure DDoS Protection Standard - tag based",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "This policy enables DDoS Protection Standard on all VNets with a specified tag value",
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "Modify",
+          "Audit",
+          "Disabled"
+        ],
+        "defaultValue": "Modify"
+      },
+      "ddosPlan": {
+        "type": "String",
+        "metadata": {
+          "displayName": "DDoS Protection Plan Resource ID",
+          "description": "Full resource ID of the DDoS Protection Plan to be associated to VNets"
+        }
+      },
+      "tagName": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Name",
+          "description": "Name of the tag, such as 'environment'"
+        }
+      },
+      "tagValue": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Value",
+          "description": "Value of the tag, such as 'production'"
+        }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/virtualNetworks"
+          },
+          {
+            "anyOf": [
+              {
+                "field": "Microsoft.Network/virtualNetworks/enableDdosProtection",
+                "notEquals": true
+              },
+              {
+                "field": "Microsoft.Network/virtualNetworks/ddosProtectionPlan",
+                "equals": ""
+              }
+            ]
+          },
+          {
+            "field": "[concat('tags[', parameters('tagName'), ']')]",
+            "equals": "[parameters('tagValue')]"
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]",
+        "details": {
+          "conflictEffect": "audit",
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Network/virtualNetworks/enableDdosProtection",
+              "value": true
+            },
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Network/virtualNetworks/ddosProtectionPlan.id",
+              "value": "[parameters('ddosPlan')]"
+            }
+          ],
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+          ]
+        }
+      }
+    }
+  },
+  "id": "/subscriptions/1c61ccbf-70b3-45a3-a1fb-848ce46d70a6/providers/Microsoft.Authorization/policyDefinitions/e0a21d62-eb31-44ff-85a4-65e3a8e8bd12",
+  "type": "Microsoft.Authorization/policyDefinitions"
+}

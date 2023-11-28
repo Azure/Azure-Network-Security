@@ -1,0 +1,816 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUserName": {
+            "defaultValue": "AzureUser",
+            "type": "string",
+            "metadata": {
+                "description": "The admin user name for the Windows virtual machines."
+            }
+        },
+        "adminPassword": {
+            "type": "secureString",
+            "metadata": {
+                "description": "The admin password for the Windows virtual machines."
+            }
+        }
+    },
+    "variables": {
+        "identityName": "azfwMI",
+        "hubNetworkName": "vnet-hub-secured",
+        "hubNetworkAddressPrefix": "192.168.0.0/23",
+        "hubNetworkGatewaySubnetName": "GatewaySubnet",
+        "hubNetworkGatewaySubnetAddressPrefix": "192.168.0.0/27",
+        "hubNetworkAzureFirewallSubnetName": "AzureFirewallSubnet",
+        "hubNetworkAzureFirewallSubnetAddressPrefix": "192.168.0.64/26",
+        "hubNetworkAzureFirewallManagementSubnetName": "AzureFirewallManagementSubnet",
+        "hubNetworkAzureFirewallManagementSubnetAddressPrefix": "192.168.0.128/26",
+        "spokeNetworkName": "vnet-spoke-workers",
+        "spokeNetworkAddressPrefix": "192.168.2.0/24",
+        "spokeNetworkSubnetName": "snet-trust-workers",
+        "spokeNetworkSubnetAddressPrefix": "192.168.2.0/28",
+        "firewallName": "azfw-vnet-hub-secured",
+        "firewallPublicIPName1": "[concat('pip-azfw-vnet-hub-secured', uniqueString(subscription().id))]",
+        "firewallPublicIPName2": "[concat('pip-azfw-vnet-hub-secured-manage', uniqueString(subscription().id))]",
+        "firewallPolicyName": "pol-azfw-vnet-hub",
+        "logAnalyticWorkspaceName": "law-soc",
+        "iPGroupName01": "ipg-azure-network",
+        "iPGroupName02": "ipg-onprem-network",
+        "gatewayHubName": "vgw-vnet-hub-secured",
+        "gatewayHubPublicIPName": "[concat('pip-vgw-vnet-hub-secured', uniqueString(subscription().id))]",
+        "gatewayHubPublicIPDomainNameLabel": "[variables('gatewayHubPublicIPName')]",
+        "gatewayHubPublicIPId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('gatewayHubPublicIPName'))]",
+        "vpnType": "RouteBased",
+        "vpnSku": "VpnGw1",
+        "asn1": "65521",
+        "localNetworkGatewayName1": "lgw-azure-network",
+        "routeTableName1": "route-spoke-snets",
+        "routeTableName2": "route-fw-snet",
+        "routeName01": "send-all-to-fw",
+        "routeName02": "send-to-kms",
+        "routeName03": "send-to-onprem",
+        "spokeNetworkVMName": "vmserver",
+        "spokeNetworkVMNicName": "nic-01-vmserver",
+        "vmSize": "Standard_D2s_v3",
+        "OsVersion": "2019-datacenter-gensecond"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+            "apiVersion": "2018-11-30",
+            "name": "[variables('identityName')]",
+            "location": "[resourceGroup().location]"
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('hubNetworkName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', variables('routeTableName2'))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('hubNetworkAddressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('hubNetworkGatewaySubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('hubNetworkGatewaySubnetAddressPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('hubNetworkAzureFirewallSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('hubNetworkAzureFirewallSubnetAddressPrefix')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', variables('routeTableName2'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[variables('hubNetworkAzureFirewallManagementSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('hubNetworkAzureFirewallManagementSubnetAddressPrefix')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('spokeNetworkName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', variables('routeTableName1'))]"
+            ],
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('spokeNetworkAddressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('spokeNetworkSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('spokeNetworkSubnetAddressPrefix')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', variables('routeTableName1'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2019-11-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('firewallPublicIPName1')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "publicIPAddressVersion": "IPv4",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "apiVersion": "2019-11-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('firewallPublicIPName2')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "publicIPAddressVersion": "IPv4",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[variables('iPGroupName01')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipAddresses": [
+                    "192.168.0.0/23",
+                    "192.168.2.0/24"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[variables('iPGroupName02')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipAddresses": [
+                    "10.100.0.0/24"
+                ]
+            }
+        },
+        {
+            "apiVersion": "2020-05-01",
+            "type": "Microsoft.Network/firewallPolicies",
+            "name": "[variables('firewallPolicyName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('firewallPublicIPName1'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('firewallPublicIPName2'))]",
+                "[resourceId('Microsoft.Network/ipGroups', variables('iPGroupName01'))]",
+                "[resourceId('Microsoft.Network/ipGroups', variables('iPGroupName02'))]"
+            ],
+            "properties": {
+                "threatIntelMode": "Alert"
+            },
+            "sku": {
+                "name": "Standard",
+                "tier": "Standard"
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(variables('firewallPolicyName'), '/DefaultDnatRuleCollectionGroup')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', variables('firewallPolicyName'))]"
+            ],
+            "properties": {
+                "priority": 100,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+                        "action": {
+                            "type": "Dnat"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NatRule",
+                                "name": "RDP",
+                                "translatedAddress": "192.168.2.4",
+                                "translatedPort": "3389",
+                                "ipProtocols": [
+                                    "TCP",
+                                    "UDP"
+                                ],
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "sourceIpGroups": [],
+                                "destinationAddresses": [
+                                    "[first(split(reference(resourceId('Microsoft.Network/publicIPAddresses', variables('firewallPublicIPName1')), '2019-11-01').ipAddress , ',')) ]"
+                                ],
+                                "destinationPorts": [
+                                    "33899"
+                                ]
+                            }
+                        ],
+                        "name": "RemoteIn",
+                        "priority": 1000
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(variables('firewallPolicyName'), '/DefaultNetworkRuleCollectionGroup')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', variables('firewallPolicyName'))]",
+                "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', variables('firewallPolicyName'), 'DefaultDnatRuleCollectionGroup')]"
+            ],
+            "properties": {
+                "priority": 200,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "azure-to-onprem",
+                                "ipProtocols": [
+                                    "Any"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', variables('iPGroupName01'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', variables('iPGroupName02'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            },
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "onprem-to-azure",
+                                "ipProtocols": [
+                                    "Any"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', variables('iPGroupName02'))]"
+                                ],
+                                "destinationAddresses": [],
+                                "destinationIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', variables('iPGroupName01'))]"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "*"
+                                ]
+                            }
+                        ],
+                        "name": "east-west",
+                        "priority": 1000
+                    },
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "NetworkRule",
+                                "name": "to-kms",
+                                "ipProtocols": [
+                                    "Any"
+                                ],
+                                "sourceAddresses": [],
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', variables('iPGroupName01'))]"
+                                ],
+                                "destinationAddresses": [
+                                    "23.102.135.246"
+                                ],
+                                "destinationIpGroups": [],
+                                "destinationFqdns": [],
+                                "destinationPorts": [
+                                    "1688"
+                                ]
+                            }
+                        ],
+                        "name": "internet",
+                        "priority": 1100
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+            "apiVersion": "2022-01-01",
+            "name": "[concat(variables('firewallPolicyName'), '/DefaultApplicationRuleCollectionGroup')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', variables('firewallPolicyName'))]",
+                "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', variables('firewallPolicyName'), 'DefaultDnatRuleCollectionGroup')]",
+                "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', variables('firewallPolicyName'), 'DefaultNetworkRuleCollectionGroup')]"
+            ],
+            "properties": {
+                "priority": 300,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "name": "Internet",
+                        "priority": 1000,
+                        "action": {
+                            "type": "Allow"
+                        },
+                        "rules": [
+                            {
+                                "ruleType": "ApplicationRule",
+                                "name": "internet",
+                                "protocols": [
+                                    {
+                                        "protocolType": "Https",
+                                        "port": 443
+                                    },
+                                    {
+                                        "protocolType": "Http",
+                                        "port": 80
+                                    }
+                                ],
+                                "targetFqdns": [
+                                    "owaspdirect.azurewebsites.net"
+                                ],
+                                "terminateTLS": false,
+                                "sourceIpGroups": [
+                                    "[resourceId('Microsoft.Network/ipGroups', variables('iPGroupName01'))]"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2021-06-01",
+            "name": "[variables('logAnalyticWorkspaceName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "retentionInDays": 30,
+                "sku": {
+                    "name": "PerGB2018"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Insights/diagnosticSettings",
+            "apiVersion": "2021-05-01-preview",
+            "scope": "[format('Microsoft.Network/azureFirewalls/{0}', variables('firewallName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticWorkspaceName'))]",
+                "[resourceId('Microsoft.Network/azureFirewalls', variables('firewallName'))]"
+            ],
+            "name": "diagnosticSettings",
+            "properties": {
+                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticWorkspaceName'))]",
+                "logs": [
+                    {
+                        "category": "AzureFirewallNetworkRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AzureFirewallApplicationRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AzureFirewallDnsProxy",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWNetworkRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWApplicationRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWNatRule",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWThreatIntel",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWIdpsSignature",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWDnsQuery",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWFqdnResolveFailure",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWApplicationRuleAggregation",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWNetworkRuleAggregation",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    },
+                    {
+                        "category": "AZFWNatRuleAggregation",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 0,
+                            "enabled": true
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/azureFirewalls",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('firewallName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('hubNetworkName'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('firewallPublicIPName1'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('firewallPublicIPName2'))]",
+                "[resourceId('Microsoft.Network/firewallPolicies', variables('firewallPolicyName'))]",
+                "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', variables('firewallPolicyName'), 'DefaultDnatRuleCollectionGroup')]",
+                "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', variables('firewallPolicyName'), 'DefaultNetworkRuleCollectionGroup')]"
+            ],
+            "properties": {
+                "sku": {
+                    "name": "AZFW_VNet",
+                    "tier": "Standard"
+                },
+                "threatIntelMode": "Alert",
+                "additionalProperties": {},
+                "managementIpConfiguration": {
+                    "name": "[variables('firewallPublicIPName2')]",
+                    "properties": {
+                        "publicIPAddress": {
+                            "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('firewallPublicIPName2'))]"
+                        },
+                        "subnet": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('hubNetworkName'), variables('hubNetworkAzureFirewallManagementSubnetName'))]"
+                        }
+                    }
+                },
+                "ipConfigurations": [
+                    {
+                        "name": "[variables('firewallName')]",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('firewallPublicIPName1'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('hubNetworkName'), variables('hubNetworkAzureFirewallSubnetName'))]"
+                            }
+                        }
+                    }
+                ],
+                "firewallPolicy": {
+                    "id": "[resourceId('Microsoft.Network/firewallPolicies', variables('firewallPolicyName'))]"
+                }
+            },
+            "zones": [
+                "1",
+                "2",
+                "3"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('routeTableName1')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/azureFirewalls', variables('firewallName'))]"
+            ],
+            "properties": {
+                "disableBgpRoutePropagation": true,
+                "routes": [
+                    {
+                        "name": "[variables('routeName01')]",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[reference(resourceId('Microsoft.Network/azureFirewalls', variables('firewallName')), '2020-05-01').ipConfigurations[0].properties.privateIpAddress]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('routeTableName2')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "[variables('routeName03')]",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualNetworkGateway",
+                            "nextHopIpAddress": ""
+                        }
+                    },
+                    {
+                        "name": "[variables('routeName02')]",
+                        "properties": {
+                            "addressPrefix": "23.102.135.246/32",
+                            "nextHopType": "Internet",
+                            "nextHopIpAddress": ""
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[format('{0}/{1}', variables('hubNetworkName'), format('{0}-{1}', variables('hubNetworkName'), variables('spokeNetworkName')))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('hubNetworkName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('spokeNetworkName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworkGateways', variables('gatewayHubName'))]"
+            ],
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": true,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('spokeNetworkName'))]"
+                    }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-05-01",
+            "name": "[format('{0}/{1}', variables('spokeNetworkName'), format('{0}-{1}', variables('spokeNetworkName'), variables('hubNetworkName')))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('hubNetworkName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('spokeNetworkName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworkGateways', variables('gatewayHubName'))]"
+            ],
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": true,
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('hubNetworkName'))]"
+                    }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2021-02-01",
+            "name": "[variables('spokeNetworkVMNicName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('spokeNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                {
+                    "name": "ipconfig1",
+                    "properties": {
+                    "privateIPAllocationMethod": "Dynamic",
+                    "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('spokeNetworkName'), variables('spokeNetworkSubnetName'))]"
+                    }
+                    }
+                }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2021-03-01",
+            "name": "[variables('spokeNetworkVMName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('spokeNetworkVMNicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('spokeNetworkVMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[variables('OSVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                        "storageAccountType": "StandardSSD_LRS"
+                        }
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('spokeNetworkVMNicName'))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "2020-11-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('gatewayHubPublicIPName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "publicIPAddressVersion": "IPv4",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": [],
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('gatewayHubPublicIPDomainNameLabel')]"
+                }
+            },
+            "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+            }
+        },
+        {
+            "apiVersion": "2020-11-01",
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "name": "[variables('gatewayHubName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('gatewayHubPublicIPName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('hubNetworkName'))]",
+                "[resourceId('Microsoft.Network/azureFirewalls', variables('firewallName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('hubNetworkName'), variables('hubNetworkGatewaySubnetName'))]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('gatewayHubPublicIPName'))]"
+                            }
+                        },
+                        "name": "vnetGatewayConfig"
+                    }
+                ],
+                "sku": {
+                    "name": "[variables('vpnSku')]",
+                    "tier": "[variables('vpnSku')]"
+                },
+                "gatewayType": "Vpn",
+                "vpnType": "[variables('vpnType')]",
+                "enableBgp": "true",
+                "bgpSettings": {
+                    "asn": "[variables('asn1')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/localNetworkGateways",
+            "apiVersion": "2020-08-01",
+            "name": "[variables('localNetworkGatewayName1')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworkGateways', variables('gatewayHubName'))]"
+            ],
+            "properties": {
+                "fqdn": "[reference(variables('gatewayHubPublicIPId'),'2020-06-01').dnsSettings.fqdn]",
+                "bgpSettings": {
+                    "asn": "[variables('asn1')]",
+                    "bgpPeeringAddress": "[first(split( reference(resourceId('Microsoft.Network/virtualNetworkGateways',variables('gatewayHubName')),'2020-06-01').bgpSettings.bgpPeeringAddress , ','))]",
+                    "peerWeight": 0
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "azureVNGResourceID": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworkGateways', variables('gatewayHubName'))]"
+        },
+        "azureLNGResourceID": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/localNetworkGateways', variables('localNetworkGatewayName1'))]"
+        },
+        "workspaceResourceID": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.OperationalInsights/workspaces',variables('logAnalyticWorkspaceName'))]"
+        },
+        "userMIPrincipalID": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2018-11-30').principalId]"
+        },
+        "userMIResourceID": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName'))]"
+        }
+    }
+}

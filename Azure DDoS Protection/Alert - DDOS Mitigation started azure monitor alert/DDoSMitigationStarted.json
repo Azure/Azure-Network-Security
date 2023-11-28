@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"workspaceName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Name of the Log Analytics workspace"
+            }
+		},
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+            "description": "Location must match the location of the workspace - Do not edit this parameter."
+            }
+        }
+    },
+    "variables": {
+        "alertLocation": "[parameters('location')]",
+        "alertName": "DDoS Mitigation Started - Potential Attack",
+        "alertDescription": "This alert detects a MitigationStarted event logged by Azure DDoS Protection Standard.",
+        "alertStatus": "true",
+        "alertSource":{
+            "Query": "AzureDiagnostics | where Category == \"DDoSProtectionNotifications\" | where type_s == \"MitigationStarted\"",
+			"SourceId": "[resourceId('Microsoft.OperationalInsights/workspaces',parameters('workspaceName'))]",
+            "Type":"ResultCount"
+        },
+        "alertSchedule":{
+            "Frequency": 5,
+            "Time": 5
+        },
+        "alertActions":{
+            "SeverityLevel": "2"
+        },
+        "alertTrigger":{
+            "Operator":"GreaterThan",
+            "Threshold":"0"
+        }
+    },
+    "resources":[ {
+        "name":"[variables('alertName')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[variables('alertLocation')]",
+        "properties":{
+            "description": "[variables('alertDescription')]",
+            "enabled": "[variables('alertStatus')]",
+            "source": {
+                "query": "[variables('alertSource').Query]",
+                "dataSourceId": "[variables('alertSource').SourceId]",
+                "queryType":"[variables('alertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "[variables('alertSchedule').Frequency]",
+                "timeWindowInMinutes": "[variables('alertSchedule').Time]"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"[variables('alertActions').SeverityLevel]",
+                "trigger":{
+                    "thresholdOperator":"[variables('alertTrigger').Operator]",
+                    "threshold":"[variables('alertTrigger').Threshold]"
+                }
+            }
+        }
+    } ]
+}

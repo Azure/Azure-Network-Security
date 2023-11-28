@@ -1,0 +1,217 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceNames": {
+      "type": "object"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/connections",
+      "apiVersion": "2016-06-01",
+      "name": "[parameters('resourceNames').tableConnection]",
+      "location": "[resourceGroup().location]",
+      "kind": "V1",
+      "properties": {
+        "displayName": "ddos-protection-cache",
+        "customParameterValues": {},
+        "parameterValues": {
+          "storageaccount": "[tolower(parameters('resourceNames').storage)]",
+          "sharedkey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', tolower(parameters('resourceNames').storage)), '2019-06-01').keys[0].value]"
+        },
+        "api": {
+          "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azuretables')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2017-07-01",
+      "name": "[parameters('resourceNames').ddosProtectionSchedulerApp]",
+      "dependsOn": [ "[resourceId('Microsoft.Web/connections', parameters('resourceNames').tableConnection)]" ],
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {}
+            }
+          },
+          "actions": {
+            "Condition": {
+              "actions": {
+                "DisableDDoSProtection": {
+                  "runAfter": {
+                    "Until": [
+                      "Succeeded"
+                    ]
+                  },
+                  "type": "Workflow",
+                  "inputs": {
+                    "host": {
+                      "triggerName": "manual",
+                      "workflow": {
+                        "id": "[resourceId('Microsoft.Logic/workflows', parameters('resourceNames').disableDdosProtectionApp)]"
+                      }
+                    }
+                  }
+                },
+                "Until": {
+                  "actions": {
+                    "Delay_until": {
+                      "runAfter": {},
+                      "type": "Wait",
+                      "inputs": {
+                        "until": {
+                          "timestamp": "@variables('TimeToStop')"
+                        }
+                      }
+                    },
+                    "Get_new_time_to_stop": {
+                      "runAfter": {
+                        "Delay_until": [
+                          "Succeeded"
+                        ]
+                      },
+                      "type": "ApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connection": {
+                            "name": "@parameters('$connections')['azuretables']['connectionId']"
+                          }
+                        },
+                        "method": "get",
+                        "path": "/Tables/@{encodeURIComponent('ddosProtectionRequestsCahce')}/entities(PartitionKey='@{encodeURIComponent('EnableRequest')}',RowKey='@{encodeURIComponent('TimeToStop')}')"
+                      }
+                    },
+                    "Set_variable": {
+                      "runAfter": {
+                        "Get_new_time_to_stop": [
+                          "Succeeded"
+                        ]
+                      },
+                      "type": "SetVariable",
+                      "inputs": {
+                        "name": "TimeToStop",
+                        "value": "@{outputs('Get_new_time_to_stop').body.Value}"
+                      }
+                    }
+                  },
+                  "runAfter": {},
+                  "expression": "@less(variables('TimeToStop'), utcNow())",
+                  "limit": {
+                    "count": 600,
+                    "timeout": "PT24H"
+                  },
+                  "type": "Until"
+                }
+              },
+              "runAfter": {
+                "Insert_or_Merge_Entity": [
+                  "Succeeded"
+                ]
+              },
+              "expression": {
+                "and": [
+                  {
+                    "equals": [
+                      "@outputs('EnableDDoSProtection').statusCode",
+                      201
+                    ]
+                  }
+                ]
+              },
+              "type": "If"
+            },
+            "EnableDDoSProtection": {
+              "runAfter": {},
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "triggerName": "manual",
+                  "workflow": {
+                    "id": "[resourceId('Microsoft.Logic/workflows', parameters('resourceNames').enableDdosProtectionApp)]"
+                  }
+                }
+              }
+            },
+            "Initialize_variable": {
+              "runAfter": {
+                "EnableDDoSProtection": [
+                  "Succeeded"
+                ]
+              },
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "TimeToStop",
+                    "type": "string",
+                    "value": "@{addMinutes(utcNow(), 90)}"
+                  }
+                ]
+              }
+            },
+            "Insert_or_Merge_Entity": {
+              "runAfter": {
+                "Initialize_variable": [
+                  "Succeeded"
+                ]
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "body": {
+                  "Value": "@{variables('TimeToStop')}"
+                },
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['azuretables']['connectionId']"
+                  }
+                },
+                "method": "patch",
+                "path": "/Tables/@{encodeURIComponent('ddosProtectionRequestsCahce')}/entities(PartitionKey='@{encodeURIComponent('EnableRequest')}',RowKey='@{encodeURIComponent('TimeToStop')}')"
+              }
+            },
+            "Response": {
+              "runAfter": {
+                "Condition": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "kind": "Http",
+              "inputs": {
+                "statusCode": 200
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "azuretables": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('resourceNames').tableConnection)]",
+                "connectionName": "azuretables",
+                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azuretables')]"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

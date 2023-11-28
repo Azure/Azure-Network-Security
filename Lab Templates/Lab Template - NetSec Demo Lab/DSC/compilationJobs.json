@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceNames": {
+      "type": "object"
+    },
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcnow()]"
+    }
+
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "name": "[concat(parameters('resourceNames').automationAccountName, '/', parameters('configurations')[copyIndex()].name, guid(parameters('timestamp')))]",
+      "type": "Microsoft.Automation/automationAccounts/compilationjobs",
+      "apiVersion": "2018-01-15",
+      "location": "[variables('automationAccountLocation')]",
+      "copy": {
+        "name": "jobLoop",
+        "count": "[length(parameters('configurations'))]"
+      },
+      "properties": {
+        "configuration": {
+          "name": "[parameters('configurations')[copyIndex()].name]"
+        },
+        "parameters": {
+          "configurationData": "[string(parameters('configurations')[copyIndex()].data)]"
+        }
+      }
+    }
+  ]
+}

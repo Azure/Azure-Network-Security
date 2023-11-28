@@ -1,0 +1,216 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroup1": {
+            "type": "string",
+            "defaultValue": "rg-fw-azure",
+            "metadata": {
+                "description": "Resource Group for the Azure environment. Do not change this value."
+            }
+        },
+        "resourceGroup2": {
+            "type": "string",
+            "defaultValue": "rg-fw-onprem",
+            "metadata": {
+                "description": "Resource Group for the on-premises environment. Do not change this value."
+            }
+        },
+        "adminUserName": {
+            "type": "string",
+            "defaultValue": "AzureUser",
+            "metadata": {
+                "description": "The admin user name for the Windows virtual machines."
+            }
+        },
+        "adminPassword": {
+            "type": "secureString",
+            "metadata": {
+                "description": "The admin password for the Windows virtual machines."
+            }
+        },
+        "sharedKey": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Shared key (PSK) for IPSec tunnel"
+            }
+        }
+    },
+    "variables": {
+        "roleAssignmentId": "[guid(concat(subscription().id, 'contributor'))]",
+        "contributorRoleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "location": "[deployment().location]",
+            "name": "[parameters('resourceGroup1')]",
+            "apiVersion": "2022-05-01"
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "location": "[deployment().location]",
+            "name": "[parameters('resourceGroup2')]",
+            "apiVersion": "2022-05-01"
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2020-10-01-preview",
+            "name": "[variables('roleAssignmentId')]",
+            "dependsOn": [
+                "azureLinkedTemplate"
+            ],
+            "properties": {
+                "roleDefinitionId": "[variables('contributorRoleDefinitionId')]",
+                "principalId": "[reference('azureLinkedTemplate').outputs.userMIPrincipalID.value]",
+                "principalType": "ServicePrincipal"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "azureLinkedTemplate",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroup1'))]"
+            ],
+            "resourceGroup": "[parameters('resourceGroup1')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "adminUserName": {
+                        "value": "[parameters('adminUserName')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                },
+                "templateLink": {
+                    "uri":"https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Templates/Linked%20Templates/azureLinkedTemplate.json",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "onPremLinkedTemplate",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroup2'))]"
+            ],
+            "resourceGroup": "[parameters('resourceGroup2')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "adminUserName": {
+                        "value": "[parameters('adminUserName')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                },
+                "templateLink": {
+                    "uri":"https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Templates/Linked%20Templates/onPremLinkedTemplate.json",
+                    "contentVersion":"1.0.0.0"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "azfwConnectionsTemplate",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroup1'))]",
+                "azureLinkedTemplate",
+                "onPremLinkedTemplate"
+            ],
+            "resourceGroup": "[parameters('resourceGroup1')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "sharedKey": {
+                        "value": "[parameters('sharedKey')]"
+                    },
+                    "azureVNG": {
+                        "value": "[reference('azureLinkedTemplate').outputs.azureVNGResourceID.value]"
+                    },
+                    "azureLNG": {
+                        "value": "[reference('azureLinkedTemplate').outputs.azureLNGResourceID.value]"
+                    },
+                    "onPremVNG": {
+                        "value": "[reference('onPremLinkedTemplate').outputs.onPremVNGResourceID.value]"
+                    },
+                    "onPremLNG": {
+                        "value": "[reference('onPremLinkedTemplate').outputs.onPremLNGResourceID.value]"
+                    },
+                    "userMI": {
+                        "value": "[reference('azureLinkedTemplate').outputs.userMIResourceID.value]"
+                    }
+                },
+                "templateLink": {
+                "uri":"https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Templates/Linked%20Templates/azfwConnectionsLinkedTemplate.json",
+                "contentVersion":"1.0.0.0"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "diagnosticLinkedTemplate",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroup2'))]",
+                "azureLinkedTemplate",
+                "onPremLinkedTemplate"
+            ],
+            "resourceGroup": "[parameters('resourceGroup2')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "onPremFirewall": {
+                        "value": "[reference('onPremLinkedTemplate').outputs.onPremFWResourceID.value]"
+                    },
+                    "workspace": {
+                        "value": "[reference('azureLinkedTemplate').outputs.workspaceResourceID.value]"
+                    }
+                },
+                "templateLink": {
+                    "uri":"https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Lab%20Templates/Lab%20Template%20-%20Azure%20Firewall%20Forced%20Tunnel%20Lab/Templates/Linked%20Templates/diagnosticLinkedTemplate.json",
+                    "contentVersion":"1.0.0.0"
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "azureVNGResourceID": {
+            "type": "string",
+            "value": "[reference('azureLinkedTemplate').outputs.azureVNGResourceID.value]"
+        },
+        "azureLNGResourceID": {
+            "type": "string",
+            "value": "[reference('azureLinkedTemplate').outputs.azureLNGResourceID.value]"
+        },
+        "workspaceResourceID": {
+            "type": "string",
+            "value": "[reference('azureLinkedTemplate').outputs.workspaceResourceID.value]"
+        },
+        "userMIPrincipalID": {
+            "type": "string",
+            "value": "[reference('azureLinkedTemplate').outputs.userMIPrincipalID.value]"
+        },
+        "userMIResourceID": {
+            "type": "string",
+            "value": "[reference('azureLinkedTemplate').outputs.userMIResourceID.value]"
+        },
+        "onPremVNGResourceID": {
+            "type": "string",
+            "value": "[reference('onPremLinkedTemplate').outputs.onPremVNGResourceID.value]"
+        },
+        "onPremLNGResourceID": {
+            "type": "string",
+            "value": "[reference('onPremLinkedTemplate').outputs.onPremLNGResourceID.value]"
+        },
+        "onPremFWResourceID": {
+            "type": "string",
+            "value": "[reference('onPremLinkedTemplate').outputs.onPremFWResourceID.value]"
+        }
+    }
+}
