@@ -1,6 +1,0 @@
-AzureDiagnostics
-| where TimeGenerated >= ago(15m)
-| where Category == "AzureFirewallNetworkRule"
-| where OperationName == "AzureFirewallIDSLog"
-| parse msg_s with * "TCP request from " Source " to " Destination ". Action: " ActionTaken ". Rule: " IDPSSig ". IDS: " IDSMessage ". Priority: " Priority ". Classification: " Classification
-| project TimeGenerated, Source, Destination, ActionTaken, IDPSSig, IDSMessage, Priority, Classification
