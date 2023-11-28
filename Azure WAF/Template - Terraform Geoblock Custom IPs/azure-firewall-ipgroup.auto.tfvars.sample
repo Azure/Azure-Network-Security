@@ -1,5 +1,0 @@
-resource_group_name = "terraformtesting"
-resource_group_location = "westus2"
-csv_file_path = "../../ip_group_csvs/ipg_part_1.csv"
-waf_policy_name = "test_policy"
-rule_name = "test_block_rule"
