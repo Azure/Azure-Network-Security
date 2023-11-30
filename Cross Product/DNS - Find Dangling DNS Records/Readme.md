@@ -1,4 +1,4 @@
-## Tool to generate the dangling domains for a tenant (multiple subscriptions)
+## Tool to generate a list of dangling domains for a tenant (multiple subscriptions)
 
 This tool is to be used by Azure customers to list all domain chains that have a CNAME associated to an existing Azure resource that was created on their subscriptions or tenants. Alternatively, for customers like Contoso, who have the CNAMES in the other DNS services pointing to Azure resources, the customer can provide the CNAMEs in an input file to the tool. You can use this tool by executing this as a PowerShell script.
 
