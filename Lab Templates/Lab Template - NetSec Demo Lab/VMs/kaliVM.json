@@ -55,7 +55,7 @@
         "[concat('Microsoft.Network/networkInterfaces/', parameters('resourceNames').kaliVm, '-nic')]"
       ],
       "plan": {
-        "name": "kali",
+        "name": "kali-2023-3",
         "publisher": "kali-linux",
         "product": "kali"
       },
