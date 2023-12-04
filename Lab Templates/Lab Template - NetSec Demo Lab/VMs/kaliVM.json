@@ -74,7 +74,7 @@
           "imageReference": {
             "publisher": "kali-linux",
             "offer": "kali",
-            "sku": "kali",
+            "sku": "kali-2023-3",
             "version": "latest"
           }
         },
