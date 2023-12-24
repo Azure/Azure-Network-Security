@@ -1,0 +1,44 @@
+{
+    "properties": {
+      "displayName": "Upgrade your Azure Firewall Standard SKU to Premium SKU for Next Generation Protection",
+      "policyType": "BuiltIn",
+      "mode": "Indexed",
+      "description": "If you are looking for Next Generation protection like IDPS and TLS inspection, you should consider upgrading your Azure Firewall to Premium SKU.",
+      "metadata": {
+        "version": "1.0.0",
+        "category": "Network"
+      },
+      "parameters": {
+        "effect": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Effect",
+            "description": "Enable or disable the execution of the policy"
+          },
+          "allowedValues": [
+            "Audit",
+            "Deny",
+            "Disabled"
+          ],
+          "defaultValue": "Audit"
+        }
+      },
+      "policyRule": {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Network/azureFirewalls"
+            },
+            {
+              "field": "Microsoft.Network/azureFirewalls/sku.tier",
+              "equals": "Standard"
+            }
+          ]
+        },
+        "then": {
+          "effect": "[parameters('effect')]"
+        }
+      }
+    }
+}

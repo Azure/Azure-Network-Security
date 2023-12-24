@@ -1,0 +1,292 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.21.1.54444",
+      "templateHash": "16686573946872607909"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The Azure region where the resources should be deployed."
+      }
+    }
+  },
+  "variables": {
+    "appgwVnetName": "[format('vnet-{0}-waf', uniqueString(resourceGroup().id))]",
+    "appgwVnetAddress": "192.168.0.0/24",
+    "appgwVnetSubnet1Name": "snet-appgw",
+    "appgwVnetSubnet1Address": "192.168.0.0/26",
+    "appgwPublicIp": "[format('pip-appgw-{0}-waf', uniqueString(resourceGroup().id))]",
+    "appgwPublicIpDomainNameLabel": "[format('owasp-{0}', uniqueString(resourceGroup().id))]",
+    "appgwPublicIpSku": {
+      "name": "Standard",
+      "tier": "Regional"
+    },
+    "coreRuleSets": {
+      "ruleSetType": "Microsoft_DefaultRuleSet",
+      "ruleSetVersion": "2.1"
+    },
+    "logScrubRule1": {
+      "matchVariable": "RequestIPAddress",
+      "selectorMatchOperator": "EqualsAny",
+      "state": "Enabled"
+    },
+    "serverFarmName": "[format('asf-{0}', uniqueString(resourceGroup().id))]",
+    "webAppName": "[format('owasp-{0}', uniqueString(resourceGroup().id))]",
+    "linuxFxVersion": "DOCKER|bkimminich/juice-shop:latest",
+    "logAnalyticsWorkspaceName": "[format('waf-workspace-{0}', uniqueString(resourceGroup().id))]",
+    "appgwName": "[format('appgw-{0}-waf', uniqueString(resourceGroup().id))]",
+    "appgwDiagnosticName": "appgw-diag"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/{1}', variables('appgwVnetName'), variables('appgwVnetSubnet1Name'))]",
+      "properties": {
+        "addressPrefix": "[variables('appgwVnetSubnet1Address')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('appgwVnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2022-05-01",
+      "name": "[variables('appgwVnetName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('appgwVnetAddress')]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2022-05-01",
+      "name": "[variables('appgwPublicIp')]",
+      "location": "[parameters('location')]",
+      "sku": "[variables('appgwPublicIpSku')]",
+      "properties": {
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('appgwPublicIpDomainNameLabel')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies",
+      "apiVersion": "2023-02-01",
+      "name": "[format('waf-appgw-{0}', uniqueString(resourceGroup().id))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "managedRules": {
+          "managedRuleSets": [
+            "[variables('coreRuleSets')]"
+          ]
+        },
+        "policySettings": {
+          "state": "Enabled",
+          "mode": "Prevention",
+          "requestBodyCheck": true,
+          "maxRequestBodySizeInKb": 10,
+          "fileUploadLimitInMb": 100,
+          "logScrubbing": {
+            "scrubbingRules": [
+              "[variables('logScrubRule1')]"
+            ],
+            "state": "Enabled"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('serverFarmName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "F1"
+      },
+      "kind": "app,linux",
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('webAppName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('serverFarmName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "[variables('linuxFxVersion')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('serverFarmName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2022-10-01",
+      "name": "[variables('logAnalyticsWorkspaceName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "retentionInDays": 30,
+        "sku": {
+          "name": "PerGB2018"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/applicationGateways",
+      "apiVersion": "2023-02-01",
+      "name": "[variables('appgwName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "name": "WAF_v2",
+          "tier": "WAF_v2",
+          "capacity": 2
+        },
+        "gatewayIPConfigurations": [
+          {
+            "name": "appGatewayIpConfig",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('appgwVnetName'), variables('appgwVnetSubnet1Name'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "appGatewayBackendPool",
+            "properties": {
+              "backendAddresses": [
+                {
+                  "fqdn": "[reference(resourceId('Microsoft.Web/sites', variables('webAppName')), '2022-03-01').defaultHostName]"
+                }
+              ]
+            }
+          }
+        ],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "appGatewayBackendHttpSettings",
+            "properties": {
+              "port": 443,
+              "protocol": "Https",
+              "cookieBasedAffinity": "Disabled",
+              "pickHostNameFromBackendAddress": true,
+              "requestTimeout": 120
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "appGatewayFrontendPort",
+            "properties": {
+              "port": 80
+            }
+          }
+        ],
+        "frontendIPConfigurations": [
+          {
+            "name": "appGatewayFrontendIp",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('appgwPublicIp'))]"
+              }
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "appGatewayHttpListener",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('appgwName'), 'appGatewayFrontendIp')]"
+              },
+              "frontendPort": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('appgwName'), 'appGatewayFrontendPort')]"
+              },
+              "protocol": "Http",
+              "hostName": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('appgwPublicIp')), '2022-05-01').dnsSettings.fqdn]"
+            }
+          }
+        ],
+        "requestRoutingRules": [
+          {
+            "name": "appGatewayRule",
+            "properties": {
+              "priority": 10,
+              "ruleType": "Basic",
+              "httpListener": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', variables('appgwName'), 'appGatewayHttpListener')]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', variables('appgwName'), 'appGatewayBackendPool')]"
+              },
+              "backendHttpSettings": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', variables('appgwName'), 'appGatewayBackendHttpSettings')]"
+              }
+            }
+          }
+        ],
+        "firewallPolicy": {
+          "id": "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', format('waf-appgw-{0}', uniqueString(resourceGroup().id)))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('appgwPublicIp'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('appgwVnetName'), variables('appgwVnetSubnet1Name'))]",
+        "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', format('waf-appgw-{0}', uniqueString(resourceGroup().id)))]",
+        "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/applicationGateways/{0}', variables('appgwName'))]",
+      "name": "[variables('appgwDiagnosticName')]",
+      "properties": {
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
+        "logs": [
+          {
+            "category": "ApplicationGatewayAccessLog",
+            "enabled": true
+          },
+          {
+            "category": "ApplicationGatewayPerformanceLog",
+            "enabled": true
+          },
+          {
+            "category": "ApplicationGatewayFirewallLog",
+            "enabled": true
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/applicationGateways', variables('appgwName'))]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
+      ]
+    }
+  ]
+}

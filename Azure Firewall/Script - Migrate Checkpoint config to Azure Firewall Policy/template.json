@@ -1,0 +1,99 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "resources": [
+        {
+            "apiVersion": "2021-08-01",
+            "location": "[variables('location')]",
+            "name": "azfwpolicy",
+            "properties": {
+                "dnsSettings": {
+                    "enableProxy": "true"
+                },
+                "sku": {
+                    "tier": "Standard"
+                },
+                "threatIntelMode": "Alert"
+            },
+            "type": "Microsoft.Network/firewallPolicies"
+        },
+        {
+            "apiVersion": "2021-08-01",
+            "location": "[variables('location')]",
+            "name": "GRP_App1",
+            "properties": {
+                "ipAddresses": [
+                    "10.0.1.32/27",
+                    "10.0.1.64/26"
+                ]
+            },
+            "type": "Microsoft.Network/ipGroups"
+        },
+        {
+            "apiVersion": "2021-08-01",
+            "location": "[variables('location')]",
+            "name": "Application_1",
+            "properties": {
+                "ipAddresses": [
+                    "10.0.1.37/32",
+                    "10.0.1.36/32"
+                ]
+            },
+            "type": "Microsoft.Network/ipGroups"
+        },
+        {
+            "apiVersion": "2021-08-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', 'azfwpolicy')]",
+                "[resourceId('Microsoft.Network/ipGroups', 'GRP_App1')]",
+                "[resourceId('Microsoft.Network/ipGroups', 'Application_1')]"
+            ],
+            "location": "[variables('location')]",
+            "name": "azfwpolicy/importedFromCheckpoint",
+            "properties": {
+                "priority": "10000",
+                "ruleCollections": [
+                    {
+                        "action": {
+                            "type": "allow"
+                        },
+                        "name": "from-chkp-net-Accept-0",
+                        "priority": "10000",
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "rules": [
+                            {
+                                "destinationAddresses": [
+                                    "10.0.1.37/32",
+                                    "10.0.1.36/32"
+                                ],
+                                "destinationFqdns": [],
+                                "destinationIpGroups": [],
+                                "destinationPorts": [
+                                    "53"
+                                ],
+                                "destinationServiceTags": [],
+                                "ipProtocols": [
+                                    "udp",
+                                    "tcp"
+                                ],
+                                "name": "DNS Azure rule",
+                                "ruleType": "NetworkRule",
+                                "sourceAddresses": [
+                                    "10.0.1.32/27",
+                                    "10.0.1.64/26"
+                                ],
+                                "sourceIpGroups": [],
+                                "sourceServiceTags": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups"
+        }
+    ],
+    "variables": {
+        "location": "[resourceGroup().location]"
+    }
+}

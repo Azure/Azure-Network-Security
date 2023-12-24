@@ -1,6 +1,6 @@
 ## Cross Product Samples
 
-Samples in this folder apply to multiple Azure Network Security products and information about other Azure Network products
+Samples in this directory apply to multiple Azure Network Security products and information about other Azure Network products
 
 ## Contributing
 

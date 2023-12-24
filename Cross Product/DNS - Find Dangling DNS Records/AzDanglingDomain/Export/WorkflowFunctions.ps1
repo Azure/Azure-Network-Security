@@ -30,21 +30,12 @@ Function Get-AZResourcesListForWorkFlow
     }
     $AzResourcesList = [System.Collections.ArrayList ]::new()
     
-    $AzResourcesList = Search-AzGraph -Query $( -join ($query, ' |  summarize TotalResources=count()'))
-    if(($null -ne $AzResourcesList) -and   ($null -ne $AzResourcesList.Data))
-    {
-            $AzResourcesList = $AzResourcesList.Data
-    }
-    $numberOfResources =  $AzResourcesList.TotalResources
+    $numberOfResources = (Search-AzGraph -Query $( -join ($query, ' |  summarize TotalResources=count()'))).TotalResources
     $maxRecords = 1000
     $skipRecords = 0
     Do
     {
         $AzResourcesList += Get-AzResources -startId $maxRecords -endId $skipRecords -query $query
-        if(($null -ne $AzResourcesList) -and   ($null -ne $AzResourcesList.Data))
-        {
-                $AzResourcesList = $AzResourcesList.Data
-        }
         $skipRecords += $maxRecords
     
     }Until($numberOfResources -le $skipRecords)
