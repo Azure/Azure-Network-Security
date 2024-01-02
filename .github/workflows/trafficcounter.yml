@@ -14,13 +14,15 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         ref: "traffic"
     
     # Calculates traffic and clones and stores in CSV file
-    - name: GitHub traffic 
+    - name: Repository Traffic
       uses: sangonzal/repository-traffic-action@v.0.1.6
+            
+      
       env:
         TRAFFIC_ACTION_TOKEN: ${{secrets.TRAFFIC_ACTION_TOKEN}} 
      
@@ -29,7 +31,7 @@ jobs:
       uses: EndBug/add-and-commit@v4
       with:
         author_name: Tobi O
-        message: "GitHub traffic counter"
+        message: "GitHub traffic"
         add: "./traffic/*"
         ref: "traffic"  # commits to branch "traffic"
  
