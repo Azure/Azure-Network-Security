@@ -25,6 +25,9 @@ There are 6 parameters with defaults
 * DiagnosticsWorkspaceResourceGroup
 * DDOSProtectionConfiguration (bool) - true by default
 
+> [!NOTE]
+> Even if *DDOSProtectionConfiguration*  will be set to false, the deployment will still create a DDoS Protection Plan resource and billing will start. This DDoS plan will be associated to the Hub VNet (*Virtual Network-1*) but will be not enabled. The Azure Portal will not show this VNet as a protected resource, this is a known issue and will be fixed in the future. To verify and check the protected VNets please use the Azure CLI command: `az network ddos-protection show --resource-group <resource-group-name> --name <ddos-protection-plan-name>`. To disable the DDoS Protection Plan for a specific VNet, use the Azure CLI command: `az network vnet update --resource-group MyResourceGroup --name MyVnet --ddos-protection-plan MyDdosProtectionPlan --ddos-protection false`. Only after removing all the associations, it will be possible to delete the DDoS Protection Plan resource.
+
 Adding some `samples` to give context
 - Subscription ID : "12345678-1234-1234-1234-b826eef6c592"
 - Log Analytics Workspace name: "TestWorkspace"
