@@ -33,6 +33,13 @@ Adding some `samples` to give context
 **Example Powershell command with some parameters configured:**
 >New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Azure%20WAF/ARM%20Template%20-%20WAF%20Attack%20Testing%20Lab/AzNetSecdeploy_Juice-Shop_AZFW-Rules_Updated.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
 
+**Kali Linux Image details**
+
+Kali Linux version has been updated to **kali 2023.3**. The images are available in the [Azure Marketplace](https://azuremarketplace.microsoft.com/marketplace/apps/kali-linux.kali?tab=PlansAndPrice). Before running the template, if not deployed already in your current subscription, please accept the terms and conditions for the Kali Linux image in the Azure Marketplace. An example of the command to accept the terms and conditions is below:
+
+```az vm image terms accept --urn kali-linux:kali:kali-2023-3:2023.3.0```
+
+More details on image licensing terms are covered in this [article](https://learn.microsoft.com/azure/virtual-machines/linux/cli-ps-findimage).
 
 ## What is included with the AzNetSec Deployment Template
 

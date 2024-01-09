@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "DefaultUserName": {
@@ -1718,9 +1718,9 @@
         "[concat('Microsoft.Network/networkInterfaces/', variables('NIC-Name2'))]"
       ],
       "plan": {
-        "name": "kali",
+        "name": "kali-2023-3",
         "publisher": "kali-linux",
-        "product": "kali"
+        "product": "kali" 
       },
       "properties": {
         "hardwareProfile": {
@@ -1737,8 +1737,8 @@
           "imageReference": {
             "publisher": "kali-linux",
             "offer": "kali",
-            "sku": "kali",
-            "version": "latest"
+            "sku": "kali-2023-3",
+            "version": "2023.3.0"
           }
         },
         "networkProfile": {
