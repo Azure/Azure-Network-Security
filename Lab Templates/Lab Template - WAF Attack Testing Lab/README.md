@@ -27,7 +27,7 @@ There are 6 parameters with defaults
 
 Adding some `samples` to give context
 - Subscription ID : "12345678-1234-1234-1234-b826eef6c592"
-- Log Analyitcs Workspace name: "TestWorkspace"
+- Log Analytics Workspace name: "TestWorkspace"
 - Resource Group Log Analytics workspace is in: "TestResourceGroup"
 
 **Example Powershell command with some parameters configured:**
@@ -58,8 +58,8 @@ More details on image licensing terms are covered in this [article](https://lear
 | Route Table | Pre-configured RT Associated to VN2 and VN3 subnets with default route pointing to Azure firewall private IP address |
 | Application Gateway v2 (WAF) | Pre-configured to publish webapp on HTTP on Public Interface|
 | Azure Firewall with Firewall Manager | Pre-configured with RDP(DNAT) rules to 3 VM's and allow search engine access(application rules) from VM's. Network rule configured to allow SMB, RDP and SSH access between VM's. Azure firewall is deployed in Hub Virtual Network managed by Firewall manager |
-| Frontdoor | Pre-configured designer with Backend pool as Applicaion gateway public interface  |
-| WebApp(PaaS) | Pre-configured app for Frontdoor and Application Gateway WAF testing |
+| Front Door | Pre-configured designer with Backend pool as Application gateway public interface  |
+| WebApp(PaaS) | Pre-configured app for Front Door and Application Gateway WAF testing |
 
 > This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace
 
