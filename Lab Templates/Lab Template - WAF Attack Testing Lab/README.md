@@ -25,14 +25,24 @@ There are 6 parameters with defaults
 * DiagnosticsWorkspaceResourceGroup
 * DDOSProtectionConfiguration (bool) - true by default
 
+> [!NOTE]
+> Even if *DDOSProtectionConfiguration*  will be set to false, the deployment will still create a DDoS Protection Plan resource and billing will start. This DDoS plan will be associated to the Hub VNet (*Virtual Network-1*) but will be not enabled. The Azure Portal will not show this VNet as a protected resource, this is a known issue and will be fixed in the future. To verify and check the protected VNets please use the Azure CLI command: `az network ddos-protection show --resource-group <resource-group-name> --name <ddos-protection-plan-name>`. To disable the DDoS Protection Plan for a specific VNet, use the Azure CLI command: `az network vnet update --resource-group MyResourceGroup --name MyVnet --ddos-protection-plan MyDdosProtectionPlan --ddos-protection false`. Only after removing all the associations, it will be possible to delete the DDoS Protection Plan resource.
+
 Adding some `samples` to give context
 - Subscription ID : "12345678-1234-1234-1234-b826eef6c592"
-- Log Analyitcs Workspace name: "TestWorkspace"
+- Log Analytics Workspace name: "TestWorkspace"
 - Resource Group Log Analytics workspace is in: "TestResourceGroup"
 
 **Example Powershell command with some parameters configured:**
 >New-AzResourceGroupDeployment -ResourceGroupName DeleteMe1 -TemplateUri https://raw.githubusercontent.com/Azure/Azure-Network-Security/master/Azure%20WAF/ARM%20Template%20-%20WAF%20Attack%20Testing%20Lab/AzNetSecdeploy_Juice-Shop_AZFW-Rules_Updated.json -DiagnosticsWorkspaceName "TestWorkspace" -DiagnosticsWorkspaceSubscription "12345678-1234-1234-1234-b826eef6c592" -DiagnosticsWorkspaceResourceGroup "TestResourceGroup" -DDOSProtectionConfiguration $true
 
+**Kali Linux Image details**
+
+Kali Linux version has been updated to **kali 2023.3**. The images are available in the [Azure Marketplace](https://azuremarketplace.microsoft.com/marketplace/apps/kali-linux.kali?tab=PlansAndPrice). Before running the template, if not deployed already in your current subscription, please accept the terms and conditions for the Kali Linux image in the Azure Marketplace. An example of the command to accept the terms and conditions is below:
+
+```az vm image terms accept --urn kali-linux:kali:kali-2023-3:2023.3.0```
+
+More details on image licensing terms are covered in this [article](https://learn.microsoft.com/azure/virtual-machines/linux/cli-ps-findimage).
 
 ## What is included with the AzNetSec Deployment Template
 
@@ -51,8 +61,8 @@ Adding some `samples` to give context
 | Route Table | Pre-configured RT Associated to VN2 and VN3 subnets with default route pointing to Azure firewall private IP address |
 | Application Gateway v2 (WAF) | Pre-configured to publish webapp on HTTP on Public Interface|
 | Azure Firewall with Firewall Manager | Pre-configured with RDP(DNAT) rules to 3 VM's and allow search engine access(application rules) from VM's. Network rule configured to allow SMB, RDP and SSH access between VM's. Azure firewall is deployed in Hub Virtual Network managed by Firewall manager |
-| Frontdoor | Pre-configured designer with Backend pool as Applicaion gateway public interface  |
-| WebApp(PaaS) | Pre-configured app for Frontdoor and Application Gateway WAF testing |
+| Front Door | Pre-configured designer with Backend pool as Application gateway public interface  |
+| WebApp(PaaS) | Pre-configured app for Front Door and Application Gateway WAF testing |
 
 > This build has diagnostic settings enabled by default; it requires a Log Analytics workspace for logs to be collected. https://docs.microsoft.com/en-us/azure/azure-monitor/learn/quick-create-workspace
 
