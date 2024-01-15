@@ -1,0 +1,62 @@
+{
+  "properties": {
+    "displayName": "Enable Rate Limit rule on Application Gateway WAF",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "The Azure Web Application Firewall (WAF) rate limit rule for Application Gateway controls the number of requests allowed from a particular client to the application during a rate limit duration.",
+    "metadata": {
+      "category": "Network",
+	  "version": "1.0.0"
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "Audit",
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Audit"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+          },
+          {
+            "count": {
+              "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/customRules[*]",
+              "where": {
+                "allOf": [
+                  {
+                    "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/customRules[*].ruleType",
+                    "equals": "RateLimitRule"
+                  },
+                  {
+                    "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/customRules[*].rateLimitDuration",
+                    "exists": true
+                  },
+                  {
+                    "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/customRules[*].rateLimitThreshold",
+                    "exists": true
+                  }
+                ]
+              }
+            },
+            "equals": 0
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  }
+}
