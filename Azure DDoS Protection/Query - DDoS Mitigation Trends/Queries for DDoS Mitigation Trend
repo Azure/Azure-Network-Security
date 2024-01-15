@@ -1,0 +1,20 @@
+//Query to get the trend of the total packets and the total packets dropped for each public IP address in a chart
+
+AzureDiagnostics
+| where Category == "DDoSMitigationReports"
+| where ReportType_s == "Post mitigation"
+| extend TrafficOverview = parse_json(TrafficOverview_s)
+| project IPAddress, MitigationPeriodStart_t, MitigationPeriodEnd_t, TrafficOverview
+| evaluate bag_unpack(TrafficOverview)
+| project IPAddress, MitigationPeriodStart_t, Total_packets, Total_packets_dropped
+| render barchart
+
+
+//Query to see DDoS Mitigation Duration And Attack Vectors
+
+AzureDiagnostics
+| where Category == "DDoSMitigationReports"
+| where ReportType_s == "Post mitigation"
+| extend MitigationDuration = datetime_diff("minute", MitigationPeriodEnd_t, MitigationPeriodStart_t) // output in minutes
+| project IPAddress, MitigationPeriodStart_t, MitigationPeriodEnd_t, MitigationDuration, AttackVectors_s
+| order by MitigationPeriodStart_t asc
