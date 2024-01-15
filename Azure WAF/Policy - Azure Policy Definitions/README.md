@@ -1,4 +1,4 @@
-# This repository contains Azure Policy Definition scripts for Azure WAF.*  
+# This repository contains Azure Policy Definition scripts for Azure WAF. 
 
 There are usually compliance obligations while utilizing Azure services including Azure Web Applicaiton Firewall (WAF), the extent of which depends on the sensitivity of your data, your company's compliance goals, and the relevant legal and regulatory requirements. Azure provides [built in policies]https://learn.microsoft.com/en-us/azure/governance/policy/samples/built-in-policies) and platform to create [custom policies](https://learn.microsoft.com/en-us/azure/governance/policy/tutorials/create-custom-policy-definition) to improve utilization of WAF services
 
