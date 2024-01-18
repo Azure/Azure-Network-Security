@@ -1162,7 +1162,7 @@
               "ruleSetVersion": "2.1",
               "ruleGroupOverrides": [
                 {
-                  "ruleGroupName": "REQUEST-920-PROTOCOL-ENFORCEMENT",
+                  "ruleGroupName": "PROTOCOL-ENFORCEMENT",
                   "rules": [
                     {
                       "ruleId": "920350",
