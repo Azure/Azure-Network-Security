@@ -1158,23 +1158,30 @@
           "exclusions": [],
           "managedRuleSets": [
             {
-              "ruleSetType": "OWASP",
-              "ruleSetVersion": "3.1",
+              "ruleSetType": "Microsoft_DefaultRuleSet",
+              "ruleSetVersion": "2.1",
               "ruleGroupOverrides": [
                 {
-                  "ruleGroupName": "REQUEST-920-PROTOCOL-ENFORCEMENT",
+                  "ruleGroupName": "PROTOCOL-ENFORCEMENT",
                   "rules": [
                     {
                       "ruleId": "920350",
-                      "state": "Disabled"
+                      "state": "Disabled",
+                      "action": "AnomalyScoring"
                     },
                     {
                       "ruleId": "920320",
-                      "state": "Disabled"
+                      "state": "Disabled",
+                      "action": "AnomalyScoring"
                     }
                   ]
                 }
               ]
+            },
+            {
+              "ruleSetType": "Microsoft_BotManagerRuleSet",
+              "ruleSetVersion": "1.0",
+              "ruleGroupOverrides": []
             }
           ]
         }
