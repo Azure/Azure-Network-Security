@@ -2,7 +2,7 @@ on:
   schedule: 
 
     # runs every tuesday @ 3:00pm
-    - cron: "0 14 * * 3"
+    - cron: "55 11 * * 2"
 
     
 jobs:
@@ -10,19 +10,24 @@ jobs:
   traffic:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+      deployments: read
+      packages: none
+      pull-requests: write
+      security-events: write
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v2
       with:
         ref: "traffic"
     
     # Calculates traffic and clones and stores in CSV file
     - name: Repository Traffic
-      uses: sangonzal/repository-traffic-action@v.0.1.6
-            
-      
+      uses: sangonzal/repository-traffic-action@v.0.1.6      
       env:
         TRAFFIC_ACTION_TOKEN: ${{secrets.TRAFFIC_ACTION_TOKEN}} 
      
@@ -34,4 +39,4 @@ jobs:
         message: "GitHub traffic"
         add: "./traffic/*"
         ref: "traffic"  # commits to branch "traffic"
- 
+
