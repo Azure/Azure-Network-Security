@@ -2,7 +2,7 @@ on:
   schedule: 
 
     # runs every tuesday @ 3:00pm
-    - cron: "55 11 * * 2"
+    - cron: "0 14 * * 0"
 
     
 jobs:
@@ -21,7 +21,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: "traffic"
     
