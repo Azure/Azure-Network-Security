@@ -1,0 +1,69 @@
+{
+  "properties": {
+    "displayName": "Public IPs With a Specified Tag Should Have DDoS Protection Enabled",
+    "policyType": "Custom",
+    "mode": "All",
+    "description": "Enforces the presence of DDoS protection on public IPs with a specified Tag.",
+    "metadata": {
+      "version": "1.0.0",
+      "category": "Network"
+    },
+    "parameters": {
+      "tagName": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Name",
+          "description": "Name of the Azure Tag"
+        }
+      },
+      "tagValue": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Value",
+          "description": "Value of the Azure Tag"
+        }
+      },
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "Audit",
+          "Deny"
+        ],
+        "defaultValue": "Audit"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/publicIPAddresses"
+          },
+          {
+            "field": "[concat('tags[', parameters('tagName'), ']')]",
+            "equals": "[parameters('tagValue')]"
+          },
+          {
+            "allOf": [
+              {
+                "field": "Microsoft.Network/publicIPAddresses/ddosSettings.protectionMode",
+                "notEquals": "Enabled"
+              },
+              {
+                "field": "Microsoft.Network/publicIPAddresses/ddosSettings.protectionMode",
+                "notEquals": "VirtualNetworkInherited"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  }
+}
