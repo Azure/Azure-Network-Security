@@ -4,6 +4,15 @@
  <img src="https://github.com/Azure/Azure-Network-Security/blob/master/Cross%20Product/MediaFiles/Azure-WAF/WAF_Workbook.png">
 </p>
 
+
+# WAF Workbook V2 deployment button
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520WAF%2520Monitor%2520Workbook%2FWAFWorkbookV2_WithMetrics_ARM.json)
+
+This new WAF Workbook V2 includes Metrics section on top of the V1 workbook.
+
+# WAF Workbook V1 deployment button
+
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520WAF%2520Monitor%2520Workbook%2FWAFWorkbook_ARM.json)
 
 This workbook visualizes security-relevant WAF events across several filterable panels. It works with all WAF types, including Application Gateway, Front Door, and CDN, and can be filtered based on WAF type or a specific WAF instance. Import via ARM Template or Gallery Template.
