@@ -50,7 +50,7 @@
                 "quote": "'",
                 "delimiter": ",",
                 "value": [
-                  "/subscriptions/651dc44c-5d8e-48da-8cd3-cd79224ac290"
+                  "all"
                 ],
                 "typeSettings": {
                   "additionalResourceOptions": [],
@@ -68,7 +68,7 @@
                 "crossComponentResources": [
                   "{subscription}"
                 ],
-                "value": "/subscriptions/651dc44c-5d8e-48da-8cd3-cd79224ac290/resourceGroups/xstof-appgw/providers/Microsoft.OperationalInsights/workspaces/xstof-appgw",
+                "value": "all",
                 "typeSettings": {
                   "additionalResourceOptions": []
                 },
@@ -491,6 +491,11 @@
                                 "value": "workspace"
                               },
                               {
+                                "name": "source",
+                                "source": "static",
+                                "value": "Microsoft_Azure_Monitoring_Logs/LogsBlade"
+                              },
+                              {
                                 "name": "query",
                                 "source": "cell",
                                 "value": ""
@@ -514,6 +519,11 @@
                                 "name": "resourceId",
                                 "source": "parameter",
                                 "value": "workspace"
+                              },
+                              {
+                                "name": "source",
+                                "source": "static",
+                                "value": "Microsoft_Azure_Monitoring_Logs/LogsBlade"
                               },
                               {
                                 "name": "query",
@@ -839,6 +849,11 @@
                                 "value": "workspace"
                               },
                               {
+                                "name": "source",
+                                "source": "static",
+                                "value": "Microsoft_Azure_Monitoring_Logs/LogsBlade"
+                              },
+                              {
                                 "name": "query",
                                 "source": "cell",
                                 "value": ""
@@ -862,6 +877,11 @@
                                 "name": "resourceId",
                                 "source": "parameter",
                                 "value": "workspace"
+                              },
+                              {
+                                "name": "source",
+                                "source": "static",
+                                "value": "Microsoft_Azure_Monitoring_Logs/LogsBlade"
                               },
                               {
                                 "name": "query",
@@ -1035,7 +1055,7 @@
       ],
       "isLocked": false,
       "defaultResourceIds": [
-        "/subscriptions/651dc44c-5d8e-48da-8cd3-cd79224ac290/resourceGroups/appgw-waf-triage/providers/Microsoft.OperationalInsights/workspaces/la-appgw-waf-triage"
+        "value::all"
       ]
     }
   },
