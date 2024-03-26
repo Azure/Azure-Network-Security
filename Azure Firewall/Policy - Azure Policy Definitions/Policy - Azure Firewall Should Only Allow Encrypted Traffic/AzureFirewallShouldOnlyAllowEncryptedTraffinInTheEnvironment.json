@@ -1,0 +1,129 @@
+{
+    "properties": {
+        "displayName": "Azure Firewall Should Only Allow Encrypted Traffic in the Environment",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Ensure that only encrypted/https traffic is allowed in an Azure Firewall Policy based on ports used.",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "Network"
+        },
+        "parameters": {
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Effect",
+                    "description": "Enable or disable the execution of the policy"
+                },
+                "allowedValues": [
+                    "Audit",
+                    "Deny"
+                ],
+                "defaultValue": "Audit"
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Network/firewallPolicies/ruleCollectionGroups"
+                    },
+                    {
+                        "anyOf": [
+                            {
+                                "allOf": [
+                                    {
+                                        "count": {
+                                            "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*]",
+                                            "where": {
+                                                "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].ruleType",
+                                                "equals": "NetworkRule"
+                                            }
+                                        },
+                                        "greaterOrEquals": 1
+                                    },
+                                    {
+                                        "anyOf": [
+                                            {
+                                                "count": {
+                                                    "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].NetworkRule.destinationPorts[*]",
+                                                    "where": {
+                                                        "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].NetworkRule.destinationPorts[*]",
+                                                        "equals": "80"
+                                                    }
+                                                },
+                                                "greaterOrEquals": 1
+                                            },
+                                            {
+                                                "count": {
+                                                    "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].NetworkRule.destinationPorts[*]",
+                                                    "where": {
+                                                        "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].NetworkRule.destinationPorts[*]",
+                                                        "equals": "8080"
+                                                    }
+                                                },
+                                                "greaterOrEquals": 1
+                                            },
+                                            {
+                                                "count": {
+                                                    "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].NetworkRule.destinationPorts[*]",
+                                                    "where": {
+                                                        "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].NetworkRule.destinationPorts[*]",
+                                                        "equals": "20"
+                                                    }
+                                                },
+                                                "greaterOrEquals": 1
+                                            },
+                                            {
+                                                "count": {
+                                                    "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].NetworkRule.destinationPorts[*]",
+                                                    "where": {
+                                                        "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].NetworkRule.destinationPorts[*]",
+                                                        "equals": "21"
+                                                    }
+                                                },
+                                                "greaterOrEquals": 1
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "allOf": [
+                                    {
+                                        "count": {
+                                            "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*]",
+                                            "where": {
+                                                "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].ruleType",
+                                                "equals": "ApplicationRule"
+                                            }
+                                        },
+                                        "greaterOrEquals": 1
+                                    },
+                                    {
+                                        "anyOf": [
+                                            {
+                                                "count": {
+                                                    "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].ApplicationRule.protocols[*]",
+                                                    "where": {
+                                                        "field": "Microsoft.Network/firewallPolicies/ruleCollectionGroups/ruleCollections[*].FirewallPolicyFilterRuleCollection.rules[*].ApplicationRule.protocols[*].protocolType",
+                                                        "equals": "Http"
+                                                    }
+                                                },
+                                                "greaterOrEquals": 1
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effect')]"
+            }
+        }
+    }
+}
