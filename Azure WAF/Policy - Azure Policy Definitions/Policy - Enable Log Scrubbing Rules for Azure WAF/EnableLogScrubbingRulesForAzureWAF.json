@@ -1,0 +1,139 @@
+{
+    "properties": {
+        "displayName": "Azure WAF Should Have Log Scrubbing Rules Enabled",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Ensure that log scrubbing rules are enabled on the Azure WAF to remove sensitive data from your WAF logs. This policy will check if at least 1 rule is configured.",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "Network"
+        },
+        "parameters": {
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Effect",
+                    "description": "Enable or disable the execution of the policy"
+                },
+                "allowedValues": [
+                    "Audit",
+                    "Deny"
+                ],
+                "defaultValue": "Audit"
+            }
+        },
+        "policyRule": {
+            "if": {
+                "anyOf": [
+                    {
+                        "allOf": [
+                          {
+                            "field": "type",
+                            "equals": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+                          },
+                          {
+                            "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/policySettings.logScrubbing.state",
+                            "equals": "Enabled"
+                          },
+                          {
+                            "count": {
+                                "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/policySettings.logScrubbing.scrubbingRules[*]",
+                                "where": {
+                                    "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/policySettings.logScrubbing.scrubbingRules[*].state",
+                                    "equals": "Enabled"
+                                }
+                            },
+                            "equals": 0
+                          }
+                        ]
+                    },
+                    {
+                        "allOf": [
+                          {
+                            "field": "type",
+                            "equals": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+                          },
+                          {
+                            "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/policySettings.logScrubbing.state",
+                            "equals": "Disabled"
+                          }
+                        ]
+                    },
+                    {
+                        "allOf": [
+                          {
+                            "field": "type",
+                            "equals": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+                          },
+                          {
+                            "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/policySettings.logScrubbing",
+                            "exists": "false"
+                          }
+                        ]
+                    },
+                    {
+                        "allOf": [
+                          {
+                            "field": "type",
+                            "equals": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies"
+                          },
+                          {
+                            "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/policySettings.logScrubbing.state",
+                            "equals": "Enabled"
+                          },
+                          {
+                            "count": {
+                                "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/policySettings.logScrubbing.scrubbingRules[*]",
+                                "where": {
+                                    "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/policySettings.logScrubbing.scrubbingRules[*].state",
+                                    "equals": "Enabled"
+                                }
+                            },
+                            "equals": 0
+                          }
+                        ]
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "field": "type",
+                          "equals": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies"
+                        },
+                        {
+                          "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/policySettings.logScrubbing.state",
+                          "equals": "Disabled"
+                        }
+                      ]
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "field": "type",
+                          "equals": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies"
+                        },
+                        {
+                          "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/policySettings.logScrubbing",
+                          "equals": "null"
+                        }
+                      ]
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "field": "type",
+                          "equals": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies"
+                        },
+                        {
+                          "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/policySettings.logScrubbing",
+                          "exists": "false"
+                        }
+                      ]
+                  }
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effect')]"
+            }
+        }
+    }
+}
