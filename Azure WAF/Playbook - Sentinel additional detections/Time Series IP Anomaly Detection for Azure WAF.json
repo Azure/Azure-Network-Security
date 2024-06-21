@@ -4,7 +4,6 @@ let starttime = 14d;
 let endtime = 1d;
 let scorethreshold = 5;
 let baselinethreshold = 10;
-
 let TimeSeriesData = AzureDiagnostics
     | where Category in ("ApplicationGatewayFirewallLog", "ApplicationGatewayAccessLog", "FrontDoorWebApplicationFirewallLog", "FrontdoorAccessLog") // Removed "FrontdoorWebApplicationFirewallLog" and added "Blocked", "Anomaly Score", "Block", "Redirect" to action_s
     and action_s in ("Log", "Matched", "Blocked", "Anomaly Score", "Block", "Redirect") // Changed actions
@@ -13,7 +12,6 @@ let TimeSeriesData = AzureDiagnostics
     | where TimeGenerated between (ago(starttime) .. ago(endtime))
     | project TimeGenerated, ClientIPAddress
     | make-series Total = count() on TimeGenerated from (ago(starttime)) to (ago(endtime)) step timeframe by ClientIPAddress;
-
 let TimeSeriesAlerts = TimeSeriesData
     | extend (anomalies, score, baseline) = series_decompose_anomalies(Total, scorethreshold, 1, 'linefit')
     | mv-expand Total to typeof(double), TimeGenerated to typeof(datetime), anomalies to typeof(double), score to typeof(double), baseline to typeof(long)
@@ -21,7 +19,6 @@ let TimeSeriesAlerts = TimeSeriesData
     | extend score = round(score, 2), AnomalyHour = TimeGenerated
     | project ClientIPAddress, AnomalyHour, TimeGenerated, Total, baseline, anomalies, score
     | where baseline > baselinethreshold;
-
 TimeSeriesAlerts
     | join ( 
         AzureDiagnostics
