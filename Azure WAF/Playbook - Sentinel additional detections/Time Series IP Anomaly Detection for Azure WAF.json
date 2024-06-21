@@ -1,3 +1,6 @@
+// Description: This Detection utilizes Azure WAF logs from both Front Door and Application Gateway to detect anomalous IP traffic patterns. It applies advanced time series analysis to identify potential security threats and web vulnerabilities.
+// Alerts are triggered when the anomaly score exceeds a predefined threshold, signalling unusual activity that may require immediate attention and investigation by the security team.
+
 let percentotalthreshold = 25;
 let timeframe = 1h;
 let starttime = 14d;
@@ -5,12 +8,10 @@ let endtime = 1d;
 let scorethreshold = 5;
 let baselinethreshold = 10;
 let TimeSeriesData = AzureDiagnostics
-    | where Category in ("ApplicationGatewayFirewallLog", "ApplicationGatewayAccessLog", "FrontDoorWebApplicationFirewallLog", "FrontdoorAccessLog") // Removed "FrontdoorWebApplicationFirewallLog" and added "Blocked", "Anomaly Score", "Block", "Redirect" to action_s
-    and action_s in ("Log", "Matched", "Blocked", "Anomaly Score", "Block", "Redirect") // Changed actions
+    | where Category in ("ApplicationGatewayFirewallLog", "ApplicationGatewayAccessLog", "FrontDoorWebApplicationFirewallLog", "FrontdoorAccessLog") 
+    and action_s in ("Log", "Matched", "Blocked", "Anomaly Score", "Block", "Redirect")
     | where isnotempty(clientIP_s) or isnotempty(clientIp_s)
-    | extend ClientIPAddress = iff(Category in ("FrontDoorWebApplicationFirewallLog", "ApplicationGatewayAccessLog"), clientIP_s, clientIp_s) // Removed "FrontdoorWebApplicationFirewallLog" from the condition
-    | where TimeGenerated between (ago(starttime) .. ago(endtime))
-    | project TimeGenerated, ClientIPAddress
+    | extend ClientIPAddress = iff(Category in ("FrontDoorWebApplicationFirewallLog", "ApplicationGatewayAccessLog"), clientIP_s, clientIp_s) 
     | make-series Total = count() on TimeGenerated from (ago(starttime)) to (ago(endtime)) step timeframe by ClientIPAddress;
 let TimeSeriesAlerts = TimeSeriesData
     | extend (anomalies, score, baseline) = series_decompose_anomalies(Total, scorethreshold, 1, 'linefit')
@@ -22,7 +23,7 @@ let TimeSeriesAlerts = TimeSeriesData
 TimeSeriesAlerts
     | join ( 
         AzureDiagnostics
-        | extend ClientIPAddress = iff(Category in ("FrontdoorWebApplicationFirewallLog", "FrontDoorWebApplicationFirewallLog", "ApplicationGatewayAccessLog"), clientIP_s, clientIp_s) // Consistency with the first query, no change in logic
+        | extend ClientIPAddress = iff(Category in ("FrontdoorWebApplicationFirewallLog", "FrontDoorWebApplicationFirewallLog", "ApplicationGatewayAccessLog"), clientIP_s, clientIp_s) 
         | where isnotempty(ClientIPAddress)
         | where TimeGenerated > ago(endtime)
         | summarize HourlyCount = count(), TimeGeneratedMax = arg_max(TimeGenerated, *), ClientIPlist = make_set(ClientIPAddress), Portlist = make_set(clientPort_d) by clientIP_s, TimeGeneratedHour = bin(TimeGenerated, 1h)
