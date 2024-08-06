@@ -5,6 +5,13 @@
 </p>
 
 
+# WAF Workbook V3 deployment button
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520WAF%2520Monitor%2520Workbook%2FWAFWorkbookV3_WithJSChallenge_ARM.json)
+
+This new WAF Workbook V3 includes JS Challenge Action on top of the V2 workbook.
+
+
 # WAF Workbook V2 deployment button
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520WAF%2520Monitor%2520Workbook%2FWAFWorkbookV2_WithMetrics_ARM.json)
