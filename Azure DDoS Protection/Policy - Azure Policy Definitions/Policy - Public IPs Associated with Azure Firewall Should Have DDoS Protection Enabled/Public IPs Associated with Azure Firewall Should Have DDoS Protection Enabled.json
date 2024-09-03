@@ -3,7 +3,7 @@
     "displayName": "Public IPs Associated with Azure Firewall Should Have DDoS Protection Enabled",
     "policyType": "Custom",
     "mode": "All",
-    "description": "Public IPs Associated with Azure Firewall Should Have DDoS Protection Enabled.\n\nNote: The Policy checks if DDoS Protection (Virtual Network Inherited or IP Protection is enabled on all Public IP addresses. For Azure Firewall Public IP addresses that do not have DDoS Protection, a non compliance state is returned. ",
+    "description": "Public IPs Associated with Azure Firewall Should Have DDoS Protection Enabled.\n\nNote: The Policy checks if DDoS Protection (Virtual Network Inherited or IP Protection is enabled on all Public IP addresses. For Azure Firewall Public IP addresses that do not have DDoS Protection, a non compliance state is returned. However if DDoS Protection on the VNET is not enabled then this policy is not valid in this scope. ",
     "metadata": {
       "version": "1.0.0",
       "category": "Network",
