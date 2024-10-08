@@ -24,7 +24,7 @@
             "quote": "'",
             "delimiter": ",",
             "value": [
-              "/subscriptions/7fb60491-16dc-40e7-8a78-6cfd3cd18d39"
+              "value::all"
             ],
             "typeSettings": {
               "additionalResourceOptions": [],
@@ -42,7 +42,7 @@
             "crossComponentResources": [
               "{subscription}"
             ],
-            "value": "/subscriptions/7fb60491-16dc-40e7-8a78-6cfd3cd18d39/resourceGroups/avd-rg-law-core-westeu-01/providers/Microsoft.OperationalInsights/workspaces/avd-law-core-westeu-01",
+            "value": ["value::all"],
             "typeSettings": {
               "additionalResourceOptions": []
             },
