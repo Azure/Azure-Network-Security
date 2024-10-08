@@ -12,7 +12,7 @@ Contributor: [Martin Buna](https://github.com/MartinBuna)
 ## WAF Triage Workbook - using Resource specific tables
 This template uses the resource specific tables AGWAccessLogs and AGWFirewallLogs.\
 \
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMartinBuna%2FAzure-Network-Security%2Frefs%2Fheads%2Ffeature%2Fappgw-waf-triage-wb-res-tables%2FAzure%2520WAF%2FWorkbook%2520-%2520AppGw%2520WAF%2520Triage%2520Workbook%2FWAFTriageWorkbook_ResourceSpecificTables_ARM.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520AppGw%2520WAF%2520Triage%2520Workbook%2FWAFTriageWorkbook_ResourceSpecificTables_ARM.json)
 
 # Description
 
