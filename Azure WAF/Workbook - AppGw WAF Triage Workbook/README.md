@@ -1,7 +1,7 @@
 # Application Gateway WAF Triage Workbook
 
-Author: [Christof Claessens](https://github.com/xstof), [Camila Martins](https://github.com/ccmartins)
-\Contributor: [Martin Buna](https://github.com/MartinBuna)
+Author: [Christof Claessens](https://github.com/xstof), [Camila Martins](https://github.com/ccmartins) \
+Contributor: [Martin Buna](https://github.com/MartinBuna)
 
 # WAF Triage Workbook - using AzureDiagnostics table
 
