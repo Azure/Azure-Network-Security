@@ -3,14 +3,17 @@
 Author: [Christof Claessens](https://github.com/xstof), [Camila Martins](https://github.com/ccmartins) \
 Contributor: [Martin Buna](https://github.com/MartinBuna)
 
-# WAF Triage Workbook - using AzureDiagnostics table
+# Quick deploy to Azure
+
+## WAF Triage Workbook - using AzureDiagnostics table
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520AppGw%2520WAF%2520Triage%2520Workbook%2FWAFTriageWorkbook_ARM.json)
 
-# WAF Triage Workbook - using Resource specific tables
+## WAF Triage Workbook - using Resource specific tables
 This template uses the resource specific tables AGWAccessLogs and AGWFirewallLogs.
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)]()
 
+# Description
 
 This workbook visualizes Application Gateway WAF rule violations and helps with triaging those so to facilitate tuning the WAF against valid traffic.
 
