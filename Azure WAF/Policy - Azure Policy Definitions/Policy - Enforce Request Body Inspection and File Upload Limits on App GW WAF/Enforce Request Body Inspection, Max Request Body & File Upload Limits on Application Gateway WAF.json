@@ -1,0 +1,56 @@
+{
+  "properties": {
+    "displayName": "Enforce Request Body Inspection, Max Request Body & File Upload Limits on Application Gateway WAF",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "Application Gateway WAF should have enforcement enabled for Request Body Inspection, Maximum Request Body Limit and Maximum File Upload Limit.",
+    "metadata": {
+      "version": "1.0.0",
+      "category": "Network"
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "Audit",
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Audit"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies"
+          },
+          {
+            "anyof": [
+              {
+                "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/policySettings.requestBodyCheck",
+                "equals": "false"
+              },
+              {
+                "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/policySettings.requestBodyEnforcement",
+                "equals": "false"
+              },
+              {
+                "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/policySettings.fileUploadEnforcement",
+                "equals": "false"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  }
+}
