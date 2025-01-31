@@ -135,11 +135,3 @@
     }
   }
 }
-
-  /* This template deploys a Web Application Firewall (WAF) policy to an Azure Front Door or Application Gateway. 
-  The WAF policy includes the latest Microsoft Default Rule Set (DRS)2.1 and the latest Bot Manager Rule Set - 1.1. 
-  The template also deploys sensitive data protection (log scrubbing) and enables request body inspection settings. The default policy settings have been used but can be customized as needed.
-  The WAF policy is deployed in Prevention mode.
- The template includes a condition to deploy the WAF policy to either Azure Front Door or Application Gateway based on the value of the deployOption parameter. Once deployed, the WAF policy can be associated to an Application Gateway or Azure Front Door with these settings.
- The template also includes parameters for the WAF policy name, region, and deployment option. 
-  The output section provides a deployment summary with the managed ruleset and policy settings */
