@@ -1,5 +1,8 @@
 ## ARM Template for Deploying WAF Policy
 
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Frefs%2Fheads%2Fmaster%2FAzure%2520WAF%2FTemplate%2520-%2520QuickStart%2520Deployment%2520template%2520for%2520Azure%2520WAF%2520with%2520latest%2520Features%2520Jan%25202025%2FWAF%2520Quickstart%2520Template%2520v2.json)
+
+
 This ARM template deploys a Web Application Firewall (WAF) policy for either an Application Gateway or Azure Front Door. 
 
 The WAF policy includes the latest Microsoft Default Rule Set (DRS) 2.1 and Bot Manager Rule Set 1.1.
