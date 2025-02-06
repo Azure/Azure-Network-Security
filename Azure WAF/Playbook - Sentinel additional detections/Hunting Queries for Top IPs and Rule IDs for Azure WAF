@@ -1,0 +1,35 @@
+Application Gateway WAF:
+ 
+Top IPs:
+ 
+AzureDiagnostics
+| where Category == "ApplicationGatewayFirewallLog"
+| summarize Total_TransactionId = dcount(transactionId_g), StartTime = min(TimeGenerated), EndTime = max(TimeGenerated), TransactionID = make_set(transactionId_g,1000), Message = make_set(Message,1000), Detail_Message = make_set(details_message_s,1000), Detail_Data = make_set(details_data_s,1000) by clientIp_s
+| sort by Total_TransactionId desc
+ 
+ 
+Top Rules:
+ 
+AzureDiagnostics
+| where Category == "ApplicationGatewayFirewallLog"
+| summarize Total_TransactionId = dcount(transactionId_g), ClientIPs = make_set(clientIp_s,1000), StartTime = min(TimeGenerated), EndTime = max(TimeGenerated), TransactionID = make_set(transactionId_g,100), Message = make_set(Message,1000), Detail_Message = make_set(details_message_s,1000), Detail_Data = make_set(details_data_s,1000) by ruleId_s
+| sort by Total_TransactionId desc
+ 
+ 
+ 
+Front Door WAF:
+ 
+Top IPs:
+ 
+AzureDiagnostics
+| where Category =~ "FrontDoorWebApplicationFirewallLog"
+| summarize Total_TrackingReference_s = dcount(trackingReference_s), StartTime = min(TimeGenerated), EndTime = max(TimeGenerated), TrackingReference_s = make_set(trackingReference_s,1000), Message = make_set(details_matches_s,1000), Detail_Message = make_set(details_msg_s,1000), Detail_Data = make_set(details_data_s,1000) by clientIP_s
+| sort by Total_TrackingReference_s desc
+ 
+ 
+Top Rules:
+ 
+AzureDiagnostics
+| where Category =~ "FrontDoorWebApplicationFirewallLog"
+| summarize Total_TrackingReference_s = dcount(trackingReference_s), StartTime = min(TimeGenerated), EndTime = max(TimeGenerated), TrackingReference_s = make_set(trackingReference_s,1000), Message = make_set(details_matches_s,1000), Detail_Message = make_set(details_msg_s,1000), Detail_Data = make_set(details_data_s,1000) by ruleName_s
+| sort by Total_TrackingReference_s desc

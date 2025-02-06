@@ -19,7 +19,7 @@ When deploying via ARM Template, please make sure you know what Resource ID (Log
 
 This workbook visualizes security-relevant Azure Firewall events across several filterable panels for Mutli-Tenant/Workspace view. It works with all Azure Firewall data types, including Application Rule Logs, Network Rule Logs, DNS Proxy logs and ThreatIntel logs. Import via ARM Template or Gallery Template.
 
-To use the Workbook with Resource Specific logs enabled, use the deployment button below.
+To use the Workbook with **Resource Specific logs enabled**, use the deployment button below.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Firewall%2FWorkbook%2520-%2520Azure%2520Firewall%2520Monitor%2520Workbook%2FAzure%2520Firewall_ResourceSpecific_ARM.json)
 

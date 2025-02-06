@@ -1,0 +1,11 @@
+let firewallIDPS = AZFWIdpsSignature
+| project TimeGenerated, SourceIp;
+let firewallThreatIntelligence = AZFWThreatIntel
+| project TimeGenerated, SourceIp;
+let wafLogs = AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.NETWORK" and Category == "ApplicationGatewayFirewallLog"
+| where action_s == "Blocked"
+| project TimeGenerated, SourceIp = clientIp_s;
+let combinedResults = union firewallIDPS, firewallThreatIntelligence, wafLogs
+| distinct SourceIp;
+combinedResults

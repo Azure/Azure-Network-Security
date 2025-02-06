@@ -1,7 +1,6 @@
 ## Warning
 
-Username and password to log in into the Windows VM are hard coded within the template.
-Please, change the password in the template before starting the deployment or after the VM is deployed.
+Check the Azure KeyVault within the newly created Resource Group, then go to Secrets to gain access to the usernames and passwords required for logging into the Windows VM and the MySQL instance.
 
 ## Pre-requisites:
 1. Configure your Terraform environment. Example using Terraform on Windows with PowerShell: https://learn.microsoft.com/en-us/azure/developer/terraform/get-started-windows-powershell?tabs=bash

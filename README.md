@@ -24,6 +24,7 @@ Welcome to the Azure Network Security community repository. This repo is designe
 - [Azure WAF Docs](https://docs.microsoft.com/en-us/azure/web-application-firewall/)
 - [Azure DDoS Protection Docs](https://docs.microsoft.com/en-us/azure/virtual-network/ddos-protection-overview)
 - [Azure Networking Feedback](https://feedback.azure.com/forums/217313-networking)
+- [Technical Community Blog](https://techcommunity.microsoft.com/t5/azure-network-security-blog/bg-p/AzureNetworkSecurityBlog)
 
 # What's new?
 Please find the latest artifacts in this repo on our [What's New Page](https://github.com/Azure/Azure-Network-Security/wiki/What's-New)  

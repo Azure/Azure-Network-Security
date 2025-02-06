@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "DefaultUserName": {
@@ -1158,23 +1158,30 @@
           "exclusions": [],
           "managedRuleSets": [
             {
-              "ruleSetType": "OWASP",
-              "ruleSetVersion": "3.1",
+              "ruleSetType": "Microsoft_DefaultRuleSet",
+              "ruleSetVersion": "2.1",
               "ruleGroupOverrides": [
                 {
-                  "ruleGroupName": "REQUEST-920-PROTOCOL-ENFORCEMENT",
+                  "ruleGroupName": "PROTOCOL-ENFORCEMENT",
                   "rules": [
                     {
                       "ruleId": "920350",
-                      "state": "Disabled"
+                      "state": "Disabled",
+                      "action": "AnomalyScoring"
                     },
                     {
                       "ruleId": "920320",
-                      "state": "Disabled"
+                      "state": "Disabled",
+                      "action": "AnomalyScoring"
                     }
                   ]
                 }
               ]
+            },
+            {
+              "ruleSetType": "Microsoft_BotManagerRuleSet",
+              "ruleSetVersion": "1.0",
+              "ruleGroupOverrides": []
             }
           ]
         }
@@ -1718,9 +1725,9 @@
         "[concat('Microsoft.Network/networkInterfaces/', variables('NIC-Name2'))]"
       ],
       "plan": {
-        "name": "kali",
+        "name": "kali-2023-3",
         "publisher": "kali-linux",
-        "product": "kali"
+        "product": "kali" 
       },
       "properties": {
         "hardwareProfile": {
@@ -1737,8 +1744,8 @@
           "imageReference": {
             "publisher": "kali-linux",
             "offer": "kali",
-            "sku": "kali",
-            "version": "latest"
+            "sku": "kali-2023-3",
+            "version": "2023.3.0"
           }
         },
         "networkProfile": {

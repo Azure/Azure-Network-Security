@@ -1,0 +1,137 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "condition": "[equals(parameters('deployOption'), 'FrontDoor')]",
+      "type": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies",
+      "apiVersion": "2024-02-01",
+      "name": "[parameters('WAFPolicyName')]",
+      "location": "Global",
+      "sku": {
+        "name": "Premium_AzureFrontDoor"
+      },
+      "properties": {
+        "policySettings": {
+          "enabledState": "Enabled",
+          "mode": "Prevention",
+          "requestBodyCheck": "Enabled",
+          "javascriptChallengeExpirationInMinutes": 30,
+          "logScrubbing": {
+            "state": "Enabled",
+            "scrubbingRules": []
+          }
+        },
+        "managedRules": {
+          "managedRuleSets": [
+            {
+              "ruleSetType": "Microsoft_DefaultRuleSet",
+              "ruleSetVersion": "2.1",
+              "ruleSetAction": "Block"
+            },
+            {
+              "ruleSetType": "Microsoft_BotManagerRuleSet",
+              "ruleSetVersion": "1.1",
+              "ruleSetAction": "Log"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('deployOption'), 'AppGateway')]",
+      "type": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies",
+      "apiVersion": "2023-11-01",
+      "name": "[parameters('WAFPolicyName')]",
+      "location": "[parameters('region')]",
+      "properties": {
+        "policySettings": {
+          "state": "Enabled",
+          "mode": "Prevention",
+          "requestBodyCheck": true,
+          "maxRequestBodySizeInKb": 128,
+          "fileUploadLimitInMb": 100,
+          "logScrubbing": {
+            "state": "Enabled",
+            "scrubbingRules": []
+          },
+          "requestBodyInspectLimitInKB": 128,
+          "fileUploadEnforcement": true,
+          "requestBodyEnforcement": true
+        },
+        "managedRules": {
+          "managedRuleSets": [
+            {
+              "ruleSetType": "Microsoft_DefaultRuleSet",
+              "ruleSetVersion": "2.1",
+              "ruleGroupOverrides": []
+            },
+            {
+              "ruleSetType": "Microsoft_BotManagerRuleSet",
+              "ruleSetVersion": "1.1",
+              "ruleGroupOverrides": []
+            }
+          ],
+          "exclusions": []
+        }
+      }
+    }
+  ],
+  "parameters": {
+    "WAFPolicyName": {
+      "type": "string",
+      "defaultValue": "defaultWAFPolicy",
+      "metadata": {
+        "description": "Name of the WAF Policy to be created."
+      }
+    },
+    "region": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "allowedValues": [
+        "eastus",
+        "eastus2",
+        "westus",
+        "westus2",
+        "centralus",
+        "northcentralus",
+        "southcentralus",
+        "westeurope",
+        "northeurope",
+        "southeastasia",
+        "eastasia",
+        "japaneast",
+        "japanwest",
+        "australiaeast",
+        "australiasoutheast",
+        "brazilsouth",
+        "southafricanorth",
+        "southafricawest",
+        "uaenorth",
+        "uksouth",
+        "ukwest",
+        "indiacentral",
+        "indiawest",
+        "canadacentral",
+        "canadaeast"
+      ],
+      "metadata": {
+        "description": "Azure region where the WAF policy will be deployed."
+      }
+    },
+    "deployOption": {
+      "type": "string",
+      "allowedValues": ["FrontDoor", "AppGateway"],
+      "defaultValue": "FrontDoor",
+      "metadata": {
+        "description": "Specify whether to deploy the WAF policy to an Azure Front Door or Application Gateway."
+      }
+    }
+  },
+  "outputs": {
+    "deploymentSummary": {
+      "type": "string",
+      "value": "Deployment Summary:\n - Managed Ruleset: DRS 2.1\n - Bot Manager: 1.1\n - Policy Settings: Enabled\n"
+    }
+  }
+}

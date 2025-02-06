@@ -1,0 +1,71 @@
+{
+    "properties": {
+        "displayName": "Azure WAF Should Have JavaScript (JS) Challenge Custom Rules Enabled",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Ensure that the Azure WAF Policy has custom rules with JS Challenge as the action. JS Challenge is used to protect against malicious and unwanted bots. This policy will check if at least 1 custom rule is configured with an action of JS Challenge.",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "Network"
+        },
+        "parameters": {
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Effect",
+                    "description": "Enable or disable the execution of the policy"
+                },
+                "allowedValues": [
+                    "Audit",
+                    "Deny"
+                ],
+                "defaultValue": "Audit"
+            }
+        },
+        "policyRule": {
+            "if": {
+                "anyOf": [
+                    {
+                        "allOf": [
+                          {
+                            "field": "type",
+                            "equals": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+                          },
+                          {
+                            "count": {
+                                "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/customRules[*]",
+                                "where": {
+                                    "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/customRules[*].action",
+                                    "equals": "JSChallenge"
+                                }
+                            },
+                            "equals": 0
+                          }
+                        ]
+                    },
+                    {
+                        "allOf": [
+                          {
+                            "field": "type",
+                            "equals": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies"
+                          },
+                          {
+                            "count": {
+                                "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/customRules.rules[*]",
+                                "where": {
+                                    "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/customRules.rules[*].action",
+                                    "equals": "JSChallenge"
+                                }
+                            },
+                            "equals": 0
+                          }
+                        ]
+                    }
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effect')]"
+            }
+        }
+    }
+}

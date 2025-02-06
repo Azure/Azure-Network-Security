@@ -1,0 +1,91 @@
+{
+  "properties": {
+      "displayName": "Azure WAF Geo Match Custom Rules Should Have Unknown Location Selected",
+      "policyType": "Custom",
+      "mode": "All",
+      "description": "Ensure that Unknown country is selected for geo-filtering. The Unknown country code captures IP addresses that are not yet mapped to a country or in Azure's dataset. This will avoid false positives.",
+      "metadata": {
+          "version": "1.0.0",
+          "category": "Network"
+      },
+      "parameters": {
+          "effect": {
+              "type": "String",
+              "metadata": {
+                  "displayName": "Effect",
+                  "description": "Enable or disable the execution of the policy"
+              },
+              "allowedValues": [
+                  "Audit",
+                  "Deny"
+              ],
+              "defaultValue": "Audit"
+          }
+      },
+      "policyRule": {
+          "if": {
+              "anyOf": [
+                  {
+                      "allOf": [
+                        {
+                          "field": "type",
+                          "equals": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+                        },
+                        {
+                          "count": {
+                              "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/customRules[*].matchConditions[*]",
+                              "where": {
+                                  "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/customRules[*].matchConditions[*].operator",
+                                  "equals": "GeoMatch"
+                              }
+                          },
+                          "greaterOrEquals": 1
+                        },
+                        {
+                          "count": {
+                              "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/customRules[*].matchConditions[*].matchValues[*]",
+                              "where": {
+                                  "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/customRules[*].matchConditions[*].matchValues[*]",
+                                  "equals": "ZZ"
+                              }
+                          },
+                          "equals": 0
+                        }
+                      ]
+                  },
+                  {
+                      "allOf": [
+                        {
+                          "field": "type",
+                          "equals": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies"
+                        },
+                        {
+                          "count": {
+                              "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/customRules.rules[*].matchConditions[*]",
+                              "where": {
+                                  "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/customRules.rules[*].matchConditions[*].operator",
+                                  "equals": "GeoMatch"
+                              }
+                          },
+                          "greaterOrEquals": 1
+                        },
+                        {
+                          "count": {
+                              "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/customRules.rules[*].matchConditions[*].matchValue[*]",
+                              "where": {
+                                  "field": "Microsoft.Network/frontdoorWebApplicationFirewallPolicies/customRules.rules[*].matchConditions[*].matchValue[*]",
+                                  "equals": "ZZ"
+                              }
+                          },
+                          "equals": 0
+                        }
+                      ]
+                  }
+              ]
+          },
+          "then": {
+              "effect": "[parameters('effect')]"
+          }
+      }
+  }
+}
