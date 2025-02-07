@@ -1,4 +1,5 @@
-Azure Policy - Enforce Explicit Proxy Configuration for Firewall Policies
+## Azure Policy - Enforce Explicit Proxy Configuration for Firewall Policies
+
 This Azure Policy checks all deployed Firewall Policies (Microsoft.Network/firewallPolicies) to ensure the explicitProxy.enableExplicitProxy field is present. If it is missing, the policy flags or audits the resource based on the chosen effect.
 
 How the Policy Works
