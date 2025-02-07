@@ -1,0 +1,47 @@
+{
+    "properties": {
+        "displayName": "Audit Azure Firewall Policies with Explicit Proxy and PAC File",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "This policy audits Azure Firewall Policies to ensure that if Explicit Proxy is enabled, then the PAC File must also be enabled.",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "Network"
+        },
+        "parameters": {
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Effect",
+                    "description": "Enable or disable the execution of the policy"
+                },
+                "allowedValues": [
+                    "Audit",
+                    "Disabled"
+                ],
+                "defaultValue": "Audit"
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Network/firewallPolicies"
+                    },
+                    {
+                        "field": "Microsoft.Network/firewallPolicies/explicitProxy.enableExplicitProxy",
+                        "equals": true
+                    },
+                    {
+                        "field": "Microsoft.Network/firewallPolicies/explicitProxy.enablePacFile",
+                        "notEquals": true
+                    }
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effect')]"
+            }
+        }
+    }
+}
