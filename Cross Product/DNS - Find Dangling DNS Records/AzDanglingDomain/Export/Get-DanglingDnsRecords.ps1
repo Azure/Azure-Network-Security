@@ -822,7 +822,8 @@ Function Get-DanglingDnsRecords {
     $interestedResourcesQuery = "
     resources
     | where subscriptionId matches regex '(?i)$InputSubscriptionIdRegexFilterForAzureResourcesGraph'
-    | where type in ('microsoft.network/frontdoors',
+    | where type in (
+    'microsoft.network/frontdoors',
     'microsoft.storage/storageaccounts',
     'microsoft.cdn/profiles/endpoints',
     'microsoft.cdn/profiles/afdendpoints',
@@ -832,56 +833,59 @@ Function Get-DanglingDnsRecords {
     'microsoft.apimanagement/service',
     'microsoft.web/sites',
     'microsoft.web/sites/slots',
-    'microsoft.classiccompute/domainnames',    
-    'microsoft.classicstorage/storageaccounts')
-    |mvexpand properties.hostnameConfigurations    
+    'microsoft.classiccompute/domainnames',
+    'microsoft.classicstorage/storageaccounts',
+    'microsoft.containerregistry/registries',
+    'microsoft.app/containerapps',
+    'microsoft.web/staticsites',    
+    )
     | extend dnsEndpoint = case
     (
-       type =~ 'microsoft.network/frontdoors', properties.cName,
+       type =~ 'microsoft.network/frontdoors', pack_array(properties.cName, strcat('afdverify.',properties.cName)),
+       type =~ 'microsoft.cdn/profiles/endpoints', pack_array(properties.hostName, strcat('cdnverify.',properties.hostName)),
        type =~ 'microsoft.storage/storageaccounts', iff(properties['primaryEndpoints']['blob'] matches regex '(?i)(http|https)://',
-                parse_url(tostring(properties['primaryEndpoints']['blob'])).Host, tostring(properties['primaryEndpoints']['blob'])),
-       type =~ 'microsoft.cdn/profiles/endpoints', properties.hostName,
-       type =~ 'microsoft.cdn/profiles/afdendpoints', properties.hostName,
-       type =~ 'microsoft.network/publicipaddresses', properties.dnsSettings.fqdn,
-       type =~ 'microsoft.network/trafficmanagerprofiles', properties.dnsConfig.fqdn,
-       type =~ 'microsoft.containerinstance/containergroups', properties.ipAddress.fqdn,
-       type =~ 'microsoft.apimanagement/service', properties_hostnameConfigurations.hostName,
-       type =~ 'microsoft.web/sites', properties.defaultHostName,
-       type =~ 'microsoft.web/sites/slots', properties.defaultHostName,
-       type =~ 'microsoft.classiccompute/domainnames',properties.hostName,
-       ''
-    )
-    | extend dnsEndpoints = case
-    (
-        type =~ 'microsoft.apimanagement/service', 
-           pack_array(dnsEndpoint, 
+                pack_array(parse_url(tostring(properties['primaryEndpoints']['blob'])).Host), pack_array(tostring(properties['primaryEndpoints']['blob']))),
+       type =~ 'microsoft.cdn/profiles/afdendpoints', pack_array(properties.hostName),
+       type =~ 'microsoft.network/publicipaddresses', pack_array(properties.dnsSettings.fqdn),
+       type =~ 'microsoft.network/trafficmanagerprofiles', pack_array(properties.dnsConfig.fqdn),
+       type =~ 'microsoft.containerinstance/containergroups', pack_array(properties.ipAddress.fqdn),
+       type =~ 'microsoft.apimanagement/service',            pack_array(
             parse_url(tostring(properties.gatewayRegionalUrl)).Host,
-            parse_url(tostring(properties.developerPortalUrl)).Host, 
+            parse_url(tostring(properties.developerPortalUrl)).Host,
             parse_url(tostring(properties.managementApiUrl)).Host,
             parse_url(tostring(properties.portalUrl)).Host,
             parse_url(tostring(properties.scmUrl)).Host,
             parse_url(tostring(properties.gatewayUrl)).Host),
-        type =~ 'microsoft.web/sites', properties.hostNames,
-       	type =~ 'microsoft.web/sites/slots', properties.hostNames,
-        type =~ 'microsoft.classicstorage/storageaccounts', properties.endpoints,
-        pack_array(dnsEndpoint)
+       type =~ 'microsoft.web/sites', pack_array(properties.defaultHostName),
+       type =~ 'microsoft.web/sites/slots', pack_array(properties.defaultHostName),
+       type =~ 'microsoft.classiccompute/domainnames',pack_array(properties.hostName),
+       type =~ 'microsoft.app/containerapps',pack_array(properties.configuration.ingress.fqdn),
+       type =~ 'microsoft.containerregistry/registries',array_concat(properties.dataEndpointHostNames, pack_array(properties.loginServer)),
+       type =~ 'microsoft.web/staticsites', pack_array(properties.defaultHostname),       
+       pack_array('')
     )
+    | mv-expand (dnsEndpoint)
+    | extend dnsEndpoint = tostring(dnsEndpoint)
     | where isnotempty(dnsEndpoint)
     | extend resourceProvider = case
     (
         dnsEndpoint endswith 'azure-api.net', 'azure-api.net',
         dnsEndpoint endswith 'azurecontainer.io', 'azurecontainer.io',
+        dnsEndpoint endswith 'azurecr.io', 'azurecr.io',
         dnsEndpoint endswith 'azureedge.net', 'azureedge.net',
         dnsEndpoint endswith 'azurefd.net', 'azurefd.net',
         dnsEndpoint endswith 'azurewebsites.net', 'azurewebsites.net',
-        dnsEndpoint endswith 'blob.core.windows.net', 'blob.core.windows.net', 
+        dnsEndpoint endswith 'blob.core.windows.net', 'blob.core.windows.net',
         dnsEndpoint endswith 'cloudapp.azure.com', 'cloudapp.azure.com',
         dnsEndpoint endswith 'cloudapp.net', 'cloudapp.net',
         dnsEndpoint endswith 'trafficmanager.net', 'trafficmanager.net',
-        '' 
+        dnsEndpoint endswith 'azurecontainerapps.io', 'azurecontainerapps.io',
+        dnsEndpoint endswith 'azurestaticapps.net', 'azurestaticapps.net',
+        ''
     )
-    | project id, tenantId, subscriptionId, type, resourceGroup, name, dnsEndpoint, dnsEndpoints, properties, resourceProvider
-    | order by dnsEndpoint asc, name asc, id asc"
+    | project id, tenantId, subscriptionId, type, resourceGroup, name, dnsEndpoint, properties, resourceProvider
+    | order by dnsEndpoint asc, name asc, id asc
+    | order by ['type'] asc"
 
     $inputDnsZoneNameRegexFilterForSearch =   $inputDnsZoneNameRegexFilter.replace('\','\\')
     $InputSubscriptionIdRegexFilterForAzureResourcesGraphSearch = $InputSubscriptionIdRegexFilterForAzureResourcesGraph.replace('\','\\')
