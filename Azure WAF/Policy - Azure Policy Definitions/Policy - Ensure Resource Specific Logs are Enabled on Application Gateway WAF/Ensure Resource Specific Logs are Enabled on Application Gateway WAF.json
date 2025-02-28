@@ -1,0 +1,55 @@
+{
+    "properties": {
+      "displayName": "Ensure Resource Specific Logs are Enabled on Application Gateway WAF",
+      "policyType": "Custom",
+      "mode": "All",
+      "description": "This Policy ensures that the Resource Specific Logs are enabled while configuring the diagnostic settings for Application Gateway WAF.",
+      "metadata": {
+        "version": "1.0.0",
+        "category": "Network"
+      },
+      "parameters": {
+        "effect": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Effect",
+            "description": "Enable or disable the execution of the policy"
+          },
+          "allowedValues": [
+            "AuditIfNotExists"
+          ],
+          "defaultValue": "AuditIfNotExists"
+        }
+      },
+      "policyRule": {
+        "if": {
+          "field": "type",
+          "equals": "Microsoft.Network/applicationGateways"
+        },
+        "then": {
+          "effect": "[parameters('effect')]",
+          "details": {
+            "type": "Microsoft.Insights/diagnosticSettings",
+            "existenceCondition": {
+              "allOf": [
+                {
+                  "count": {
+                    "field": "Microsoft.Insights/diagnosticSettings/logs[*]",
+                    "where": {
+                      "field": "Microsoft.Insights/diagnosticSettings/logs[*].enabled",
+                      "equals": true
+                    }
+                  },
+                  "greater": 0
+                },
+                {
+                  "field": "Microsoft.Insights/diagnosticSettings/logAnalyticsDestinationType",
+                  "equals": "Dedicated"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
