@@ -2,6 +2,8 @@
 
 Hi! Welcome to the Azure Network Security Workshop. 
 
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520Network%2520Security%2520-%2520Workshop%2FLabs.json)
+
 **Objectives**
 
 This Workshop is designed to be an immersive and collaborative experience focused on harnessing the power of Azure DDoS, Azure Firewall and Azure Web Application Firewall to improve security measures.
