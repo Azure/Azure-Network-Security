@@ -1,10 +1,10 @@
-# Module 1: Azure Firewall
+# Module 1 - Azure Firewall
 
 **Have any feedback?**
 
 If you have any ideas or suggestions to improve this demo environment and its scripts, please share your thoughts with us.
 
-**Scenario: Controlling access between apoke virtual networks (Network Rules)**
+## Scenario: Controlling access between apoke virtual networks (Network Rules)
 
 For this scenario, we'll demonstrate how to control traffic flows between servers in different spoke virtual networks using Network rules. There are two spoke virtual networks that are directly peered to the Hub virtual network, housing the Azure Firewall. Using Route tables, all traffic from both spokes is forced to the Azure Firewall for inspection.
 
