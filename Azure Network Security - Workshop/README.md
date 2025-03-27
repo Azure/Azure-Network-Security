@@ -1,8 +1,8 @@
 # Azure Network Security Workshop
 
-Hi! Welcome to the Azure Network Security Workshop.
+**Hi! Welcome to the Azure Network Security Workshop.**
 
-If you would like to learn more about Azure Network Security focusing on Azure DDoS, Azure Firewall and Azure Web Application Firewall before you deploy this workshop, we recommend you checking out our [Azure Network Security Ninja Training](https://aka.ms/aznetsecninja), where you will be walked through basic to advanced scenarios for Azure network security. Ready to become an Azure NetSec ninja? Dive right in!
+If you would like to learn more about Azure Network Security, specifically Azure DDoS, Azure Firewall, and Azure Web Application Firewall, before deploying this workshop, we recommend you checking out our [Azure Network Security Ninja Training](https://aka.ms/aznetsecninja), where you will be walked through basic to advanced scenarios for Azure network security. Ready to become an Azure NetSec ninja? Dive right in!
 
 ## Objectives
 
