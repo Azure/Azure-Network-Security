@@ -36,6 +36,13 @@ You must own or have access to an Azure subscription where you will deploy the r
 
 Please note that all passwords must be provided at the time of deploying the ARM (Azure Resource Manager) template. We are not pre-defining passwords in the template to prevent potential security risks associated with hardcoded credentials. By requiring passwords to be entered during deployment, we ensure that each deployment uses unique and secure passwords, reducing the risk of unauthorized access and enhancing the overall security of our infrastructure. This approach also aligns with best practices for managing sensitive information, ensuring that passwords are not exposed or stored in an insecure manner.
 
+## Modules
+
+- [Module 1 - Azure Firewall](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
+- [Module 2 - Azure Application Gateway WAF](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
+- [Module 3 - Azure Front Door WAF](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
+- [Module 4 - Azure DDoS Protection](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
