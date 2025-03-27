@@ -1,10 +1,6 @@
 # Module 1 - Azure Firewall
 
-[<< Return to the main page](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
-
-**Have any feedback?**
-
-If you have any ideas or suggestions to improve this demo environment and its scripts, please share your thoughts with us.
+⬅️[Return to the main page](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
 
 ## Scenarios
 - [Controlling access between spoke virtual networks](#controlling-access-between-spoke-virtual-networks)
