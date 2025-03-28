@@ -32,7 +32,7 @@ Please note that all passwords must be provided at the time of deploying the ARM
 
 To start practicing your skills in Azure Network Security, including exploring Azure DDoS, Azure Firewall, and Azure Web Application Firewall, you will need to deploy the proposed environment using the **Deploy to Azure** button below.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Templates/labdeployment.json)
+[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Templates/labdeployment.json)
 
 Once the deployment is complete, you need to run the following PowerShell command on each of the four Windows virtual machines deployed. This PowerShell command will disable the Windows Firewall profiles, allowing you to practice the scenarios successfully.
 
