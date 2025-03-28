@@ -3,11 +3,11 @@
 ⬅️[Return to the main page](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
 
 ## Scenarios
-- [Verify DDoS Network Protection is associated with a virtual network](#verify-ddos-network-protection-is-associated-with-a-virtual-network)
+- [Verify DDoS Network Protection is associated with a public IP](#verify-ddos-network-protection-is-associated-with-a-public-ip)
 - [Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations](#use-azure-diagnostic-logs-and-metrics-to-analyze-azure-ddos-protection-mitigations)
 - [Use Microsoft Sentinel to analyze Azure DDoS Protection mitigations](#use-microsoft-sentinel-to-analyze-azure-ddos-protection-mitigations)
 
-## Verify DDoS Network Protection is associated with a virtual network
+## Verify DDoS Network Protection is associated with a public IP
 
 In this scenario, we'll verify that a DDoS Protection plan is associated with our virtual network using Azure Firewall Manager. Once a DDoS protection plan is enabled on a virtual network, all of the Public IP resources within that virtual network are automatically protected by that plan. Additionally, we'll show you how to check if a Public IP is being protected using DDoS IP Protection in the Azure Preview Portal.
 
@@ -45,8 +45,6 @@ Now that we've verified that our resources are protected with a DDoS Protection 
 **You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
-
-Click [back](#modules) to return to the list of modules and select a new one. You can also click the bottom right arrow to move ahead to the next page, Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations.
 
 ## Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations
 
