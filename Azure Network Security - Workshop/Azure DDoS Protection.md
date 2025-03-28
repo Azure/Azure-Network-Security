@@ -42,7 +42,7 @@ Now let's check on how we can verify if a Public IP is protected using DDoS IP P
 
 Now that we've verified that our resources are protected with a DDoS Protection Plan, let's move to the next module.
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
@@ -120,7 +120,7 @@ AzureDiagnostics
 | where Category == "DDoSMitigationFlowLogs"
 ```
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
@@ -160,7 +160,7 @@ The DDoS Metrics tab provides graphical representation of all the important metr
 The Investigation Tab in the workbook offers specific details on the number of packets that were dropped or allowed during past DDoS attacks, including the ports involved. Additionally, this tab provides information on the top attacking IPs and the timeline of the mitigation activities, as illustrated below.
 !IMAGE[ddos-sentinel-4.png](instructions281582/ddos-sentinel-4.png)
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
