@@ -28,6 +28,8 @@ Let's verify the Network rules configurations on the firewall policy first.
 
 ![AZFW-East_West-Network-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-3.png)
 
+⬅️ [Go to the top](#scenarios)
+
 ## Securing Internet access using Azure Firewall
 
 In this scenario, we'll use Application rules to control internet bound traffic from resources in our Azure virtual networks. We'll look at how to use FQDNs and Web Categories to filter what traffic should be allowed and to block the rest by not explicitly creating a rule to allow other traffic. Using Route tables, all traffic from both spokes is forced to the Azure Firewall for inspection.
