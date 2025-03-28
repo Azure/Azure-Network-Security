@@ -36,7 +36,9 @@ To start practicing your skills in Azure Network Security, including exploring A
 
 Once the deployment is complete, you need to run the following PowerShell command on each of the four Windows virtual machines deployed. This PowerShell command will disable the Windows Firewall profiles, allowing you to practice the scenarios successfully.
 
-- Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+```powershell
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+```
 
 Use the following documentation to learn how to run the PowerShell command by using Azure Portal: https://learn.microsoft.com/en-us/azure/virtual-machines/windows/run-command
 
