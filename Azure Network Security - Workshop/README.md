@@ -43,7 +43,7 @@ Use the following documentation to learn how to run the PowerShell command by us
 ## Modules
 
 - [Module 1 - Azure Firewall](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
-- [Module 2 - Azure Application Gateway WAF](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
+- [Module 2 - Azure Application Gateway WAF](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Application%20Gateway%20WAF.md)
 - [Module 3 - Azure Front Door WAF](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
 - [Module 4 - Azure DDoS Protection](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
 
