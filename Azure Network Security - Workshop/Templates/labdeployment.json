@@ -1,1 +1,2414 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.32.4.45862",
+      "templateHash": "16331686003976478878"
+    }
+  },
 
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "adminUsername": "AzureUser",
+    "vnet-hub-alpineSkiHouse-AddressSpace": "10.0.0.0/23",
+    "azureFirewallSubnetPrefix": "10.0.0.0/26",
+    "azureFirewallManagementSubnetPrefix": "10.0.0.64/26",
+    "snet-service-1SubnetPrefix": "10.0.0.192/28",
+    "snet-service-2SubnetPrefix": "10.0.0.208/28",
+    "azureBastionSubnetPrefix": "10.0.0.128/26",
+    "testApplicationKaliSubnetPrefix": "10.0.1.0/29",
+    "vnet-spoke-workload-1-AddressSpace": "10.0.100.0/24",
+    "snet-servers-1SubnetPrefixSW1": "10.0.100.0/28",
+    "snet-servers-2SubnetPrefixSW1": "10.0.100.16/28",
+    "snet-servers-3SubnetPrefixSW1": "10.0.100.32/28",
+    "vnet-spoke-workload-2-AddressSpace": "10.0.200.0/24",
+    "snet-appgwSubnetPrefixSW2": "10.0.200.32/27",
+    "snet-servers-1SubnetPrefixSW2": "10.0.200.0/28",
+    "snet-RADARSubnetPrefixSW2": "10.0.200.64/28"
+  },
+  "parameters": {
+    "adminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "The password for the Virtual Machine Administrator account. Passwords must be at least 12 characters and contain 3 of the following 4 character types: uppercase, lowercase, number, and symbol."
+      }
+    },
+    "appGwAfdName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Application Gateway Front Door."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[concat('webapp-', parameters('appGwAfdName'))]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', 'webapp-', parameters('appGwAfdName'))]"
+      ],
+      "tags": {},
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "DOCKER_REGISTRY_SERVER_URL",
+              "value": "https://index.docker.io"
+            },
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "false"
+            }
+          ],
+          "linuxFxVersion": "DOCKER|bkimminich/juice-shop",
+          "alwaysOn": true
+        },
+        "serverFarmId": "[concat(resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', 'webapp-', parameters('appGwAfdName'))]",
+        "clientAffinityEnabled": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2018-02-01",
+      "name": "[concat('webapp-', parameters('appGwAfdName'))]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "Tier": "PremiumV2",
+        "Name": "P1v2"
+      },
+      "kind": "linux",
+      "properties": {
+        "name": "[concat('webapp-', parameters('appGwAfdName'))]",
+        "workerSize": 3,
+        "workerSizeId": 3,
+        "numberOfWorkers": 1,
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Network/ipGroups",
+      "apiVersion": "2024-01-01",
+      "name": "ipg-spoke1-snet-servers-1",
+      "location": "[variables('location')]",
+      "properties": {
+        "ipAddresses": [
+          "10.0.100.0/28"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/ipGroups",
+      "apiVersion": "2024-01-01",
+      "name": "ipg-spoke1-snet-servers-2",
+      "location": "[variables('location')]",
+      "properties": {
+        "ipAddresses": [
+          "10.0.100.16/28"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/ipGroups",
+      "apiVersion": "2024-01-01",
+      "name": "ipg-spoke2-snet-servers-1",
+      "location": "[variables('location')]",
+      "properties": {
+        "ipAddresses": [
+          "10.0.200.0/28"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/ipGroups",
+      "apiVersion": "2024-01-01",
+      "name": "ipg-spoke2-snet-servers-2",
+      "location": "[variables('location')]",
+      "properties": {
+        "ipAddresses": [
+          "10.0.200.32/27"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2023-02-01",
+      "name": "vnet-hub-alpineSkiHouse",
+      "location": "[variables('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet-hub-alpineSkiHouse-AddressSpace')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "AzureFirewallSubnet",
+            "properties": {
+              "addressPrefix": "[variables('azureFirewallSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "AzureFirewallManagementSubnet",
+            "properties": {
+              "addressPrefix": "[variables('azureFirewallManagementSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "snet-service-1",
+            "properties": {
+              "addressPrefix": "[variables('snet-service-1SubnetPrefix')]"
+            }
+          },
+          {
+            "name": "snet-service-2",
+            "properties": {
+              "addressPrefix": "[variables('snet-service-2SubnetPrefix')]"
+            }
+          },
+          {
+            "name": "AzureBastionSubnet",
+            "properties": {
+              "addressPrefix": "[variables('azureBastionSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "TestApplicationKaliSubnet",
+            "properties": {
+              "addressPrefix": "[variables('testApplicationKaliSubnetPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2023-02-01",
+      "name": "vnet-spoke-workload-1",
+      "location": "[variables('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet-spoke-workload-1-AddressSpace')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "snet-servers-1",
+            "properties": {
+              "addressPrefix": "[variables('snet-servers-1SubnetPrefixSW1')]",
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', 'rt-spokes-to-hub')]"
+              }
+            }
+          },
+          {
+            "name": "snet-servers-2",
+            "properties": {
+              "addressPrefix": "[variables('snet-servers-2SubnetPrefixSW1')]"
+            }
+          },
+          {
+            "name": "snet-servers-3",
+            "properties": {
+              "addressPrefix": "[variables('snet-servers-3SubnetPrefixSW1')]"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/routeTables', 'rt-spokes-to-hub')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2023-02-01",
+      "name": "vnet-spoke-workload-2",
+      "location": "[variables('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('vnet-spoke-workload-2-AddressSpace')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "snet-appgw",
+            "properties": {
+              "addressPrefix": "[variables('snet-appgwSubnetPrefixSW2')]"
+            }
+          },
+          {
+            "name": "snet-servers-1",
+            "properties": {
+              "addressPrefix": "[variables('snet-servers-1SubnetPrefixSW2')]",
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', 'rt-spokes-to-hub')]"
+              }
+            }
+          },
+          {
+            "name": "snet-RADAR",
+            "properties": {
+              "addressPrefix": "[variables('snet-RADARSubnetPrefixSW2')]"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/routeTables', 'rt-spokes-to-hub')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-02-01",
+      "name": "vnet-hub-alpineSkiHouse/vnet-hub-alpineSkiHouse-to-vnet-spoke-workload-1",
+      "properties": {
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-1')]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-1')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-02-01",
+      "name": "vnet-hub-alpineSkiHouse/vnet-hub-alpineSkiHouse-to-vnet-spoke-workload-2",
+      "properties": {
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-2')]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-2')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-02-01",
+      "name": "vnet-spoke-workload-1/vnet-spoke-workload-1-to-vnet-hub-alpineSkiHouse",
+      "properties": {
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse')]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-1')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "apiVersion": "2023-02-01",
+      "name": "vnet-spoke-workload-2/vnet-spoke-workload-2-to-vnet-hub-alpineSkiHouse",
+      "properties": {
+        "remoteVirtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse')]"
+        },
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-2')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-02-01",
+      "name": "[concat('pip-bastion-', parameters('AppGwAfdName'))]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-02-01",
+      "name": "pip-azfw-hub-alpineSkiHouse",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIpAddresses/providers/diagnosticSettings",
+      "name": "[concat('pip-azfw-hub-alpineSkiHouse', '/Microsoft.Insights/', 'AzfwPipDiagLogs')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', concat('law-', parameters('appGwAfdName')))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', concat('law-', parameters('appGwAfdName')))]",
+        "logs": [
+          {
+            "category": "DDoSProtectionNotifications",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationFlowLogs",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationReports",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-02-01",
+      "name": "pip-azfw-hub-mgmt-alpineSkiHouse",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-02-01",
+      "name": "[concat('pip-appgw-', parameters('AppGwAfdName'), '-waf')]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat('owasp-', parameters('appGwAfdName'))]",
+          "fqdn": "[concat('owasp-', parameters('appGwAfdName'), '.', variables('location'), '.cloudapp.azure.com')]"
+        },
+        "ddosSettings": {
+            "protectionMode": "Enabled"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIpAddresses/providers/diagnosticSettings",
+      "name": "[concat('pip-appgw-', parameters('appGwAfdName'), '-waf', '/Microsoft.Insights/', 'AppGwPipDiagLogs')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', concat('pip-appgw-', parameters('AppGwAfdName'), '-waf'))]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', concat('law-', parameters('appGwAfdName')))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', concat('law-', parameters('appGwAfdName')))]",
+        "logs": [
+          {
+            "category": "DDoSProtectionNotifications",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationFlowLogs",
+            "enabled": true
+          },
+          {
+            "category": "DDoSMitigationReports",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/routeTables",
+      "apiVersion": "2024-01-01",
+      "name": "rt-spokes-to-hub",
+      "location": "[variables('location')]",
+      "tags": {},
+      "properties": {
+        "disableBgpRoutePropagation": false,
+        "routes": [
+          {
+            "name": "DefaultRoute",
+            "id": "[resourceId('Microsoft.Network/routeTables/routes', 'rt-spokes-to-hub', 'DefaultRoute')]",
+            "properties": {
+              "addressPrefix": "0.0.0.0/0",
+              "nextHopType": "VirtualAppliance",
+              "nextHopIpAddress": "10.0.0.4",
+              "hasBgpOverride": false
+            },
+            "type": "Microsoft.Network/routeTables/routes"
+          },
+          {
+            "name": "AsymmetricRoute",
+            "id": "[resourceId('Microsoft.Network/routeTables/routes', 'rt-spokes-to-hub', 'AsymmetricRoute')]",
+            "properties": {
+              "addressPrefix": "10.0.100.36/32",
+              "nextHopType": "VirtualAppliance",
+              "nextHopIpAddress": "10.0.0.4",
+              "hasBgpOverride": false
+            },
+            "type": "Microsoft.Network/routeTables/routes"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/routeTables/routes",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('rt-spokes-to-hub', '/AsymmetricRoute')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/routeTables', 'rt-spokes-to-hub')]"
+      ],
+      "properties": {
+        "addressPrefix": "10.0.100.36/32",
+        "nextHopType": "VirtualAppliance",
+        "nextHopIpAddress": "10.0.0.4",
+        "hasBgpOverride": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/routeTables/routes",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('rt-spokes-to-hub', '/DefaultRoute')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/routeTables', 'rt-spokes-to-hub')]"
+      ],
+      "properties": {
+        "addressPrefix": "0.0.0.0/0",
+        "nextHopType": "VirtualAppliance",
+        "nextHopIpAddress": "10.0.0.4",
+        "hasBgpOverride": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/bastionHosts",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('bstn-', parameters('AppGwAfdName'))]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "scaleUnits": 2,
+        "disableCopyPaste": false,
+        "ipConfigurations": [
+          {
+            "name": "IpConfig",
+            "properties": {
+              "subnet": {
+                "id": "[format('{0}/subnets/AzureBastionSubnet', resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('pip-bastion-', parameters('AppGwAfdName')))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/azureFirewalls",
+      "apiVersion": "2024-01-01",
+      "name": "azfw-hub-alpineSkiHouse",
+      "location": "[variables('location')]",
+      "properties": {
+        "sku": {
+          "name": "AZFW_VNet",
+          "tier": "Premium"
+        },
+        "threatIntelMode": "Deny",
+        "additionalProperties": {},
+        "managementIpConfiguration": {
+          "name": "AzureFirewallMgmtIpConfiguration",
+          "properties": {
+            "publicIPAddress": {
+              "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-mgmt-alpineSkiHouse')]"
+            },
+            "subnet": {
+              "id": "[format('{0}/subnets/AzureFirewallManagementSubnet', resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse'))]"
+            }
+          }
+        },
+        "ipConfigurations": [
+          {
+            "name": "AzureFirewallIpConfiguration0",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]"
+              },
+              "subnet": {
+                "id": "[format('{0}/subnets/AzureFirewallSubnet', resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse'))]"
+              }
+            }
+          }
+        ],
+        "networkRuleCollections": [],
+        "applicationRuleCollections": [],
+        "natRuleCollections": [],
+        "firewallPolicy": {
+          "id": "[resourceId('Microsoft.Network/firewallPolicies', 'fwpol-premium-alpineSkiHouse')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/firewallPolicies', 'fwpol-premium-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-mgmt-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'DefaultApplicationRuleCollectionGroup')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-hub')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-MidnightBlizzard-WAP')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-SAP')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-spoke-workload-1')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-spoke-workload-2')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'TestRCG')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/azureFirewalls/providers/diagnosticSettings",
+      "name": "[concat('azfw-hub-alpineSkiHouse', '/Microsoft.Insights/', 'AzfwDiagLogs')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/azureFirewalls', 'azfw-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', concat('law-', parameters('appGwAfdName')))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', concat('law-', parameters('appGwAfdName')))]",
+        "logAnalyticsDestinationType": "Dedicated",
+        "logs": [
+          {
+            "category": "AZFWNetworkRule",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AZFWApplicationRule",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AZFWNatRule",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AZFWThreatIntel",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AZFWIdpsSignature",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AZFWDnsQuery",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AZFWFqdnResolveFailure",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AZFWApplicationRuleAggregation",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AZFWNetworkRuleAggregation",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          },
+          {
+            "category": "AZFWNatRuleAggregation",
+            "categoryGroup": null,
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 10,
+              "enabled": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies",
+      "apiVersion": "2024-01-01",
+      "name": "fwpol-premium-alpineSkiHouse",
+      "location": "[variables('location')]",
+      "properties": {
+        "sku": {
+          "tier": "Premium"
+        },
+        "threatIntelMode": "Deny",
+        "intrusionDetection": {
+          "mode": "Alert",
+          "configuration": {
+            "signatureOverrides": [
+              {
+                "id": "2008983",
+                "mode": "Deny"
+              },
+              {
+                "id": "2032081",
+                "mode": "Deny"
+              }
+            ],
+            "bypassTrafficSettings": []
+          }
+        },
+        "explicitProxy": {
+          "enableExplicitProxy": true,
+          "httpPort": 8080,
+          "httpsPort": 8443
+        },
+        "threatIntelWhitelist": {
+          "fqdns": [],
+          "ipAddresses": []
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('fwpol-premium-alpineSkiHouse', '/DefaultApplicationRuleCollectionGroup')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies', 'fwpol-premium-alpineSkiHouse')]"
+      ],
+      "properties": {
+        "priority": 300,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [],
+            "name": "Temporary-Allow-All",
+            "priority": 111
+          },
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [],
+            "name": "AllowHTTPS",
+            "priority": 500
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('fwpol-premium-alpineSkiHouse', '/rcg-vnet-hub')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies', 'fwpol-premium-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'DefaultApplicationRuleCollectionGroup')]"
+      ],
+      "properties": {
+        "priority": 500,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+            "action": {
+              "type": "Dnat"
+            },
+            "rules": [
+              {
+                "ruleType": "NatRule",
+                "name": "OWASP-VM-1-HTTP",
+                "translatedAddress": "10.0.200.5",
+                "translatedPort": "3000",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "8080"
+                ]
+              },
+              {
+                "ruleType": "NatRule",
+                "name": "OWASP-VM-2-HTTP",
+                "translatedAddress": "10.0.200.6",
+                "translatedPort": "3000",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "8081"
+                ]
+              },
+              {
+                "ruleType": "NatRule",
+                "name": "OWASP-VM-1-SSH",
+                "translatedAddress": "10.0.200.5",
+                "translatedPort": "22",
+                "ipProtocols": [
+                  "TCP",
+                  "UDP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "2220"
+                ]
+              },
+              {
+                "ruleType": "NatRule",
+                "name": "OWASP-VM-2-SSH",
+                "translatedAddress": "10.0.200.6",
+                "translatedPort": "22",
+                "ipProtocols": [
+                  "TCP",
+                  "UDP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "2221"
+                ]
+              }
+            ],
+            "name": "OWASP-DNAT",
+            "priority": 900
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('fwpol-premium-alpineSkiHouse', '/rcg-vnet-MidnightBlizzard-WAP')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies', 'fwpol-premium-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'DefaultApplicationRuleCollectionGroup')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-hub')]"
+      ],
+      "properties": {
+        "priority": 600,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+            "action": {
+              "type": "Dnat"
+            },
+            "rules": [
+              {
+                "ruleType": "NatRule",
+                "name": "MidnightBlizzard-WAP-443",
+                "translatedAddress": "192.168.0.4",
+                "translatedPort": "443",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "443"
+                ]
+              },
+              {
+                "ruleType": "NatRule",
+                "name": "MidnightBlizzard-WAP-49443",
+                "translatedAddress": "192.168.0.4",
+                "translatedPort": "49443",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "49443"
+                ]
+              }
+            ],
+            "name": "MidnightBlizzard-WAP",
+            "priority": 500
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('fwpol-premium-alpineSkiHouse', '/rcg-vnet-SAP')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies', 'fwpol-premium-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'DefaultApplicationRuleCollectionGroup')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-hub')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-MidnightBlizzard-WAP')]"
+      ],
+      "properties": {
+        "priority": 700,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+            "action": {
+              "type": "Dnat"
+            },
+            "rules": [
+              {
+                "ruleType": "NatRule",
+                "name": "SAP-HTTPS",
+                "translatedAddress": "10.70.0.4",
+                "translatedPort": "44300",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "44300"
+                ]
+              },
+              {
+                "ruleType": "NatRule",
+                "name": "SAP-GUI",
+                "translatedAddress": "10.70.0.4",
+                "translatedPort": "3201",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "3201"
+                ]
+              },
+              {
+                "ruleType": "NatRule",
+                "name": "MDIOT-Ux",
+                "translatedAddress": "10.2.1.4",
+                "translatedPort": "443",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "4433"
+                ]
+              }
+            ],
+            "name": "SAP-dnatRuleCollection",
+            "priority": 800
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('fwpol-premium-alpineSkiHouse', '/rcg-vnet-spoke-workload-1')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]",
+        "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+        "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]",
+        "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-1')]",
+        "[resourceId('Microsoft.Network/firewallPolicies', 'fwpol-premium-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'DefaultApplicationRuleCollectionGroup')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-hub')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-MidnightBlizzard-WAP')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-SAP')]"
+      ],
+      "properties": {
+        "priority": 1000,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [
+              {
+                "ruleType": "NetworkRule",
+                "name": "spoke1-to-spoke2-snet1-SMB",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]"
+                ],
+                "destinationAddresses": [],
+                "destinationIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-1')]"
+                ],
+                "destinationFqdns": [],
+                "destinationPorts": [
+                  "445"
+                ]
+              },
+              {
+                "ruleType": "NetworkRule",
+                "name": "spoke1-to-spoke2-snet1-RDP",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]"
+                ],
+                "destinationAddresses": [],
+                "destinationIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-1')]"
+                ],
+                "destinationFqdns": [],
+                "destinationPorts": [
+                  "3389"
+                ]
+              },
+              {
+                "ruleType": "NetworkRule",
+                "name": "spoke1-to-spoke2-snet1-Telnet",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]"
+                ],
+                "destinationAddresses": [],
+                "destinationIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-1')]"
+                ],
+                "destinationFqdns": [],
+                "destinationPorts": [
+                  "23"
+                ]
+              }
+            ],
+            "name": "spoke-workload-1-networkRuleCollection",
+            "priority": 100
+          },
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [
+              {
+                "ruleType": "ApplicationRule",
+                "name": "spoke1-to-OWASPJuiceShopAndMicrosoft",
+                "protocols": [
+                  {
+                    "protocolType": "Http",
+                    "port": 80
+                  },
+                  {
+                    "protocolType": "Https",
+                    "port": 443
+                  }
+                ],
+                "fqdnTags": [],
+                "webCategories": [],
+                "targetFqdns": [
+                  "*.microsoft.com",
+                  "[concat('owasp-', parameters('appGwAfdName'), '.', variables('location'), '.cloudapp.azure.com')]"
+                ],
+                "targetUrls": [],
+                "terminateTLS": true,
+                "sourceAddresses": [],
+                "destinationAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]"
+                ],
+                "httpHeadersToInsert": []
+              },
+              {
+                "ruleType": "ApplicationRule",
+                "name": "spoke1-to-WindowsUpdate",
+                "protocols": [
+                  {
+                    "protocolType": "Https",
+                    "port": 443
+                  }
+                ],
+                "fqdnTags": [
+                  "WindowsUpdate"
+                ],
+                "webCategories": [],
+                "targetFqdns": [],
+                "targetUrls": [],
+                "terminateTLS": false,
+                "sourceAddresses": [],
+                "destinationAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]"
+                ],
+                "httpHeadersToInsert": []
+              },
+              {
+                "ruleType": "ApplicationRule",
+                "name": "spoke1-to-SearchEnginesandNewsSites",
+                "protocols": [
+                  {
+                    "protocolType": "Http",
+                    "port": 80
+                  },
+                  {
+                    "protocolType": "Https",
+                    "port": 443
+                  }
+                ],
+                "fqdnTags": [],
+                "webCategories": [
+                  "news",
+                  "searchenginesandportals"
+                ],
+                "targetFqdns": [],
+                "targetUrls": [],
+                "terminateTLS": true,
+                "sourceAddresses": [],
+                "destinationAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]"
+                ],
+                "httpHeadersToInsert": []
+              },
+              {
+                "ruleType": "ApplicationRule",
+                "name": "spoke1-to-Postman",
+                "protocols": [
+                  {
+                    "protocolType": "Https",
+                    "port": 443
+                  }
+                ],
+                "fqdnTags": [],
+                "webCategories": [],
+                "targetFqdns": [
+                  "*.postman.com",
+                  "*.getpostman.com"
+                ],
+                "targetUrls": [],
+                "terminateTLS": false,
+                "sourceAddresses": [],
+                "destinationAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]"
+                ],
+                "httpHeadersToInsert": []
+              }
+            ],
+            "name": "spoke-workload-1-applicationRuleCollection",
+            "priority": 110
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('fwpol-premium-alpineSkiHouse', '/rcg-vnet-spoke-workload-2')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]",
+        "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-1')]",
+        "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+        "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]",
+        "[resourceId('Microsoft.Network/firewallPolicies', 'fwpol-premium-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'DefaultApplicationRuleCollectionGroup')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-hub')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-MidnightBlizzard-WAP')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-SAP')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-spoke-workload-1')]"
+      ],
+      "properties": {
+        "priority": 2000,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [
+              {
+                "ruleType": "NetworkRule",
+                "name": "spoke2-snet1-to-spoke1-RDP",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-1')]"
+                ],
+                "destinationAddresses": [],
+                "destinationIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-1')]",
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke1-snet-servers-2')]"
+                ],
+                "destinationFqdns": [],
+                "destinationPorts": [
+                  "3389"
+                ]
+              }
+            ],
+            "name": "spoke-workload-2-networkRuleCollection",
+            "priority": 100
+          },
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [
+              {
+                "ruleType": "ApplicationRule",
+                "name": "spoke2-to-WindowsUpdate",
+                "protocols": [
+                  {
+                    "protocolType": "Https",
+                    "port": 443
+                  }
+                ],
+                "fqdnTags": [
+                  "WindowsUpdate"
+                ],
+                "webCategories": [],
+                "targetFqdns": [],
+                "targetUrls": [],
+                "terminateTLS": false,
+                "sourceAddresses": [],
+                "destinationAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-1')]"
+                ],
+                "httpHeadersToInsert": []
+              },
+              {
+                "ruleType": "ApplicationRule",
+                "name": "spoke2-to-SearchEnginesandNewsSites",
+                "protocols": [
+                  {
+                    "protocolType": "Http",
+                    "port": 80
+                  },
+                  {
+                    "protocolType": "Https",
+                    "port": 443
+                  }
+                ],
+                "fqdnTags": [],
+                "webCategories": [
+                  "news",
+                  "searchenginesandportals"
+                ],
+                "targetFqdns": [],
+                "targetUrls": [],
+                "terminateTLS": true,
+                "sourceAddresses": [],
+                "destinationAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-1')]"
+                ],
+                "httpHeadersToInsert": []
+              },
+              {
+                "ruleType": "ApplicationRule",
+                "name": "spoke2-to-docker",
+                "protocols": [
+                  {
+                    "protocolType": "Http",
+                    "port": 80
+                  },
+                  {
+                    "protocolType": "Https",
+                    "port": 443
+                  }
+                ],
+                "fqdnTags": [],
+                "webCategories": [],
+                "targetFqdns": [
+                  "*.docker.com",
+                  "*.docker.io",
+                  "*"
+                ],
+                "targetUrls": [],
+                "terminateTLS": true,
+                "sourceAddresses": [],
+                "destinationAddresses": [],
+                "sourceIpGroups": [
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-1')]",
+                  "[resourceid('Microsoft.Network/ipGroups', 'ipg-spoke2-snet-servers-2')]"
+                ],
+                "httpHeadersToInsert": []
+              }
+            ],
+            "name": "spoke-workload-2-applicationRuleCollection",
+            "priority": 110
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2024-01-01",
+      "name": "[concat('fwpol-premium-alpineSkiHouse', '/TestRCG')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies', 'fwpol-premium-alpineSkiHouse')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'DefaultApplicationRuleCollectionGroup')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-hub')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-MidnightBlizzard-WAP')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-SAP')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-spoke-workload-1')]",
+        "[resourceId('Microsoft.Network/firewallPolicies/ruleCollectionGroups', 'fwpol-premium-alpineSkiHouse', 'rcg-vnet-spoke-workload-2')]"
+      ],
+      "properties": {
+        "priority": 2020,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+            "action": {
+              "type": "Dnat"
+            },
+            "rules": [
+              {
+                "ruleType": "NatRule",
+                "name": "Kali-DNAT-HTTP",
+                "translatedAddress": "10.0.1.4",
+                "translatedPort": "8080",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "9090"
+                ]
+              },
+              {
+                "ruleType": "NatRule",
+                "name": "Kali-DNAT-SSH",
+                "translatedAddress": "10.0.1.4",
+                "translatedPort": "22",
+                "ipProtocols": [
+                  "TCP"
+                ],
+                "sourceAddresses": [
+                  "*"
+                ],
+                "sourceIpGroups": [],
+                "destinationAddresses": [
+                  "[reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-azfw-hub-alpineSkiHouse')).ipAddress]"
+                ],
+                "destinationPorts": [
+                  "2222"
+                ]
+              }
+            ],
+            "name": "rcg-kalilinuxtest",
+            "priority": 2020
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies",
+      "apiVersion": "2024-05-01",
+      "name": "[concat('wafappgw', parameters('AppGwAfdName'))]",
+      "location": "[variables('location')]",
+      "properties": {
+        "customRules": [
+          {
+            "name": "RateLimitRequest",
+            "priority": 10,
+            "ruleType": "RateLimitRule",
+            "rateLimitDuration": "FiveMins",
+            "action": "Block",
+            "rateLimitThreshold": 3,
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RequestUri"
+                  }
+                ],
+                "operator": "Contains",
+                "negationConditon": false,
+                "matchValues": [
+                  "search",
+                  "login",
+                  "comment"
+                ],
+                "transforms": []
+              }
+            ],
+            "groupByUserSession": [
+              {
+                "groupByVariables": [
+                  {
+                    "variableName": "ClientAddr"
+                  }
+                ]
+              }
+            ],
+            "state": "Enabled"
+          },
+          {
+            "name": "BlockGeoLocationNorthKorea",
+            "priority": 20,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RemoteAddr"
+                  }
+                ],
+                "operator": "GeoMatch",
+                "negationConditon": false,
+                "matchValues": [
+                  "KP"
+                ],
+                "transforms": []
+              }
+            ],
+            "state": "Enabled"
+          },
+          {
+            "name": "Log4jRCEMitigation",
+            "priority": 30,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RequestBody"
+                  }
+                ],
+                "operator": "Contains",
+                "negationConditon": false,
+                "matchValues": [
+                  "\"$\"{jndi:"
+                ],
+                "transforms": [
+                  "UrlDecode",
+                  "Lowercase"
+                ]
+              }
+            ],
+            "state": "Enabled"
+          },
+          {
+            "name": "BlockFirefoxUserAgent",
+            "priority": 40,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RequestHeaders",
+                    "selector": "User-Agent"
+                  }
+                ],
+                "operator": "Contains",
+                "negationConditon": false,
+                "matchValues": [
+                  "rv:"
+                ],
+                "transforms": []
+              }
+            ],
+            "state": "Enabled"
+          },
+          {
+            "name": "SentinelBlockIP",
+            "priority": 50,
+            "ruleType": "MatchRule",
+            "action": "Block",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RemoteAddr"
+                  }
+                ],
+                "operator": "IPMatch",
+                "negationConditon": false,
+                "matchValues": [
+                  "1.2.3.4"
+                ],
+                "transforms": []
+              }
+            ],
+            "state": "Enabled"
+          },
+          {
+            "name": "JSChallenge",
+            "priority": 60,
+            "ruleType": "MatchRule",
+            "action": "JSChallenge",
+            "matchConditions": [
+              {
+                "matchVariables": [
+                  {
+                    "variableName": "RequestUri"
+                  }
+                ],
+                "operator": "Contains",
+                "negationConditon": false,
+                "matchValues": [
+                  "/ftp"
+                ],
+                "transforms": []
+              }
+            ],
+            "state": "Enabled"
+          }
+        ],
+        "policySettings": {
+          "requestBodyCheck": true,
+          "maxRequestBodySizeInKb": 15,
+          "fileUploadLimitInMb": 1,
+          "state": "Enabled",
+          "mode": "Prevention",
+          "logScrubbing": {
+            "state": "Enabled",
+            "scrubbingRules": [
+              {
+                "matchVariable": "RequestJSONArgNames",
+                "selectorMatchOperator": "Equals",
+                "selector": "email",
+                "state": "Enabled"
+              }
+            ]
+          },
+          "jsChallengeCookieExpirationInMins": 5,
+          "requestBodyInspectLimitInKB": 10,
+          "fileUploadEnforcement": true,
+          "requestBodyEnforcement": true
+        },
+        "managedRules": {
+          "managedRuleSets": [
+            {
+              "ruleSetType": "Microsoft_DefaultRuleSet",
+              "ruleSetVersion": "2.1",
+              "ruleGroupOverrides": [
+                {
+                  "ruleGroupName": "LFI",
+                  "rules": [
+                    {
+                      "ruleId": "930110",
+                      "state": "Enabled",
+                      "action": "Block"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "ruleSetType": "Microsoft_BotManagerRuleSet",
+              "ruleSetVersion": "1.1",
+              "ruleGroupOverrides": []
+            }
+          ],
+          "exclusions": [
+            {
+              "matchVariable": "RequestHeaderValues",
+              "selectorMatchOperator": "Equals",
+              "selector": "comment",
+              "exclusionManagedRuleSets": [
+                {
+                  "ruleSetType": "Microsoft_DefaultRuleSet",
+                  "ruleSetVersion": "2.1",
+                  "ruleGroups": [
+                    {
+                      "ruleGroupName": "SQLI",
+                      "rules": [
+                        {
+                          "ruleId": "942430"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/applicationGateways",
+      "apiVersion": "2024-05-01",
+      "name": "[concat('appgw-', parameters('AppGwAfdName'), '-waf')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "sku": {
+          "name": "WAF_v2",
+          "tier": "WAF_v2",
+          "family": "Generation_2",
+          "capacity": 3
+        },
+        "gatewayIPConfigurations": [
+          {
+            "name": "appGatewayIpConfig",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-spoke-workload-2', 'snet-appgw')]"
+              }
+            }
+          }
+        ],
+        "sslCertificates": [],
+        "trustedRootCertificates": [],
+        "trustedClientCertificates": [],
+        "sslProfiles": [],
+        "frontendIPConfigurations": [
+          {
+            "name": "appGatewayFrontendIp",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('pip-appgw-', parameters('AppGwAfdName'), '-waf'))]"
+              }
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "appGatewayFrontendPort",
+            "properties": {
+              "port": 80
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "appGatewayBackendPool",
+            "properties": {
+              "backendAddresses": [
+                {
+                  "fqdn": "[concat('webapp-', parameters('AppGwAfdName'), '.azurewebsites.net')]"
+                }
+              ],
+              "requestRoutingRules": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationGateways/requestRoutingRules', concat('appgw-', parameters('AppGwAfdName'), '-waf'), 'appGatewayRule')]"
+                }
+              ]
+            },
+            "type": "Microsoft.Network/applicationGateways/backendAddressPools"
+          }
+        ],
+        "loadDistributionPolicies": [],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "appGatewayBackendHttpSettings",
+            "properties": {
+              "port": 443,
+              "protocol": "Https",
+              "cookieBasedAffinity": "Disabled",
+              "hostname": "[concat('webapp-', parameters('AppGwAfdName'), '.azurewebsites.net')]",
+              "pickHostNameFromBackendAddress": false,
+              "affinityCookieName": "ApplicationGatewayAffinity",
+              "requestTimeout": 20
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "appGatewayHttpListener",
+            "properties": {
+              "firewallPolicy": {
+                "id": "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', concat('wafappgw', parameters('AppGwAfdName')))]"
+              },
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', concat('appgw-', parameters('AppGwAfdName'), '-waf'), 'appGatewayFrontendIp')]"
+              },
+              "frontendPort": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', concat('appgw-', parameters('appGwAfdName'), '-waf'), 'appGatewayFrontendPort')]"
+              },
+              "protocol": "Http",
+              "hostName": "[concat('owasp-', parameters('appGwAfdName'), '.', variables('location'), '.cloudapp.azure.com')]",
+              "hostNames": [],
+              "requireServerNameIndication": false
+            }
+          }
+        ],
+        "urlPathMaps": [],
+        "requestRoutingRules": [
+          {
+            "name": "appGatewayRule",
+            "properties": {
+              "ruleType": "Basic",
+              "priority": 10,
+              "httpListener": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', concat('appgw-', parameters('appGwAfdName'), '-waf'), 'appGatewayHttpListener')]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', concat('appgw-', parameters('appGwAfdName'), '-waf'), 'appGatewayBackendPool')]"
+              },
+              "backendHttpSettings": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', concat('appgw-', parameters('appGwAfdName'), '-waf'), 'appGatewayBackendHttpSettings')]"
+              }
+            }
+          }
+        ],
+        "routingRules": [],
+        "probes": [],
+        "rewriteRuleSets": [],
+        "redirectConfigurations": [],
+        "privateLinkConfigurations": [],
+        "enableHttp2": false,
+        "forceFirewallPolicyAssociation": true,
+        "firewallPolicy": {
+          "id": "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', concat('wafappgw', parameters('appGwAfdName')))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', concat('wafappgw', parameters('appGwAfdName')))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-2')]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', concat('pip-appgw-', parameters('appGwAfdName'), '-waf'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/applicationGateways/providers/diagnosticSettings",
+      "name": "[concat('appgw-', parameters('AppGwAfdName'), '-waf','/microsoft.insights/', 'AppGwDiagnostics')]",
+      "apiVersion": "2017-05-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/applicationGateways', concat('appgw-', parameters('AppGwAfdName'), '-waf'))]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', concat('law-', parameters('appGwAfdName')))]"
+      ],
+      "properties": {
+        "name": "DiagService",
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', concat('law-', parameters('appGwAfdName')))]",
+        "logs": [
+          {
+            "category": "ApplicationGatewayAccessLog",
+            "enabled": true
+          },
+          {
+            "category": "ApplicationGatewayPerformanceLog",
+            "enabled": true
+          },
+          {
+            "category": "ApplicationGatewayFirewallLog",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-07-01",
+      "name": "vm-srv19-1",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-11",
+            "sku": "win11-22h2-pro",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "osProfile": {
+          "computerName": "vm-srv19-1",
+          "adminUsername": "[variables('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'vm-srv19-1-nic')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'vm-srv19-1-nic')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2024-01-01",
+      "name": "vm-srv19-1-nic",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-spoke-workload-2', 'snet-servers-1')]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-2')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-07-01",
+      "name": "vm-win11-1",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-11",
+            "sku": "win11-22h2-pro",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "osProfile": {
+          "computerName": "vm-win11-1",
+          "adminUsername": "[variables('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'vm-win11-1-nic')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'vm-win11-1-nic')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2024-01-01",
+      "name": "vm-win11-1-nic",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-spoke-workload-1', 'snet-servers-1')]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-1')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-07-01",
+      "name": "vm-win11-2",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-11",
+            "sku": "win11-22h2-pro",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "osProfile": {
+          "computerName": "vm-win11-2",
+          "adminUsername": "[variables('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'vm-win11-2-nic')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'vm-win11-2-nic')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2024-01-01",
+      "name": "vm-win11-2-nic",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-spoke-workload-1', 'snet-servers-3')]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-1')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-07-01",
+      "name": "vm-win11-3",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-11",
+            "sku": "win11-22h2-pro",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "osProfile": {
+          "computerName": "vm-win11-3",
+          "adminUsername": "[variables('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'vm-win11-3-nic')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'vm-win11-3-nic')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2024-01-01",
+      "name": "vm-win11-3-nic",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-spoke-workload-1', 'snet-servers-2')]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spoke-workload-1')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+      "apiVersion": "2024-02-01",
+      "name": "[concat('wafafd', parameters('AppGwAfdName'))]",
+      "location": "Global",
+      "sku": {
+        "name": "Premium_AzureFrontDoor"
+      },
+      "properties": {
+        "policySettings": {
+          "enabledState": "Enabled",
+          "mode": "Prevention",
+          "redirectUrl": "https://www.microsoft.com/en-us/edge",
+          "customBlockResponseStatusCode": 403,
+          "customBlockResponseBody": "PGh0bWw+PGhlYWQ+PHRpdGxlPkF6dXJlIFdBRiBBbHBpbmUgU2tpIEhvdXNlPC90aXRsZT48L2hlYWQ+PGJvZHkgYmdjb2xvcj0iI0ZGQjI5OSI+PHA+PGgxPjxzdHJvbmc+QXp1cmUgV0FGIEFscGluZSBTa2kgSG91c2UgPC9wPjxwPlRoaXMgcmVxdWVzdCBoYXMgYmVlbiBibG9ja2VkLiBQbGVhc2UgY29udGFjdCB1cyB3aXRoOiB7e2F6dXJlLXJlZn19PGJyPjwvcD48L2JvZHk+PC9odG1sPg==",
+          "requestBodyCheck": "Enabled",
+          "javascriptChallengeExpirationInMinutes": 5,
+          "logScrubbing": {
+            "state": "Enabled",
+            "scrubbingRules": []
+          }
+        },
+        "customRules": {
+          "rules": [
+            {
+              "name": "RateLimitRequest",
+              "enabledState": "Enabled",
+              "priority": 10,
+              "ruleType": "RateLimitRule",
+              "rateLimitDurationInMinutes": 5,
+              "rateLimitThreshold": 3,
+              "matchConditions": [
+                {
+                  "matchVariable": "RequestUri",
+                  "operator": "Contains",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "search",
+                    "login",
+                    "comment"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Block",
+              "groupBy": [
+                {
+                  "variableName": "SocketAddr"
+                }
+              ]
+            },
+            {
+              "name": "JSChallengeRequest",
+              "enabledState": "Enabled",
+              "priority": 20,
+              "ruleType": "MatchRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 100,
+              "matchConditions": [
+                {
+                  "matchVariable": "RequestUri",
+                  "operator": "Contains",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "/ftp"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "JSChallenge",
+              "groupBy": []
+            },
+            {
+              "name": "BlockGeoLocationNorthKorea",
+              "enabledState": "Enabled",
+              "priority": 30,
+              "ruleType": "MatchRule",
+              "matchConditions": [
+                {
+                  "matchVariable": "SocketAddr",
+                  "operator": "GeoMatch",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "KP"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Block",
+              "groupBy": []
+            },
+            {
+              "name": "Log4jRCEMitigation",
+              "enabledState": "Enabled",
+              "priority": 40,
+              "ruleType": "MatchRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 100,
+              "matchConditions": [
+                {
+                  "matchVariable": "RequestBody",
+                  "operator": "Contains",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "${jndi:"
+                  ],
+                  "transforms": [
+                    "UrlDecode",
+                    "Lowercase"
+                  ]
+                }
+              ],
+              "action": "Block",
+              "groupBy": []
+            },
+            {
+              "name": "RedirectFirefoxUserAgent",
+              "enabledState": "Enabled",
+              "priority": 50,
+              "ruleType": "MatchRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 100,
+              "matchConditions": [
+                {
+                  "matchVariable": "RequestHeader",
+                  "selector": "User-Agent",
+                  "operator": "Contains",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "rv:"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Redirect",
+              "groupBy": []
+            },
+            {
+              "name": "IPv6Rule",
+              "enabledState": "Enabled",
+              "priority": 70,
+              "ruleType": "MatchRule",
+              "rateLimitDurationInMinutes": 1,
+              "rateLimitThreshold": 100,
+              "matchConditions": [
+                {
+                  "matchVariable": "RemoteAddr",
+                  "operator": "IPMatch",
+                  "negateCondition": false,
+                  "matchValue": [
+                    "2603:1030:b:3::37e"
+                  ],
+                  "transforms": []
+                }
+              ],
+              "action": "Log",
+              "groupBy": []
+            }
+          ]
+        },
+        "managedRules": {
+          "managedRuleSets": [
+            {
+              "ruleSetType": "Microsoft_DefaultRuleSet",
+              "ruleSetVersion": "2.1",
+              "ruleSetAction": "Block",
+              "ruleGroupOverrides": [
+                {
+                  "ruleGroupName": "SQLI",
+                  "rules": [
+                    {
+                      "ruleId": "942100",
+                      "enabledState": "Enabled",
+                      "action": "AnomalyScoring",
+                      "exclusions": [
+                        {
+                          "matchVariable": "RequestBodyJsonArgNames",
+                          "selectorMatchOperator": "Contains",
+                          "selector": "password"
+                        }
+                      ]
+                    }
+                  ],
+                  "exclusions": []
+                }
+              ],
+              "exclusions": []
+            },
+            {
+              "ruleSetType": "Microsoft_BotManagerRuleSet",
+              "ruleSetVersion": "1.1",
+              "ruleGroupOverrides": [
+                {
+                  "ruleGroupName": "UnknownBots",
+                  "rules": [
+                    {
+                      "ruleId": "Bot300700",
+                      "enabledState": "Enabled",
+                      "action": "Log",
+                      "exclusions": []
+                    }
+                  ],
+                  "exclusions": []
+                }
+              ],
+              "exclusions": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles",
+      "apiVersion": "2024-09-01",
+      "name": "[concat('afd-owasp-', parameters('AppGwAfdName'))]",
+      "location": "Global",
+      "sku": {
+        "name": "Premium_AzureFrontDoor"
+      },
+      "kind": "frontdoor",
+      "properties": {
+        "originResponseTimeoutSeconds": 30
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/afdendpoints",
+      "apiVersion": "2024-09-01",
+      "name": "[concat('afd-owasp-', parameters('AppGwAfdName'), '/afd-owasp-', parameters('appGwAfdName'))]",
+      "location": "Global",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', concat('afd-owasp-', parameters('appGwAfdName')))]"
+      ],
+      "properties": {
+        "enabledState": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/origingroups",
+      "apiVersion": "2024-09-01",
+      "name": "[concat('afd-owasp-', parameters('AppGwAfdName'), '/OwaspBackend')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', concat('afd-owasp-', parameters('appGwAfdName')))]"
+      ],
+      "properties": {
+        "loadBalancingSettings": {
+          "sampleSize": 4,
+          "successfulSamplesRequired": 3,
+          "additionalLatencyInMilliseconds": 0
+        },
+        "healthProbeSettings": {
+          "probePath": "/",
+          "probeRequestType": "HEAD",
+          "probeProtocol": "Https",
+          "probeIntervalInSeconds": 100
+        },
+        "sessionAffinityState": "Disabled"
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/origingroups/origins",
+      "apiVersion": "2024-09-01",
+      "name": "[concat('afd-owasp-', parameters('AppGwAfdName'), '/OwaspBackend/OwaspJuiceShop')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles/origingroups', concat('afd-owasp-', parameters('appGwAfdName')), 'OwaspBackend')]",
+        "[resourceId('Microsoft.Cdn/profiles', concat('afd-owasp-', parameters('appGwAfdName')))]"
+      ],
+      "properties": {
+        "hostName": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat('pip-appgw-', parameters('appGwAfdName'), '-waf'))).ipAddress]",
+        "httpPort": 80,
+        "httpsPort": 443,
+        "originHostHeader": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat('pip-appgw-', parameters('appGwAfdName'), '-waf'))).dnsSettings.fqdn]",
+        "priority": 1,
+        "weight": 1000,
+        "enabledState": "Enabled",
+        "enforceCertificateNameCheck": true
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/securitypolicies",
+      "apiVersion": "2024-09-01",
+      "name": "[concat('afd-owasp-', parameters('AppGwAfdName'), '/sp-afd-owasp-', parameters('appGwAfdName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', concat('afd-owasp-', parameters('appGwAfdName')))]",
+        "[resourceId('Microsoft.Cdn/profiles/afdendpoints', concat('afd-owasp-', parameters('appGwAfdName')), concat('afd-owasp-', parameters('appGwAfdName')))]"
+      ],
+      "properties": {
+        "parameters": {
+          "wafPolicy": {
+            "id": "[resourceId('Microsoft.Network/frontdoorwebapplicationfirewallpolicies', concat('wafafd', parameters('AppGwAfdName')))]"
+            },
+          "type": "WebApplicationFirewall",
+          "associations": [
+            {
+              "domains": [
+                {
+                  "id": "[resourceId('Microsoft.Cdn/profiles/afdendpoints', concat('afd-owasp-', parameters('appGwAfdName')), concat('afd-owasp-', parameters('appGwAfdName')))]"
+                }
+              ],
+              "patternsToMatch": [
+                "/*"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/afdendpoints/routes",
+      "apiVersion": "2024-09-01",
+      "name": "[concat('afd-owasp-', parameters('AppGwAfdName'), '/afd-owasp-', parameters('appGwAfdName'), '/MainRoute')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles/afdendpoints', concat('afd-owasp-', parameters('appGwAfdName')), concat('afd-owasp-', parameters('appGwAfdName')))]",
+        "[resourceId('Microsoft.Cdn/profiles', concat('afd-owasp-', parameters('appGwAfdName')))]",
+        "[resourceId('Microsoft.Cdn/profiles/origingroups', concat('afd-owasp-', parameters('appGwAfdName')), 'OwaspBackend')]"
+      ],
+      "properties": {
+        "customDomains": [],
+        "originGroup": {
+          "id": "[resourceId('Microsoft.Cdn/profiles/origingroups', concat('afd-owasp-', parameters('appGwAfdName')), 'OwaspBackend')]"
+        },
+        "ruleSets": [],
+        "supportedProtocols": [
+          "Http",
+          "Https"
+        ],
+        "patternsToMatch": [
+          "/*"
+        ],
+        "forwardingProtocol": "HttpOnly",
+        "linkToDefaultDomain": "Enabled",
+        "httpsRedirect": "Enabled",
+        "enabledState": "Enabled"
+      }
+    },
+    {
+      "apiVersion": "2023-09-01",
+      "name": "[concat('law-', parameters('appGwAfdName'))]",
+      "location": "[variables('location')]",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        }
+      }
+    }
+  ]
+}
