@@ -3,9 +3,10 @@
 ⬅️[Return to the main page](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
 
 ## Scenarios
-- [Controlling access between spoke virtual networks](#controlling-access-between-spoke-virtual-networks)
-- [Securing Internet access using Azure Firewall](#securing-internet-access-using-azure-firewall)
-- [Use Latency Probe and Flow Trace Log to troubleshoot network connection issues](#use-latency-probe-and-flow-trace-log-to-troubleshoot-network-connection-issues)
+- [Block HTTP request from the Mozilla Firefox browser](#block-http-request-from-the-mozilla-firefox-browser)
+- [Block a SQL Injection attack](#block-a-sql-injection-attack)
+- [Use JavaScript Challenge to stop bad bots](#use-javascript-challenge-to-stop-bad-bots)
+- [Use Azure Diagnostic logs and Metrics to analyze the Azure WAF](#use-azure-diagnostic-logs-and-metrics-to-analyze-the-azure-waf)
 
 ## Block HTTP request from the Mozilla Firefox browser
 
@@ -34,6 +35,10 @@ Let's look at the images below to see what happened during our HTTP request.
 **You've reached the end of this module**
 
 Click [back](#modules) to return to the list of modules and select a new one. You can also click the bottom right arrow to move ahead to the next page, Block a SQL Injection attack.
+
+**You've reached the end of this module**
+
+⬅️ [Go to the top](#scenarios)
 
 ## Block a SQL Injection attack
 
@@ -67,6 +72,8 @@ Next, we'll run the same test but this time, we'll go through the WAF applied to
 !IMAGE[sql-injection-5.png](instructions281582/sql-injection-5.png)
 
 **You've reached the end of this module**
+
+⬅️ [Go to the top](#scenarios)
 
 Click [back](#modules) to return to the list of modules and select a new one. You can also click the bottom right arrow to move ahead to the next page, Use JavaScript Challenge to stop bad bots.
 
@@ -118,6 +125,8 @@ Now let's take a look at the logs and metrics generated from JS Challenge.
 
 **You've reached the end of this module**
 
+⬅️ [Go to the top](#scenarios)
+
 ## Use Azure Diagnostic logs and Metrics to analyze the Azure WAF
 
 In this scenario, we'll first verify that diagnostic settings are enabled on the Application Gaterway v2 resource to ensure that we can see metrics and logs when a HTTP request has been processed by the Azure WAF. We'll then show you how to get a count of total requests serviced by the WAF and how many were blocked with Metrics. After, we'll demonstrate how to use the Kusto queries to investigate the WAF logs and reasons for actions.
@@ -156,26 +165,34 @@ Next, we'll explore the logs and look for the logs showing the actions taken by 
 ### Kusto Queries
 1. **Default Rule Set**
 
-        AzureDiagnostics
-        | where Category contains "ApplicationGatewayFirewallLog"
-        | where ruleSetType_s == "Microsoft_DefaultRuleSet"
-        | project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleSetVersion_s, ruleId_s, action_s, Message, details_message_s, details_file_s, details_line_s, transactionId_g
+```kql
+AzureDiagnostics
+| where Category contains "ApplicationGatewayFirewallLog"
+| where ruleSetType_s == "Microsoft_DefaultRuleSet"
+| project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleSetVersion_s, ruleId_s, action_s, Message, details_message_s, details_file_s, details_line_s, transactionId_g
+```
 
 2. **Custom rule**
 
-        AzureDiagnostics
-        | where Category contains "ApplicationGatewayFirewallLog"
-        | where ruleSetType_s == "Custom"
-        | project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleId_s, action_s, Message, transactionId_g
+```kql
+AzureDiagnostics
+| where Category contains "ApplicationGatewayFirewallLog"
+| where ruleSetType_s == "Custom"
+| project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleId_s, action_s, Message, transactionId_g
+```
 
 3. **Bot Manager Rule Set**
 
-        AzureDiagnostics
-        | where Category contains "ApplicationGatewayFirewallLog"
-        | where ruleSetType_s == "Microsoft_BotManagerRuleSet"
-        | project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleSetVersion_s, ruleId_s, action_s, Message, details_message_s, details_file_s, details_line_s, transactionId_g
+```kql
+AzureDiagnostics
+| where Category contains "ApplicationGatewayFirewallLog"
+| where ruleSetType_s == "Microsoft_BotManagerRuleSet"
+| project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleSetVersion_s, ruleId_s, action_s, Message, details_message_s, details_file_s, details_line_s, transactionId_g
+```
 
 **You've reached the end of this module**
+
+⬅️ [Go to the top](#scenarios)
 
 ## Redirect a HTTP request from a Mozilla Firefox browser to Edge download site
 
@@ -203,6 +220,8 @@ Let's look at the images below to see what happened during our HTTP request.
 This allows us to observe the impact of the custom redirect rule when a specific condition is satisfied.
 
 **You've reached the end of this module**
+
+⬅️ [Go to the top](#scenarios)
 
 ## Rate Limit when keyword "search" exists in the URI
 
