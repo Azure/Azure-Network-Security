@@ -5,6 +5,7 @@
 ## Scenarios
 - [Controlling access between spoke virtual networks](#controlling-access-between-spoke-virtual-networks)
 - [Securing Internet access using Azure Firewall](#securing-internet-access-using-azure-firewall)
+- [Use Latency Probe and Flow Trace Log to troubleshoot network connection issues](#use-latency-probe-and-flow-trace-log-to-troubleshoot-network-connection-issues)
 
 ## Controlling access between spoke virtual networks
 
@@ -51,6 +52,63 @@ Next, we'll use Bastion to remote into one of the VMs and test network connectiv
 
 ![AZFW-Internet_Outbound-Application-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-3.png)
 
+## Use Latency Probe and Flow Trace Log to troubleshoot network connection issues
+
+Azure Firewall has a few metrics and logs for troubleshooting network connectivity issues in Azure environments. For this scenario, we’ll be focusing on Latency Probe and Flow Trace Log to troubleshoot network connection issues. Let's verify that the new logs are enabled and sent to a log analytics workspace.
+
+In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
+1. Once there, select **Azure Firewalls** under Security. You should see an Azure Firewall named **azfw-hub-alpineSkiHouse**, select it.
+2. Under Monitoring, select **Metrics**. Choose Latency Probe as the Metric in the drop-down.
+3. [Latency Probe](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#azfw-latency-probe) is designed to measure the overall latency of Azure Firewall and provide insight into the health of the service. Azure Firewall latency can be caused by various reasons, such as high CPU utilization, throughput, or networking issues. As an important note, this tool is powered by Ping Mesh technology, which means that it measures the average latency of the ping packets to the firewall itself. The metric does not measure end-to-end latency or the latency of individual packets. The average expected latency for a firewall may vary depending on deployment size and environment.
+
+![AZFW-Latency-and-Flow-Logs-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-1.png)
+
+Now, let’s trigger some asymmetric network flows and good network and check the new Flow Trace Log in our Log Analytics workspace.
+1. Next, we'll use Bastion to remote into one of the VMs and test network connectivity. In the search bar of the Azure Portal, search for **Virtual Machines** and select **vm-win11-2**.
+2. On the **vm-win11-2** Overview blade, select Connect and choose Bastion from the drop-down. For Username use **AzureUser**.
+3. For Password you will use the password defined at the time of the deployment of the template. Click Connect.
+4. Once you’re in the VM, open a a Windows PowerShell prompt and enter **test-netconnection 10.0.100.4 -p 3389**. This connection should fail. 
+5. Next, we'll use Bastion to remote into **vm-win11-1**. Repeat steps **#2** and **#3** to get in **vm-win11-1**.
+6. Once you're in the VM, open a a Windows PowerShell prompt and run **test-netconnection 10.0.200.4 -p 445**. This connection will succeed, and we’ll look at what these 2 requests look like in the logs.
+
+![AZFW-Latency-and-Flow-Logs-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-2.png)
+
+Navigate back to **Azure Firewall Manager > Azure Firewalls > azfw-hub-alpineSkiHouse**. Under Monitoring, select Logs.
+
+7. The first query we’ll run is **#1** below. You’ll see that **10.0.100.4** was able to hit **10.0.200.4** on Port **3389**. This is an indication of a SYN packet making it to the Azure Firewall and the firewall making a decision on what action to take. We'll take note of the SourcePort being used so that we can find the SYN-ACK on the next query.
+8. Now let’s run query **#2**. We're using the SourcePort found in query 1 to use in query 2. When we run this in our workspace, we're able to find the SYN-ACK that's part of the TCP 3-way handshake.
+9. Next, we will run query **#3** to see what an asymmetric route will look like in the Azure Firewall logs. You can see in the screenshot that the Flag column says INVALID for all of the request coming from 10.0.100.4 destined for 10.0.100.36. This flag INVALID, shows that the Azure Firewall does not have a SYN packet in its tables to know what to do with this unexpected SYN-ACK. If you remember from our previous steps, the VM, vm-win11-2, sent a connection request to 10.0.100.4 that would fail. This is because 10.0.100.36 has a direct path to 10.0.100.4 while 10.0.100.4 has to send all traffic to the Azure Firewall first.
+
+**Query 1:**
+
+```sql
+AZFWNetworkRule
+| where SourceIp == "10.0.100.4"
+| where DestinationIp == "10.0.200.4"
+```
+
+![AZFW-Latency-and-Flow-Logs-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-3.png)
+
+**Query 2:**
+
+```sql
+AZFWFlowTrace
+| where SourceIp == "10.0.200.4"
+| where DestinationIp == "10.0.100.4"
+| where DestinationPort == "62877"
+```
+
+![AZFW-Latency-and-Flow-Logs-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-4.png)
+
+**Query 3:**
+
+```sql
+AZFWFlowTrace
+| where SourceIp == "10.0.100.4"
+| where DestinationIp == "10.0.100.36"
+```
+
+![AZFW-Latency-and-Flow-Logs-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-5.png)
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
