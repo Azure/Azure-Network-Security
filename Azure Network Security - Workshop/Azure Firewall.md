@@ -29,7 +29,7 @@ Let's verify the Network rules configurations on the firewall policy first.
 
 ![AZFW-East_West-Network-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-3.png)
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
@@ -57,7 +57,7 @@ Next, we'll use Bastion to remote into one of the VMs and test network connectiv
 
 ![AZFW-Internet_Outbound-Application-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-3.png)
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
@@ -121,7 +121,7 @@ AZFWFlowTrace
 
 ![AZFW-Latency-and-Flow-Logs-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-5.png)
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
@@ -183,7 +183,7 @@ AZFWThreatIntel
 AZFWIdpsSignature
 ```
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
