@@ -32,11 +32,11 @@ Let's look at the images below to see what happened during our HTTP request.
 
 !IMAGE[mozilla-user-agent-3.png](instructions281582/mozilla-user-agent-3.png)
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 Click [back](#modules) to return to the list of modules and select a new one. You can also click the bottom right arrow to move ahead to the next page, Block a SQL Injection attack.
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
@@ -71,7 +71,7 @@ Next, we'll run the same test but this time, we'll go through the WAF applied to
 
 !IMAGE[sql-injection-5.png](instructions281582/sql-injection-5.png)
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
@@ -123,7 +123,7 @@ Now let's take a look at the logs and metrics generated from JS Challenge.
 
 !IMAGE[js-challenge-6.png](instructions281582/js-challenge-6.png)
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
@@ -190,7 +190,7 @@ AzureDiagnostics
 | project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleSetVersion_s, ruleId_s, action_s, Message, details_message_s, details_file_s, details_line_s, transactionId_g
 ```
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
