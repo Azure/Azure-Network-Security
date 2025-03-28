@@ -33,7 +33,7 @@ Let's look at the images below to see what happened during our HTTP request.
 
 This allows us to observe the impact of the custom redirect rule when a specific condition is satisfied.
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
@@ -46,7 +46,7 @@ Let's verify the settings on the WAF associated with our Azure Front Door first.
 2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafafdwhmzgkcjeovje**, select it.
 3. Select **Custom rules** and click on the rule named **RateLimitRequest**. You'll see that this rule is configured to check the **RequestUri** and to find a value of search. If the policy has a match of more than 3 requests within 5 minutes from the same source, then it will deny the request.
 
-!IMAGE[afd-rate-limit-1.png](instructions281582/afd-rate-limit-1.png)
+![Afd-rate-limit-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd-rate-limit-1.png)
 
 Now, let's test the Custom rule we just reviewed.
 1. Launch Microsoft Edge and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the right of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request. This will look like a wi-fi icon.
@@ -55,12 +55,13 @@ Now, let's test the Custom rule we just reviewed.
 
 Let's look at the images below to see what happened during our HTTP request.
 
-!IMAGE[afd-rate-limit-2.png](instructions281582/afd-rate-limit-2.png)
-!IMAGE[afd-rate-limit-3.png](instructions281582/afd-rate-limit-3.png)
+![Afd-rate-limit-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd-rate-limit-2.png)
+
+![Afd-rate-limit-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd-rate-limit-3.png)
 
 This enables us to observe the effect of the custom rate limit rule when a specific threshold is surpassed.
 
-**You've reached the end of this module**
+**You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
 
