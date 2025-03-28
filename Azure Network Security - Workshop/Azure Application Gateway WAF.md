@@ -17,7 +17,7 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgwwhmzgkcjeovje**, select it.
 3. Select **Custom rules** and click on the rule named **BlockFirefoxUserAgent**. You'll see that this rule is configured to check the **RequestHeader** portion of an HTTP request Whithin the 'RequestHeader', the WAF will look for the header called **User-Agent** and check if there is a value within the 'User-Agent'containing **rv:**, which are unique characters to Mozilla Firefox. If the value matches, then the request will be denied.
 
->[!note] The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
+>>**Note:** The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
 
 !IMAGE[mozilla-user-agent-1.png](instructions281582/mozilla-user-agent-1.png)
 
