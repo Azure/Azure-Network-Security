@@ -88,7 +88,7 @@ Navigate back to **Azure Firewall Manager > Azure Firewalls > azfw-hub-alpineSki
 
 **Query 1:**
 
-```sql
+```kql
 AZFWNetworkRule
 | where SourceIp == "10.0.100.4"
 | where DestinationIp == "10.0.200.4"
@@ -98,7 +98,7 @@ AZFWNetworkRule
 
 **Query 2:**
 
-```sql
+```kql
 AZFWFlowTrace
 | where SourceIp == "10.0.200.4"
 | where DestinationIp == "10.0.100.4"
@@ -109,7 +109,7 @@ AZFWFlowTrace
 
 **Query 3:**
 
-```sql
+```kql
 AZFWFlowTrace
 | where SourceIp == "10.0.100.4"
 | where DestinationIp == "10.0.100.36"
@@ -155,25 +155,25 @@ For this scenario, we'll first verify that diagnostic settings are enabled on th
 
 **Query 1:**
 
-```sql
+```kql
 AZFWNetworkRule
 ```
 
 **Query 2:**
 
-```sql
+```kql
 AZFWApplicationRule
 ```
 
 **Query 3:**
 
-```sql
+```kql
 AZFWThreatIntel
 ```
 
 **Query 4:**
 
-```sql
+```kql
 AZFWIdpsSignature
 ```
 
