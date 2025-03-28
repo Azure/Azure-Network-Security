@@ -17,7 +17,7 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgwwhmzgkcjeovje**, select it.
 3. Select **Custom rules** and click on the rule named **BlockFirefoxUserAgent**. You'll see that this rule is configured to check the **RequestHeader** portion of an HTTP request Whithin the 'RequestHeader', the WAF will look for the header called **User-Agent** and check if there is a value within the 'User-Agent'containing **rv:**, which are unique characters to Mozilla Firefox. If the value matches, then the request will be denied.
 
->>**Note:** The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
+> **Note:** The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
 
 !IMAGE[mozilla-user-agent-1.png](instructions281582/mozilla-user-agent-1.png)
 
@@ -34,10 +34,6 @@ Let's look at the images below to see what happened during our HTTP request.
 
 **You've reached the end of this scenario**
 
-Click [back](#modules) to return to the list of modules and select a new one. You can also click the bottom right arrow to move ahead to the next page, Block a SQL Injection attack.
-
-**You've reached the end of this scenario**
-
 ⬅️ [Go to the top](#scenarios)
 
 ## Block a SQL Injection attack
@@ -49,9 +45,9 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgwwhmzgkcjeovje**, select it.
 3. Select **Managed rules** and change the grouping of the rules to **Group by Rule group**. Scroll down until you see **SQLI (40)** and click on the arrow to open the list. Ensure that the rules are all set to 'Anomaly score' and 'Enabled'.
 
-!IMAGE[sql-injection-1.png](instructions281582/sql-injection-1.png)
+![Sql-injection-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-1.png)
 
-!IMAGE[sql-injection-2.png](instructions281582/sql-injection-2.png)
+![Sql-injection-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-2.png)
 
 Now, let's test the Managed rule we just reviewed. First, we'll show what a successful SQL injection attack against the web application looks like when we bypass the WAF and go directly to the application and not the Application Gateway.
 1. Open your browser on your client machine and browse to http://13.89.231.38:8081.
@@ -59,9 +55,9 @@ Now, let's test the Managed rule we just reviewed. First, we'll show what a succ
 3. At the Login page, for username, use **'or1=1--** and anything can be used for the password.
 4. Click Log in and you'll see a successful SQL injection attack as you get logged in as the admin user.
 
-!IMAGE[sql-injection-3.png](instructions281582/sql-injection-3.png)
+![Sql-injection-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-3.png)
 
-!IMAGE[sql-injection-4.png](instructions281582/sql-injection-4.png)
+![Sql-injection-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-4.png)
 
 Next, we'll run the same test but this time, we'll go through the WAF applied to the Application Gateway.
 1. Open your browser on your client machine and browse to http://owasp-whmzgkcjeovje.centralus.cloudapp.azure.com.
@@ -69,13 +65,11 @@ Next, we'll run the same test but this time, we'll go through the WAF applied to
 3. At the Login page, for username, use **'or1=1--** and anything can be used for the password.
 4. Click Log in and you should see a 405 Forbidden message at the log in prompt. The WAF has recognized the SQL injection attempt and has blocked the request.
 
-!IMAGE[sql-injection-5.png](instructions281582/sql-injection-5.png)
+![Sql-injection-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-5.png)
 
 **You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
-
-Click [back](#modules) to return to the list of modules and select a new one. You can also click the bottom right arrow to move ahead to the next page, Use JavaScript Challenge to stop bad bots.
 
 ## Use JavaScript Challenge to stop bad bots
 
