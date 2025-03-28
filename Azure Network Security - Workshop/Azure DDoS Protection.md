@@ -3,116 +3,164 @@
 ⬅️[Return to the main page](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
 
 ## Scenarios
-- [Controlling access between spoke virtual networks](#controlling-access-between-spoke-virtual-networks)
-- [Securing Internet access using Azure Firewall](#securing-internet-access-using-azure-firewall)
-- [Use Latency Probe and Flow Trace Log to troubleshoot network connection issues](#use-latency-probe-and-flow-trace-log-to-troubleshoot-network-connection-issues)
+- [Verify DDoS Network Protection is associated with a virtual network](#verify-ddos-network-protection-is-associated-with-a-virtual-network)
+- [Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations](#use-azure-diagnostic-logs-and-metrics-to-analyze-azure-ddos-protection-mitigations)
+- [Use Microsoft Sentinel to analyze Azure DDoS Protection mitigations](#use-microsoft-sentinel-to-analyze-azure-ddos-protection-mitigations)
 
-## Controlling access between spoke virtual networks
+## Verify DDoS Network Protection is associated with a virtual network
 
-For this scenario, we'll demonstrate how to control traffic flows between servers in different spoke virtual networks using Network rules. There are two spoke virtual networks that are directly peered to the Hub virtual network, housing the Azure Firewall. Using Route tables, all traffic from both spokes is forced to the Azure Firewall for inspection.
+In this scenario, we'll verify that a DDoS Protection plan is associated with our virtual network using Azure Firewall Manager. Once a DDoS protection plan is enabled on a virtual network, all of the Public IP resources within that virtual network are automatically protected by that plan. Additionally, we'll show you how to check if a Public IP is being protected using DDoS IP Protection in the Azure Preview Portal.
 
-Let's verify the Network rules configurations on the firewall policy first.
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Azure Firewall Policies** under Security. You should see a policy named **fwpol-premium-alpineSkiHouse**, select it.
-3. Select Network rules and you should see a list of rules from a variety of Rule collections. We're going to focus on the Rule name **spoke1-to-spoke2-snet1-RDP**. This rule allows TCP traffic on port 3389 to the servers in spoke2 subnet 1.
+2. Once there, select **DDoS Protection Plans** under Security. You should see a protection plan named **ddosPlan-AlpineSkiHouse**, select it.
+3. After selecting ddosPlan-AlpineSkiHouse, you should be at the Overview blade for the DDoS Protection Plan. Under Settings, select **Protected resources** so we can identify exactly what resources are protected by this plan.
+4. The Protected resources blade will have 8 different tabs at the top, showing the different resource types that are covered by DDoS Network Protection. These are the resource types and expected resource names to be protected:
+  - NET: vnet-hub-alpineSkiHouse, vnet-spoke-workload-1, vnet-spoke-workload-2
+  !IMAGE[ddos-setup-1.png](instructions281582/ddos-setup-1.png)
 
-![AZFW-East_West-Network-Rule-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-1.png)
+  - Firewall: pip-azfw-hub-alpineSkiHouse
+  !IMAGE[ddos-setup-2.png](instructions281582/ddos-setup-2.png)
 
-4. Next, we'll use Bastion to remote into one of the VMs and test network connectivity. In the search bar of the Azure Portal, search for **Virtual Machines** and select **vm-win11-1**.
-5. On the **vm-win11-1** Overview blade, select **Connect** and choose Bastion from the drop-down. For Username use **AzureUser**.
-6. For Password you will use the password defined at the time of the deployment of the template. Click Connect.
-7. Now that you're in the VM, click on the Windows icon and open a Windows PowerShell prompt. Enter '**test-netconnection 10.0.200.4**' to initiate an ICMP ping to the remote VM. You'll see that the pings fail since there are no network rules to allow ICMP traffic.
-8. Next, click on the Windows icon, type RDP, and select **Remote Desktop Connection**. Enter 10.0.200.4 if it's not already populated and click Connect. You should be prompted to enter credentials for 10.0.200.4. This proves that we have connectivity between the servers on TCP port 3389. We'll be able to verify these tests in the logs.
+  - Application Gateway: pip-appgw-whmzgkcjeovje-waf
+  !IMAGE[ddos-setup-3.png](instructions281582/ddos-setup-3.png)
 
-![AZFW-East_West-Network-Rule-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-2.png)
+  - Bastion Host: pip-bastion-whmzgkcjeovje
+  !IMAGE[ddos-setup-4.png](instructions281582/ddos-setup-4.png)
 
-![AZFW-East_West-Network-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-3.png)
+  - Load Balancer: None deployed in this lab
+  - NIC: None deployed in this lab
+  - Virtual Machine Scale Set: None deployed in this lab
+  - Virtual Network Gateway: None deployed in this lab
+
+Now let's check on how we can verify if a Public IP is protected using DDoS IP Protection rather than DDoS Network Protection.
+
+1. In the search bar, search for the Application Gateway's Public IP resource, **pip-appgw-whmzgkcjeovje-waf**.
+2. In the Overview blade for the Public IP, you'll see a button named **Protect**, select this.
+3. Once selected, you'll see a blade appear called **Configure DDoS Protection**. In our environment, we can see that the Protection status shows the Public IP as 'Protected: IP is DDoS protected'. The Protection type shows us that this resource is using the DDoS Network Protection plan from earlier, but if you wanted to use DDoS IP Protection, you can choose IP to utilize the other SKU.
+!IMAGE[ddos-setup-5.png](instructions281582/ddos-setup-5.png)
+!IMAGE[ddos-setup-6.png](instructions281582/ddos-setup-6.png)
+
+Now that we've verified that our resources are protected with a DDoS Protection Plan, let's move to the next module.
+
+**You've reached the end of this module**
 
 ⬅️ [Go to the top](#scenarios)
 
-## Securing Internet access using Azure Firewall
+Click [back](#modules) to return to the list of modules and select a new one. You can also click the bottom right arrow to move ahead to the next page, Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations.
 
-In this scenario, we'll use Application rules to control internet bound traffic from resources in our Azure virtual networks. We'll look at how to use FQDNs and Web Categories to filter what traffic should be allowed and to block the rest by not explicitly creating a rule to allow other traffic. Using Route tables, all traffic from both spokes is forced to the Azure Firewall for inspection.
+## Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations
 
-Let's verify the Application rules configurations on the firewall policy first.
-1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Azure Firewall Policies** under Security. You should see a policy named **fwpol-premium-alpineSkiHouse**, select it.
-3. Select **Application rules** and you should see a list of rules from multiple Rule collections. We're going to focus on the Rules named **spoke1-to-OWASPJuiceShopAndMicrosoft** and **spoke1-to-SearchEnginesandNewsSites**. These rules allow HTTP/S traffic on port 80/443 from the **spoke1** virtual network to ***.microsoft.com** and **owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_OF_YOUR_DEPLOYMENT>>.cloudapp.azure.com** (FQDN) and to all sites that fall under the Web categories **News**​​​​​​​ and **Search engines + portals** (Web categories).
+In this scenario, we'll first verify that diagnostic settings are enabled on the Public IP resources to ensure that we can see metrics and logs when a resource is under attack. We'll then show you how to determine if a resource is under attack, how to find the current threshold values as well as live traffic values with Metrics. After, we'll demonstrate how to use the Kusto queries to investigate a DDoS attack.
+1. In the search bar, search for the Application Gateway's Public IP resource, **pip-appgw-whmzgkcjeovje-waf**.
+2. Once selected, navigate to **Diagnostic settings** under 'Monitoring'. We should see a Diagnostic setting named **appgwPip-diag**. Select 'Edit setting' to view more.
+3. Inside the Diagnostic setting, under 'Logs', we can see 3 category logs selected.
+  - DDoS protection notifications (DDoSProtectionNotifications)
+  - Flow logs of DDoS mitigation decisions (DDoSMitigationFlowLogs)
+  - Reports of DDoS mitigations (DDoSMitigationReports)
+4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named '**CyberSOC**'.
+5. Metrics are enabled and visible by default. You do not need to send these to a Log Analytics workspace to view metrics.
 
-![AZFW-Internet_Outbound-Application-Rule-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-1.png)
+Let's quickly touch on what kind of logs are generated for each of the log categories.
+1. **DDoSProtectionNotifications**: This log will generate two messages per attack, one with the message 'Start DDOS Mitigation', to let you know when an attack has been identified by the DDoS protection service. The other with the message 'Stop DDOS Mitigation', to let you know when an active DDoS attack has ended. 
+2. **DDoSMitigationFlowLogs**: These logs allow you to review the dropped traffic, forwarded traffic and other attack data in near real-time during an active DDoS attack. This will generate a large number of logs as it will show you the action taken per network flow received.
+3. **DDoSMitigationReports**: Two types of logs will be generated under this category; Incremental reports, which is generated every 5 minutes when the resource is under an active DDoS attack, and Post mitigation reports, which is generated for the entire duration of the DDoS attack once the attack has ended. Both logs identify information like attack vectors, traffic statistics, protocols involved, top 10 source countries or ASN, and drop reason.
 
-Next, we'll use Bastion to remote into one of the VMs and test network connectivity. If you already have a Bastion session open from the previous scenario, you can jump to step #7.
+### Metrics
+Now we'll explore the metrics to determine the mitigation thresholds and identify if a public IP is under attack.
+1. Select Metrics under 'Monitoring' to view Metrics.
+2. In the chart, click on the drop-down under Metric and select **Under DDoS attack or not**. You may need to change the time range to Last 30 days to find information, unless you just initiated an attack. The 'Under DDoS attack or not' metric has a value of either 0 or 1, 0 indicating that the resource is not under attack and 1 indicating that the resource is under attack.
+3. Select + New chart on the top left and select the Metrics below. You'll have to click 'Add metric' after each selection to add them all to the same chart. These are the current threshold values of this particular resource. All resources can have different threshold values based off their unique traffic patterns.
+  - Inbound SYN packets to trigger DDoS mitigation (10k/pps)
+  - Inbound TCP packets to trigger DDoS mitigation (50k/pps)
+  - Inbound UDP packets to trigger DDoS mitigation (40k/pps)
+4. Select + New chart again and select the Metrics below. We'll see that the Inbound packets greatly surpassed the threshold value for this specific resource, forcing DDoS mitigation upon the resource.
+  - Inbound SYN packets to trigger DDoS mitigation
+  - Inbound packets DDoS
+  !IMAGE[ddos-logs-metrics-1.png](instructions281582/ddos-logs-metrics-1.png)
+  !IMAGE[ddos-logs-metrics-2.png](instructions281582/ddos-logs-metrics-2.png)
 
-4. In the search bar of the Azure Portal, search for Virtual Machines and select **vm-win11-1**.
-5. On the **vm-win11-1** Overview blade, select **Connect** and choose Bastion from the drop-down. For Username use **AzureUser**.
-6. For Password you will use the password defined at the time of the deployment of the template. Click Connect.
-7. Now that you're in the VM, click on the Edge icon to open a browser. Navigate to https://techcommunity.microsoft.com, you should be able to view the site due to the FQDN rule. Next, open another tab or Edge window and navigate to https://www.wsj.com, you should be able to view this site as well due to the Web Category rule. 
-8. Next, open another tab or Edge window and navigate to https://www.facebook.com​​​​​​​, you should now get an error when trying to get to the site. In the browser, you may see 'Can't connect securely to this page' or 'Action: Deny: No rule matched. Proceeding with default action.' 
-9. To force the 'Action: Deny' message, click on the Windows icon and open a Windows PowerShell prompt. Enter 'Invoke-WebRequest www.facebook.com' to initiate the call to the website. You should now see 'Action: Deny: No rule matched. Proceeding with default action.' if you didn't already in the browser.
+### Logs
+Finally, let's explore the logs and get additional details of any DDoS attack that may have been mitigated by Azure DDoS Protection.
+1. In the search bar, search for the Log Analytics workspace, **CyberSOC**.
+2. Once selected, navigate to **Logs** under 'General' and close the Queries pop up window.
+3. Next, click on **Queries** and type 'ddos' in the filter. You should see a query called **DDoSQueries** under 'Security'. Hover over this and select 'Load to editor'. Our 4 queries should automatically populate into the editor window.
+4. Click on 'DDoSProtectionNotifications' in the editor window to highlight the entire query and click 'Run'. If you recently triggered an attack, you should you Start and Stop mitigation logs below, if not, you may have to customize the time range to find the most recent attack triggered.
+5. Click on 'DDoSMitigationReports' in the editor window to highlight the entire query and click 'Run'. Look for a report type of Incremental to get familiar with how a 5-minute aggregated report looks like. Then look for a report type of Post mitigation to get familiar with how a total time aggregated report looks like.
+6. Click on 'DDoSMitigationFlowLogs' in the editor window to highlight the entire query and click 'Run'. This particular query will generate thousands of logs and may show you only the first 30,000. Select any log and familiarize yourself how flows are analyzed, and actions chosen based off of packet details.
+!IMAGE[ddos-logs-metrics-3.png](instructions281582/ddos-logs-metrics-3.png)
 
-![AZFW-Internet_Outbound-Application-Rule-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-2.png)
+### Kusto Queries
+1. **DDoS Protection Notifications**
 
-![AZFW-Internet_Outbound-Application-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-3.png)
+```kql
+AzureDiagnostics
+| where Category == "DDoSProtectionNotifications"
+```
+
+2. **DDoS Protection Reports - Post Mitigation**
+
+```kql
+AzureDiagnostics
+| where Category == "DDoSMitigationReports"
+| where ReportType_s == "Post mitigation"
+```
+
+3. **DDoS Protection Reports - Incremental**
+
+```kql
+AzureDiagnostics
+| where Category == "DDoSMitigationReports"
+| where ReportType_s == "Incremental"
+```
+
+4. **DDoS Mitigation Flow Logs**
+
+```kql
+AzureDiagnostics
+| where Category == "DDoSMitigationFlowLogs"
+```
+
+**You've reached the end of this module**
 
 ⬅️ [Go to the top](#scenarios)
 
-## Use Latency Probe and Flow Trace Log to troubleshoot network connection issues
+# Use Microsoft Sentinel to analyze Azure DDoS Protection mitigations
 
-Azure Firewall has a few metrics and logs for troubleshooting network connectivity issues in Azure environments. For this scenario, we’ll be focusing on Latency Probe and Flow Trace Log to troubleshoot network connection issues. Let's verify that the new logs are enabled and sent to a log analytics workspace.
+In this scenario, we'll look at how to use Microsoft Sentinel to analyze a DDoS attack against your environment using a Workbook.
 
-In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-1. Once there, select **Azure Firewalls** under Security. You should see an Azure Firewall named **azfw-hub-alpineSkiHouse**, select it.
-2. Under Monitoring, select **Metrics**. Choose Latency Probe as the Metric in the drop-down.
-3. [Latency Probe](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#azfw-latency-probe) is designed to measure the overall latency of Azure Firewall and provide insight into the health of the service. Azure Firewall latency can be caused by various reasons, such as high CPU utilization, throughput, or networking issues. As an important note, this tool is powered by Ping Mesh technology, which means that it measures the average latency of the ping packets to the firewall itself. The metric does not measure end-to-end latency or the latency of individual packets. The average expected latency for a firewall may vary depending on deployment size and environment.
+1. In the search bar, search for 'Sentinel' and select **Microsoft Sentinel**.
+2. Select the Sentinel workspace, **CyberSOC**.
+3. Once selected, click on **Workbooks** under 'Threat Management'.
+4. By default, we should be in the 'Templates' tab. In the search bar under 'Templates', search for 'ddos' and select the **Azure DDoS Protection Workbook**. Then select 'View saved workbook' in the bottom right.
+5. The Azure DDoS Protection Workbook has 3 tabs to help investigate a DDoS attack. These are:
+  - **DDoS Summary** - Overview of the protocols, origin data, AS Numbers, and Drop Reasons for the selected DDoS attack.
+  - **DDoS Metrics** - Shows Metrics values of the Public IP address that was under attack.
+  - **DDoS Investigation** - This page allows you to dive deeper into specific Kusto queries for a specified attack.
+6. When you first open the Workbook, no workspace will be selected. Click on the drop-down and select **CyberSOC**. Change the time range to an appropriate time and you can either leave Public IP Addresses set to 'All' or you can select only **pip-appgw-whmzgkcjeovje-waf**.
 
-![AZFW-Latency-and-Flow-Logs-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-1.png)
+Now, let's explore all the tabs in this Workbook, and find more information about the attacks mitigated.
 
-Now, let’s trigger some asymmetric network flows and good network and check the new Flow Trace Log in our Log Analytics workspace.
-1. Next, we'll use Bastion to remote into one of the VMs and test network connectivity. In the search bar of the Azure Portal, search for **Virtual Machines** and select **vm-win11-2**.
-2. On the **vm-win11-2** Overview blade, select Connect and choose Bastion from the drop-down. For Username use **AzureUser**.
-3. For Password you will use the password defined at the time of the deployment of the template. Click Connect.
-4. Once you’re in the VM, open a a Windows PowerShell prompt and enter **test-netconnection 10.0.100.4 -p 3389**. This connection should fail. 
-5. Next, we'll use Bastion to remote into **vm-win11-1**. Repeat steps **#2** and **#3** to get in **vm-win11-1**.
-6. Once you're in the VM, open a a Windows PowerShell prompt and run **test-netconnection 10.0.200.4 -p 445**. This connection will succeed, and we’ll look at what these 2 requests look like in the logs.
+**DDoS Summary**
 
-![AZFW-Latency-and-Flow-Logs-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-2.png)
+This section provides a summary of the DDoS attacks mitigated by Azure DDoS Protection. Check below for more details:
+  - **Traffic Overview**: Here you'll find comprehensive details on the total number of packets and the various categories of dropped packets during the DDoS attacks for the timeline defined.
+  - **Last Ten DDoS Attack Reports**: This section provides the details of attack reports, resources affected, attack vectors and packet information.
+  - **Location and Protocol details**: This section provides categorized details on the protocols involved in the DDoS attacks, the origins of these attacks, and the protocol violations that occurred during past DDoS incidents.
+  - **Raw DDoS Mitigation and Flow Logs**: Furthermore, if we would like to take a look at the Raw DDoS Logs those are also available as part of the workbook so that we do not have to look for them in the log analytics workspace.
+!IMAGE[ddos-sentinel-1.png](instructions281582/ddos-sentinel-1.png)
+!IMAGE[ddos-sentinel-2.png](instructions281582/ddos-sentinel-2.png)
 
-Navigate back to **Azure Firewall Manager > Azure Firewalls > azfw-hub-alpineSkiHouse**. Under Monitoring, select Logs.
+### DDoS Metrics
 
-7. The first query we’ll run is **#1** below. You’ll see that **10.0.100.4** was able to hit **10.0.200.4** on Port **3389**. This is an indication of a SYN packet making it to the Azure Firewall and the firewall making a decision on what action to take. We'll take note of the SourcePort being used so that we can find the SYN-ACK on the next query.
-8. Now let’s run query **#2**. We're using the SourcePort found in query 1 to use in query 2. When we run this in our workspace, we're able to find the SYN-ACK that's part of the TCP 3-way handshake.
-9. Next, we will run query **#3** to see what an asymmetric route will look like in the Azure Firewall logs. You can see in the screenshot that the Flag column says INVALID for all of the request coming from 10.0.100.4 destined for 10.0.100.36. This flag INVALID, shows that the Azure Firewall does not have a SYN packet in its tables to know what to do with this unexpected SYN-ACK. If you remember from our previous steps, the VM, vm-win11-2, sent a connection request to 10.0.100.4 that would fail. This is because 10.0.100.36 has a direct path to 10.0.100.4 while 10.0.100.4 has to send all traffic to the Azure Firewall first.
+The DDoS Metrics tab provides graphical representation of all the important metrics like Packet count, Syn packet thresholds to trigger DDoS mitigation, inbound DDoS TCP/UDP packets, and Under DDoS attack or not as shown below. Most of the metrics here are based on number of Packets Per Second (PPS) and Packets/Byte Counts.
+!IMAGE[ddos-sentinel-3.png](instructions281582/ddos-sentinel-3.png)
 
-**Query 1:**
+### DDoS Investigation
 
-```sql
-AZFWNetworkRule
-| where SourceIp == "10.0.100.4"
-| where DestinationIp == "10.0.200.4"
-```
+The Investigation Tab in the workbook offers specific details on the number of packets that were dropped or allowed during past DDoS attacks, including the ports involved. Additionally, this tab provides information on the top attacking IPs and the timeline of the mitigation activities, as illustrated below.
+!IMAGE[ddos-sentinel-4.png](instructions281582/ddos-sentinel-4.png)
 
-![AZFW-Latency-and-Flow-Logs-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-3.png)
-
-**Query 2:**
-
-```sql
-AZFWFlowTrace
-| where SourceIp == "10.0.200.4"
-| where DestinationIp == "10.0.100.4"
-| where DestinationPort == "62877"
-```
-
-![AZFW-Latency-and-Flow-Logs-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-4.png)
-
-**Query 3:**
-
-```sql
-AZFWFlowTrace
-| where SourceIp == "10.0.100.4"
-| where DestinationIp == "10.0.100.36"
-```
-
-![AZFW-Latency-and-Flow-Logs-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-5.png)
+**You've reached the end of this module**
 
 ⬅️ [Go to the top](#scenarios)
 
