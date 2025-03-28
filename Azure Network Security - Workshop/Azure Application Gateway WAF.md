@@ -7,112 +7,227 @@
 - [Securing Internet access using Azure Firewall](#securing-internet-access-using-azure-firewall)
 - [Use Latency Probe and Flow Trace Log to troubleshoot network connection issues](#use-latency-probe-and-flow-trace-log-to-troubleshoot-network-connection-issues)
 
-## Controlling access between spoke virtual networks
+## Block HTTP request from the Mozilla Firefox browser
 
-For this scenario, we'll demonstrate how to control traffic flows between servers in different spoke virtual networks using Network rules. There are two spoke virtual networks that are directly peered to the Hub virtual network, housing the Azure Firewall. Using Route tables, all traffic from both spokes is forced to the Azure Firewall for inspection.
+In this scenario, we'll use the Web Application Firewall (WAF), applied to our Application Gateway v2 resource, to block any request that comes from a Mozilla Firefox browser. Using **custom rules**, we'll use information from a HTTP request, such as User-Agent header, to identify that a request has originated from the Mozilla Firefox browser and block it accordingly.
 
-Let's verify the Network rules configurations on the firewall policy first.
+Let's verify the settings on the WAF associated with our Application Gateway v2 first:
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Azure Firewall Policies** under Security. You should see a policy named **fwpol-premium-alpineSkiHouse**, select it.
-3. Select Network rules and you should see a list of rules from a variety of Rule collections. We're going to focus on the Rule name **spoke1-to-spoke2-snet1-RDP**. This rule allows TCP traffic on port 3389 to the servers in spoke2 subnet 1.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgwwhmzgkcjeovje**, select it.
+3. Select **Custom rules** and click on the rule named **BlockFirefoxUserAgent**. You'll see that this rule is configured to check the **RequestHeader** portion of an HTTP request Whithin the 'RequestHeader', the WAF will look for the header called **User-Agent** and check if there is a value within the 'User-Agent'containing **rv:**, which are unique characters to Mozilla Firefox. If the value matches, then the request will be denied.
 
-![AZFW-East_West-Network-Rule-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-1.png)
+>[!note] The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
 
-4. Next, we'll use Bastion to remote into one of the VMs and test network connectivity. In the search bar of the Azure Portal, search for **Virtual Machines** and select **vm-win11-1**.
-5. On the **vm-win11-1** Overview blade, select **Connect** and choose Bastion from the drop-down. For Username use **AzureUser**.
-6. For Password you will use the password defined at the time of the deployment of the template. Click Connect.
-7. Now that you're in the VM, click on the Windows icon and open a Windows PowerShell prompt. Enter '**test-netconnection 10.0.200.4**' to initiate an ICMP ping to the remote VM. You'll see that the pings fail since there are no network rules to allow ICMP traffic.
-8. Next, click on the Windows icon, type RDP, and select **Remote Desktop Connection**. Enter 10.0.200.4 if it's not already populated and click Connect. You should be prompted to enter credentials for 10.0.200.4. This proves that we have connectivity between the servers on TCP port 3389. We'll be able to verify these tests in the logs.
+!IMAGE[mozilla-user-agent-1.png](instructions281582/mozilla-user-agent-1.png)
 
-![AZFW-East_West-Network-Rule-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-2.png)
+Now, let's test the Custom rule we just reviewed:
+1. To run through this scenario, you'll need Mozilla Firefox installed.
+2. Lauch the browser and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the bottom of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request.
+3. With the developer tools up, navigate to http://owasp-whmzgkcjeovje.centralus.cloudapp.azure.com, your request should have been blocked with a '403 Forbidden' status code.
 
-![AZFW-East_West-Network-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-3.png)
+Let's look at the images below to see what happened during our HTTP request.
 
-⬅️ [Go to the top](#scenarios)
+!IMAGE[mozilla-user-agent-2.png](instructions281582/mozilla-user-agent-2.png)
 
-## Securing Internet access using Azure Firewall
+!IMAGE[mozilla-user-agent-3.png](instructions281582/mozilla-user-agent-3.png)
 
-In this scenario, we'll use Application rules to control internet bound traffic from resources in our Azure virtual networks. We'll look at how to use FQDNs and Web Categories to filter what traffic should be allowed and to block the rest by not explicitly creating a rule to allow other traffic. Using Route tables, all traffic from both spokes is forced to the Azure Firewall for inspection.
+**You've reached the end of this module**
 
-Let's verify the Application rules configurations on the firewall policy first.
+Click [back](#modules) to return to the list of modules and select a new one. You can also click the bottom right arrow to move ahead to the next page, Block a SQL Injection attack.
+
+## Block a SQL Injection attack
+
+In this scenario, we'll use the Web Application Firewall (WAF), applied to our Application Gateway v2 resource, to block a SQL injection attack. Using Managed rules, the WAF will be able to identify a potential SQL injection attack and block it accordingly. 
+
+Let's verify the settings on the WAF associated with our Application Gateway v2 first:
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Azure Firewall Policies** under Security. You should see a policy named **fwpol-premium-alpineSkiHouse**, select it.
-3. Select **Application rules** and you should see a list of rules from multiple Rule collections. We're going to focus on the Rules named **spoke1-to-OWASPJuiceShopAndMicrosoft** and **spoke1-to-SearchEnginesandNewsSites**. These rules allow HTTP/S traffic on port 80/443 from the **spoke1** virtual network to ***.microsoft.com** and **owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_OF_YOUR_DEPLOYMENT>>.cloudapp.azure.com** (FQDN) and to all sites that fall under the Web categories **News**​​​​​​​ and **Search engines + portals** (Web categories).
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgwwhmzgkcjeovje**, select it.
+3. Select **Managed rules** and change the grouping of the rules to **Group by Rule group**. Scroll down until you see **SQLI (40)** and click on the arrow to open the list. Ensure that the rules are all set to 'Anomaly score' and 'Enabled'.
 
-![AZFW-Internet_Outbound-Application-Rule-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-1.png)
+!IMAGE[sql-injection-1.png](instructions281582/sql-injection-1.png)
 
-Next, we'll use Bastion to remote into one of the VMs and test network connectivity. If you already have a Bastion session open from the previous scenario, you can jump to step #7.
+!IMAGE[sql-injection-2.png](instructions281582/sql-injection-2.png)
 
-4. In the search bar of the Azure Portal, search for Virtual Machines and select **vm-win11-1**.
-5. On the **vm-win11-1** Overview blade, select **Connect** and choose Bastion from the drop-down. For Username use **AzureUser**.
-6. For Password you will use the password defined at the time of the deployment of the template. Click Connect.
-7. Now that you're in the VM, click on the Edge icon to open a browser. Navigate to https://techcommunity.microsoft.com, you should be able to view the site due to the FQDN rule. Next, open another tab or Edge window and navigate to https://www.wsj.com, you should be able to view this site as well due to the Web Category rule. 
-8. Next, open another tab or Edge window and navigate to https://www.facebook.com​​​​​​​, you should now get an error when trying to get to the site. In the browser, you may see 'Can't connect securely to this page' or 'Action: Deny: No rule matched. Proceeding with default action.' 
-9. To force the 'Action: Deny' message, click on the Windows icon and open a Windows PowerShell prompt. Enter 'Invoke-WebRequest www.facebook.com' to initiate the call to the website. You should now see 'Action: Deny: No rule matched. Proceeding with default action.' if you didn't already in the browser.
+Now, let's test the Managed rule we just reviewed. First, we'll show what a successful SQL injection attack against the web application looks like when we bypass the WAF and go directly to the application and not the Application Gateway.
+1. Open your browser on your client machine and browse to http://13.89.231.38:8081.
+2. Once the website is loaded, click on 'Account' and then 'Login'.
+3. At the Login page, for username, use **'or1=1--** and anything can be used for the password.
+4. Click Log in and you'll see a successful SQL injection attack as you get logged in as the admin user.
 
-![AZFW-Internet_Outbound-Application-Rule-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-2.png)
+!IMAGE[sql-injection-3.png](instructions281582/sql-injection-3.png)
 
-![AZFW-Internet_Outbound-Application-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-3.png)
+!IMAGE[sql-injection-4.png](instructions281582/sql-injection-4.png)
 
-⬅️ [Go to the top](#scenarios)
+Next, we'll run the same test but this time, we'll go through the WAF applied to the Application Gateway.
+1. Open your browser on your client machine and browse to http://owasp-whmzgkcjeovje.centralus.cloudapp.azure.com.
+2. Once the website is loaded, click on 'Account' and then 'Login'.
+3. At the Login page, for username, use **'or1=1--** and anything can be used for the password.
+4. Click Log in and you should see a 405 Forbidden message at the log in prompt. The WAF has recognized the SQL injection attempt and has blocked the request.
 
-## Use Latency Probe and Flow Trace Log to troubleshoot network connection issues
+!IMAGE[sql-injection-5.png](instructions281582/sql-injection-5.png)
 
-Azure Firewall has a few metrics and logs for troubleshooting network connectivity issues in Azure environments. For this scenario, we’ll be focusing on Latency Probe and Flow Trace Log to troubleshoot network connection issues. Let's verify that the new logs are enabled and sent to a log analytics workspace.
+**You've reached the end of this module**
 
-In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-1. Once there, select **Azure Firewalls** under Security. You should see an Azure Firewall named **azfw-hub-alpineSkiHouse**, select it.
-2. Under Monitoring, select **Metrics**. Choose Latency Probe as the Metric in the drop-down.
-3. [Latency Probe](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#azfw-latency-probe) is designed to measure the overall latency of Azure Firewall and provide insight into the health of the service. Azure Firewall latency can be caused by various reasons, such as high CPU utilization, throughput, or networking issues. As an important note, this tool is powered by Ping Mesh technology, which means that it measures the average latency of the ping packets to the firewall itself. The metric does not measure end-to-end latency or the latency of individual packets. The average expected latency for a firewall may vary depending on deployment size and environment.
+Click [back](#modules) to return to the list of modules and select a new one. You can also click the bottom right arrow to move ahead to the next page, Use JavaScript Challenge to stop bad bots.
 
-![AZFW-Latency-and-Flow-Logs-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-1.png)
+## Use JavaScript Challenge to stop bad bots
 
-Now, let’s trigger some asymmetric network flows and good network and check the new Flow Trace Log in our Log Analytics workspace.
-1. Next, we'll use Bastion to remote into one of the VMs and test network connectivity. In the search bar of the Azure Portal, search for **Virtual Machines** and select **vm-win11-2**.
-2. On the **vm-win11-2** Overview blade, select Connect and choose Bastion from the drop-down. For Username use **AzureUser**.
-3. For Password you will use the password defined at the time of the deployment of the template. Click Connect.
-4. Once you’re in the VM, open a a Windows PowerShell prompt and enter **test-netconnection 10.0.100.4 -p 3389**. This connection should fail. 
-5. Next, we'll use Bastion to remote into **vm-win11-1**. Repeat steps **#2** and **#3** to get in **vm-win11-1**.
-6. Once you're in the VM, open a a Windows PowerShell prompt and run **test-netconnection 10.0.200.4 -p 445**. This connection will succeed, and we’ll look at what these 2 requests look like in the logs.
+Approximately **48% of internet traffic** is generated by bots, with **30%** attributed to malicious bots. These harmful bots are programmed to attack web and mobile applications for fraudulent and malevolent purposes. These bad bots are typically automated test scripts that scrape websites to manipulate SEO rankings or prices, launch denial-of-inventory attacks and commit other malicious activities. Considering the risks associated with internet-exposed web applications, it is necessary for Azure WAF to detect and mitigate the bad bots. The mitigation of these attacks is accomplished by the Azure WAF JavaScript challenge.
 
-![AZFW-Latency-and-Flow-Logs-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-2.png)
+The Azure WAF JavaScript (JS) challenge feature is a non-interactive, invisible web challenge used to distinguish legitimate users from bad bots. It is an invisible check issued to legitimate users and attackers as an intermediate page. Bad bots will fail the JS challenge but real users will not. Furthermore, JS challenges eliminate friction for real users since they don’t require any intervention from humans.  Hence, Azure WAF JS challenge is an effective method to protect against bot attacks without introducing customer friction.
 
-Navigate back to **Azure Firewall Manager > Azure Firewalls > azfw-hub-alpineSkiHouse**. Under Monitoring, select Logs.
+Let's verify the settings on the WAF associated with our Application Gateway v2 first:
+1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgwwhmzgkcjeovje**, select it.
+3. Select **Policy settings** to first look at how long a JS Challenge cookie will last for any given user who passes. In our policy, we have this set to 5 minutes. The default value is 30 minutes and can be configured to go up to 1440 minutes (24 hours).
+4. Select **Custom rules** and click on the rule named **JSChallenge**. You'll see that this rule is configured to check the **RequestUri** and to find a value of **/ftp**. If the request matches this condition, then the Azure WAF will JS Challenge the request. A bot will be unable to solve the challenge while an actual user using a browser will have no issues.
 
-7. The first query we’ll run is **#1** below. You’ll see that **10.0.100.4** was able to hit **10.0.200.4** on Port **3389**. This is an indication of a SYN packet making it to the Azure Firewall and the firewall making a decision on what action to take. We'll take note of the SourcePort being used so that we can find the SYN-ACK on the next query.
-8. Now let’s run query **#2**. We're using the SourcePort found in query 1 to use in query 2. When we run this in our workspace, we're able to find the SYN-ACK that's part of the TCP 3-way handshake.
-9. Next, we will run query **#3** to see what an asymmetric route will look like in the Azure Firewall logs. You can see in the screenshot that the Flag column says INVALID for all of the request coming from 10.0.100.4 destined for 10.0.100.36. This flag INVALID, shows that the Azure Firewall does not have a SYN packet in its tables to know what to do with this unexpected SYN-ACK. If you remember from our previous steps, the VM, vm-win11-2, sent a connection request to 10.0.100.4 that would fail. This is because 10.0.100.36 has a direct path to 10.0.100.4 while 10.0.100.4 has to send all traffic to the Azure Firewall first.
+!IMAGE[js-challenge-1.png](instructions281582/js-challenge-1.png)
 
-**Query 1:**
+!IMAGE[js-challenge-2.png](instructions281582/js-challenge-2.png)
 
-```sql
-AZFWNetworkRule
-| where SourceIp == "10.0.100.4"
-| where DestinationIp == "10.0.200.4"
-```
+Now, let's test the Customer rule we just reviewed.
+1. Launch Microsoft Edge and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the right of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request. This will look like a wi-fi icon.
+2. With the developer tools up, navigate to http://owasp-whmzgkcjeovje.centralus.cloudapp.azure.com and click on the hamburger button on the top left. Select **About Us**.
+3. In the middle of the Lorem Ipsum text, you'll see a hyperlink that says **Check out our boring terms of use if you are interested in such lame stuff**. Select that to activate the JS Challenge.
 
-![AZFW-Latency-and-Flow-Logs-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-3.png)
+Let's look at the images below to see what happened during our HTTP request.
+1. Our first image shows the actuall JS Challenge in effect. Users will see this appear on their screen for about 2-3 seconds and will not be required to interact with it. You'll notice that very quickly, a 403 Forbidden is seen in the Dev tools, this is expected.
+2. Once the challenge is complete, we'll see our JS challenge cookie get set in the Response Headers. Navigating to any other page on this site, you'll see this same cookie as part of the Request Headers. You'll also notice that the 403 is now gone and has been replaced with a 200 OK.
 
-**Query 2:**
+!IMAGE[js-challenge-3.png](instructions281582/js-challenge-3.png)
 
-```sql
-AZFWFlowTrace
-| where SourceIp == "10.0.200.4"
-| where DestinationIp == "10.0.100.4"
-| where DestinationPort == "62877"
-```
+!IMAGE[js-challenge-4.png](instructions281582/js-challenge-4.png)
 
-![AZFW-Latency-and-Flow-Logs-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-4.png)
+Now let's take a look at the logs and metrics generated from JS Challenge.
+1. On Azure Portal search for the Application Gateway **appgw-whmzgkcjeovje-waf**, then select it.
+2. Once there, select **Metrics** under Monitoring.
+3. Select the metric **WAF JS Challenge Request Count**. This metric shows the count of all challenges that were made by the WAF, both pass and failed challenges.
 
-**Query 3:**
+!IMAGE[js-challenge-5.png](instructions281582/js-challenge-5.png)
 
-```sql
-AZFWFlowTrace
-| where SourceIp == "10.0.100.4"
-| where DestinationIp == "10.0.100.36"
-```
+4. Next, select **Logs** under Monitoring.
+5. Using the query below, we'll be able to see what has happened with the challenges that were sent out. If a challenge is issued and it was passed, you'll be able to see this in the log. If the same user returns to the page that initiates a challenge and they still have an active cookie, you'll see that the message will say JSChallengeValid. You will not be able to see JS Challenges that have failed.
 
-![AZFW-Latency-and-Flow-Logs-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-5.png)
+        AzureDiagnostics
+        | where Category contains "ApplicationGatewayFirewallLog"
+        | where action_s == "JSChallenge"
+        | project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleSetVersion_s, ruleId_s, action_s, Message, details_message_s, details_file_s, details_line_s, transactionId_g
+
+!IMAGE[js-challenge-6.png](instructions281582/js-challenge-6.png)
+
+**You've reached the end of this module**
+
+## Use Azure Diagnostic logs and Metrics to analyze the Azure WAF
+
+In this scenario, we'll first verify that diagnostic settings are enabled on the Application Gaterway v2 resource to ensure that we can see metrics and logs when a HTTP request has been processed by the Azure WAF. We'll then show you how to get a count of total requests serviced by the WAF and how many were blocked with Metrics. After, we'll demonstrate how to use the Kusto queries to investigate the WAF logs and reasons for actions.
+
+1. In the search bar, search for the Application Gateway v2 resource, **appgw-whmzgkcjeovje-waf**.
+2. Once selected, navigate to **Diagnostic settings** under 'Monitoring'. We should see a Diagnostic setting named **appgw-diag**. Select 'Edit setting' to view more.
+3. Inside the Diagnostid setting, under 'Logs', we can see 3 category logs selected.
+    - Application Gateway Access Log (ApplicationGatewayAccess).
+    - Application Gateway Performance Log (Performance Logs are only for the v1 SKU, for performance on the v2, use Metrics).
+    - Application Gateway Firewall Log (AppplicationGatewayFirewallLog) **This is the category we'll focus on in this demo script**.
+4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named '**CyberSOC**'.
+5. Metrics are enabled and visible by default. You do not need to send these to a Log Analytics workspace to view metrics.
+
+Now, let's explore what the metrics are available for WAF:
+
+1. Stay on the Application Gateway V2 resource **appgw-whmzgkcjeovje-waf** page.
+2. Select **Metrics** under 'Monitoring'.
+3. In the chart, click on the drop-down under Metric and select **WAF Total Requests**. We're going to **Apply splitting** and split by **Action**.
+4. Select **+ New chart** on the top left and select **WAF Managed Rule Matches** for the Metric. We're going to **Apply splitting** and split by **Rule Id**. This will allow us to see what rules are being hit the most frequent.
+5. You can continue to create new charts for Custom Rule Matches and Bot Protection Matches to see all actions being taken by the WAF in a metric view.
+
+!IMAGE[waf-diag-metrics-1.png](instructions281582/waf-diag-metrics-1.png)
+
+Next, we'll explore the logs and look for the logs showing the actions taken by WAF when we send the HTTP requests testing the Mozilla Firefox user agent and the SQL Injection attacks.
+
+***If you haven't done those 2 modules, don't worry! You can continue testing the queries below.***
+
+1. Stay on the Application Gateway V2 resource **appgw-whmzgkcjeovje-waf** page.
+2. Select **Logs** under 'Monitoring'. These logs are being sent to the CyberSOC log analytics workspace we say in the diagnostic setting.
+3. Copy and paste query #1 from the 'Kusto Queries' section below. This query will show you all requests that were blocked/matched by Managed rules within the time range specified. Specifically, this query will look for the logs generated by module 'Block a SQL injection attack'. Open a log to get familiar with the section **Message, details_message_s, and details_file_s** to understand what values matched the rule.
+4. Copy and paste query #2 from the 'Kusto Queries' section below. This query will show you all requests that were blocked/matched by Custom rules within the time range specified. Open a log to get familiar with the section **Message** to understand what values matched the rule.
+5. Copy and paste query #3 from the 'Kusto Queries' section below. This query will show you all requests that were blocked/matched by Bot Manager rules. Open a log to get familiar with the section **Message, details_message_s, and details_file_s** to understand what values matched the rule.
+
+!IMAGE[waf-diag-metrics-2.png](instructions281582/waf-diag-metrics-2.png)
+
+### Kusto Queries
+1. **Default Rule Set**
+
+        AzureDiagnostics
+        | where Category contains "ApplicationGatewayFirewallLog"
+        | where ruleSetType_s == "Microsoft_DefaultRuleSet"
+        | project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleSetVersion_s, ruleId_s, action_s, Message, details_message_s, details_file_s, details_line_s, transactionId_g
+
+2. **Custom rule**
+
+        AzureDiagnostics
+        | where Category contains "ApplicationGatewayFirewallLog"
+        | where ruleSetType_s == "Custom"
+        | project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleId_s, action_s, Message, transactionId_g
+
+3. **Bot Manager Rule Set**
+
+        AzureDiagnostics
+        | where Category contains "ApplicationGatewayFirewallLog"
+        | where ruleSetType_s == "Microsoft_BotManagerRuleSet"
+        | project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleSetVersion_s, ruleId_s, action_s, Message, details_message_s, details_file_s, details_line_s, transactionId_g
+
+**You've reached the end of this module**
+
+## Redirect a HTTP request from a Mozilla Firefox browser to Edge download site
+
+In this scenario, we'll use the Web Application Firewall (WAF), applied to our Premium SKU Front Door profile, to redirect any request that comes from a Mozilla Firefox browser to the Microsoft Edge download page. Using Custom rules, we'll use information from a HTTP request, such as User-Agent header, to identify that a request has originated from the Mozilla Firefox browser and redirect it accordingly.
+
+Let's verify the settings on the WAF associated with our Azure Front Door first.
+1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafafdwhmzgkcjeovje**, select it.
+3. Select **Policy settings** under 'Settings' to see the Redirect URL that has been configured. It's set to the Microsoft Edge download page.
+4. Now select **Custom rules** and click on the rule named **RedirectFirefoxUserAgent**. You'll see that this rule is configured to check the **RequestHeader** portion of an HTTP request. Within the 'RequestHeader', the WAF will look for the header called **User-Agent** and check if there is a value within the 'User-Agent' of **rv:127.0**, the current running version of Mozilla Firefox. If the value matches, then the request will be redirected.
+>[!note] The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
+
+!IMAGE[afd-redirect-1.png](instructions281582/afd-redirect-1.png)
+
+Now, let's test the Custom rule we just reviewed.
+1. To run through this scenario, you'll need Mozilla Firefox installed.
+2. With the browser installed, launch the browser and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the bottom of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request.
+3. With the developer tools up, navigate to **https://afd-owasp-whmzgkcjeovje-bnbqesg6brf3b9b4.z01.azurefd.net**, you should have been redirected to https://www.microsoft.com/en-us/edge. 
+
+Let's look at the images below to see what happened during our HTTP request.
+
+!IMAGE[afd-redirect-2.png](instructions281582/afd-redirect-2.png)
+!IMAGE[afd-redirect-3.png](instructions281582/afd-redirect-3.png)
+
+This allows us to observe the impact of the custom redirect rule when a specific condition is satisfied.
+
+**You've reached the end of this module**
+
+## Rate Limit when keyword "search" exists in the URI
+
+In this scenario, we'll use the Web Application Firewall (WAF), applied to our Premium SKU Front Door profile, to rate limit requests that have the keyword **search** within the URI. Using Custom rules, we'll use information to block requests that use the keyword more than 3 times within 5 minutes.
+
+Let's verify the settings on the WAF associated with our Azure Front Door first.
+1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafafdwhmzgkcjeovje**, select it.
+3. Select **Custom rules** and click on the rule named **RateLimitRequest**. You'll see that this rule is configured to check the **RequestUri** and to find a value of search. If the policy has a match of more than 3 requests within 5 minutes from the same source, then it will deny the request.
+
+!IMAGE[afd-rate-limit-1.png](instructions281582/afd-rate-limit-1.png)
+
+Now, let's test the Custom rule we just reviewed.
+1. Launch Microsoft Edge and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the right of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request. This will look like a wi-fi icon.
+2. With the developer tools up, navigate to **https://afd-owasp-whmzgkcjeovje-bnbqesg6brf3b9b4.z01.azurefd.net** and click on the search icon. Type in ​​**​​​​​apple** and hit enter.
+3. Then refresh the entire browser (F5) so as to not get a cached response and force an actual second request to the Front Door. We'll need to use F5 a few times to trigger the rate limit rule. Since the value for the threshold is so low with a 5-minute window, you may need to hit F5 more than 3 times. This is not typical for a customer use-case that will have a much larger threshold defined, where the engine will excel. We should see no results on the page as the search was rate limited.
+
+Let's look at the images below to see what happened during our HTTP request.
+
+!IMAGE[afd-rate-limit-2.png](instructions281582/afd-rate-limit-2.png)
+!IMAGE[afd-rate-limit-3.png](instructions281582/afd-rate-limit-3.png)
+
+This enables us to observe the effect of the custom rate limit rule when a specific threshold is surpassed.
+
+**You've reached the end of this module**
 
 ⬅️ [Go to the top](#scenarios)
 
