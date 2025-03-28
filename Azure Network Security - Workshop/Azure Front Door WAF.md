@@ -15,9 +15,10 @@ Let's verify the settings on the WAF associated with our Azure Front Door first.
 2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafafdwhmzgkcjeovje**, select it.
 3. Select **Policy settings** under 'Settings' to see the Redirect URL that has been configured. It's set to the Microsoft Edge download page.
 4. Now select **Custom rules** and click on the rule named **RedirectFirefoxUserAgent**. You'll see that this rule is configured to check the **RequestHeader** portion of an HTTP request. Within the 'RequestHeader', the WAF will look for the header called **User-Agent** and check if there is a value within the 'User-Agent' of **rv:127.0**, the current running version of Mozilla Firefox. If the value matches, then the request will be redirected.
->[!note] The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
 
-!IMAGE[afd-redirect-1.png](instructions281582/afd-redirect-1.png)
+> **Note:** The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
+
+![Afd-redirect-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd.redirect-1.png)
 
 Now, let's test the Custom rule we just reviewed.
 1. To run through this scenario, you'll need Mozilla Firefox installed.
@@ -26,8 +27,9 @@ Now, let's test the Custom rule we just reviewed.
 
 Let's look at the images below to see what happened during our HTTP request.
 
-!IMAGE[afd-redirect-2.png](instructions281582/afd-redirect-2.png)
-!IMAGE[afd-redirect-3.png](instructions281582/afd-redirect-3.png)
+![Afd-redirect-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd.redirect-2.png)
+
+![Afd-redirect-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd.redirect-3.png)
 
 This allows us to observe the impact of the custom redirect rule when a specific condition is satisfied.
 
