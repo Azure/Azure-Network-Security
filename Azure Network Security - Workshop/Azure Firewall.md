@@ -6,6 +6,7 @@
 - [Controlling access between spoke virtual networks](#controlling-access-between-spoke-virtual-networks)
 - [Securing Internet access using Azure Firewall](#securing-internet-access-using-azure-firewall)
 - [Use Latency Probe and Flow Trace Log to troubleshoot network connection issues](#use-latency-probe-and-flow-trace-log-to-troubleshoot-network-connection-issues)
+- [Use Resource Specific logs to analyze the Azure Firewall](#use-resource-specific-logs-to-analyze-the-azure-firewall)
 
 ## Controlling access between spoke virtual networks
 
@@ -83,6 +84,8 @@ Navigate back to **Azure Firewall Manager > Azure Firewalls > azfw-hub-alpineSki
 8. Now let’s run query **#2**. We're using the SourcePort found in query 1 to use in query 2. When we run this in our workspace, we're able to find the SYN-ACK that's part of the TCP 3-way handshake.
 9. Next, we will run query **#3** to see what an asymmetric route will look like in the Azure Firewall logs. You can see in the screenshot that the Flag column says INVALID for all of the request coming from 10.0.100.4 destined for 10.0.100.36. This flag INVALID, shows that the Azure Firewall does not have a SYN packet in its tables to know what to do with this unexpected SYN-ACK. If you remember from our previous steps, the VM, vm-win11-2, sent a connection request to 10.0.100.4 that would fail. This is because 10.0.100.36 has a direct path to 10.0.100.4 while 10.0.100.4 has to send all traffic to the Azure Firewall first.
 
+### Kusto Queries
+
 **Query 1:**
 
 ```sql
@@ -113,6 +116,66 @@ AZFWFlowTrace
 ```
 
 ![AZFW-Latency-and-Flow-Logs-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-5.png)
+
+⬅️ [Go to the top](#scenarios)
+
+## Use Resource Specific logs to analyze the Azure Firewall
+
+For this scenario, we'll first verify that diagnostic settings are enabled on the Azure Firewall resource to ensure that we can see logs when a traffic flow has been processed by the Azure Firewall. We'll use the new Resource Specific logs to review the tests we performed earlier.
+1. In the search bar, search for the Azure Firewall resource, **azfw-hub-alpineSkiHouse**.
+2. Once selected, navigate to **Diagnostic settings** under 'Monitoring'. We should see one Diagnostic settings called **AzfwDiagLogs**. Click 'Edit setting' to see how to configure the different diagnostics, choosing the appropriate Destination table.
+3. Inside the Diagnostic setting, under 'Logs', we can see 13 category logs that we'll use.
+   - Azure Firewall Network Rule - AZFWNetworkRule
+   - Azure Firewall Application Rule - AZFWApplicationRule
+   - Azure Firewall Nat Rule - AZFWNatRule
+   - Azure Firewall Threat Intelligence - AZFWThreatIntel
+   - Azure Firewall IDPS Signature - AZFWIdpsSignature
+   - Azure Firewall DNS query - AZFWDnsQuery
+   - Azure Firewall FQDN Resolution Failure - AZFWInternalFqdnResolutionFailure
+   - Azure Firewall Network Rule Aggregation (Policy Analytics) - *Used with Policy Analytics only*
+   - Azure Firewall Application Rule Aggregation (Policy Analytics) - *Used with Policy Analytics only*
+   - Azure Firewall Nat Rule Aggregation (Policy Analytics) - *Used with Policy Analytics only*
+   - Azure Firewall Flow Trace Log - AZFWFlowTrace
+4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named 'law-<<ID_USED_AT_DEPLOYMENT>>'. We also see the Destination table that allows you to choose Azure diagnostics or Resource specific.
+5. Metrics are enabled and visible by default. You do not need to send these to a Log Analytics workspace to view metrics.
+
+![AZFW-Resource-Specific-Logs-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-resource-specific-logs-1.png)
+
+### Logs
+
+1. Select **Logs** under 'Monitoring' to view Logs. These logs are being sent to the log analytics workspace 'law-<<ID_USED_AT_DEPLOYMENT>>' we saw in the diagnostic setting.
+2. Copy and paste query **#1** from both of the 'Kusto Queries' sections below. This query will show all of the Allowed and Blocked traffic filtered by Network rules.
+3. Copy and paste query **#2** from both of the 'Kusto Queries' sections below. This query will show all of the Allowed and Blocked traffic filtered by Application rules.
+4. Copy and paste query **#3** from both of the 'Kusto Queries' sections below. This query will show all of the Blocked traffic filtered by Threat Intelligence.
+5. Copy and paste query **#4** from both of the 'Kusto Queries' sections below. This query will show all of the Matched and Blocked traffic filtered by IDPS signature rules.
+
+![AZFW-Resource-Specific-Logs-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-resource-specific-logs-2.png)
+
+### Kusto Queries
+
+**Query 1:**
+
+```sql
+AZFWNetworkRule
+```
+
+**Query 2:**
+
+```sql
+AZFWApplicationRule
+```
+
+**Query 3:**
+
+```sql
+AZFWThreatIntel
+```
+
+**Query 4:**
+
+```sql
+AZFWIdpsSignature
+```
 
 ⬅️ [Go to the top](#scenarios)
 
