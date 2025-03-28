@@ -54,6 +54,8 @@ Next, we'll use Bastion to remote into one of the VMs and test network connectiv
 
 ![AZFW-Internet_Outbound-Application-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-3.png)
 
+⬅️ [Go to the top](#scenarios)
+
 ## Use Latency Probe and Flow Trace Log to troubleshoot network connection issues
 
 Azure Firewall has a few metrics and logs for troubleshooting network connectivity issues in Azure environments. For this scenario, we’ll be focusing on Latency Probe and Flow Trace Log to troubleshoot network connection issues. Let's verify that the new logs are enabled and sent to a log analytics workspace.
@@ -111,6 +113,9 @@ AZFWFlowTrace
 ```
 
 ![AZFW-Latency-and-Flow-Logs-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-5.png)
+
+⬅️ [Go to the top](#scenarios)
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
