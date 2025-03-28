@@ -18,7 +18,7 @@ Let's verify the settings on the WAF associated with our Azure Front Door first.
 
 > **Note:** The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
 
-![Afd-redirect-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd.redirect-1.png)
+![Afd-redirect-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd-redirect-1.png)
 
 Now, let's test the Custom rule we just reviewed.
 1. To run through this scenario, you'll need Mozilla Firefox installed.
@@ -27,9 +27,9 @@ Now, let's test the Custom rule we just reviewed.
 
 Let's look at the images below to see what happened during our HTTP request.
 
-![Afd-redirect-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd.redirect-2.png)
+![Afd-redirect-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd-redirect-2.png)
 
-![Afd-redirect-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd.redirect-3.png)
+![Afd-redirect-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/afd-redirect-3.png)
 
 This allows us to observe the impact of the custom redirect rule when a specific condition is satisfied.
 
