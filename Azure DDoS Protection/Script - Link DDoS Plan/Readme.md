@@ -1,6 +1,6 @@
 
 # Add Public IPs to Existing Azure DDoS Protection Plan  
-**Author: Saleem**
+**Author: Saleem Bseeu**
 
 This PowerShell script allows users to assign the DDoS IP Protection SKU to selected Standard SKU Public IP addresses and link them to an existing Azure DDoS Network Protection plan. This is useful for selectively applying DDoS protection to only specific IPs in your environment and avoiding double billing.
 
