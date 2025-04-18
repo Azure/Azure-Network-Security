@@ -30,8 +30,6 @@ Let's look at the images below to see what happened during our HTTP request.
 
 ![Mozilla-user-agent-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/mozilla-user-agent-2.png)
 
-![Mozilla-user-agent-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/mozilla-user-agent-2.png)
-
 **You've reached the end of this scenario**
 
 ⬅️ [Go to the top](#scenarios)
@@ -50,9 +48,9 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 ![Sql-injection-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-2.png)
 
 Now, let's test the Managed rule we just reviewed. First, we'll show what a successful SQL injection attack against the web application looks like when we bypass the WAF and go directly to the application and not the Application Gateway.
-1. Open your browser on your client machine and browse to http://13.89.231.38:8081.
+1. Open your browser on your client machine and browse to https://webapp-<<ID_USED_AT_DEPLOYMENT>>.azurewebsites.net.
 2. Once the website is loaded, click on 'Account' and then 'Login'.
-3. At the Login page, for username, use **'or1=1--** and anything can be used for the password.
+3. At the Login page, for username, use **' or 1=1--** and anything can be used for the password.
 4. Click Log in and you'll see a successful SQL injection attack as you get logged in as the admin user.
 
 ![Sql-injection-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-3.png)
