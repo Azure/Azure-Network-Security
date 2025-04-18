@@ -24,7 +24,7 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 Now, let's test the Custom rule we just reviewed:
 1. To run through this scenario, you'll need Mozilla Firefox installed.
 2. Lauch the browser and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the bottom of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request.
-3. With the developer tools up, navigate to http://owasp-whmzgkcjeovje.centralus.cloudapp.azure.com, your request should have been blocked with a '403 Forbidden' status code.
+3. With the developer tools up, navigate to http://owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com, your request should have been blocked with a '403 Forbidden' status code.
 
 Let's look at the images below to see what happened during our HTTP request.
 
@@ -60,7 +60,7 @@ Now, let's test the Managed rule we just reviewed. First, we'll show what a succ
 ![Sql-injection-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-4.png)
 
 Next, we'll run the same test but this time, we'll go through the WAF applied to the Application Gateway.
-1. Open your browser on your client machine and browse to http://owasp-whmzgkcjeovje.centralus.cloudapp.azure.com.
+1. Open your browser on your client machine and browse to http://owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com.
 2. Once the website is loaded, click on 'Account' and then 'Login'.
 3. At the Login page, for username, use **'or1=1--** and anything can be used for the password.
 4. Click Log in and you should see a 405 Forbidden message at the log in prompt. The WAF has recognized the SQL injection attempt and has blocked the request.
@@ -89,7 +89,7 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 
 Now, let's test the Customer rule we just reviewed.
 1. Launch Microsoft Edge and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the right of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request. This will look like a wi-fi icon.
-2. With the developer tools up, navigate to http://owasp-whmzgkcjeovje.centralus.cloudapp.azure.com and click on the hamburger button on the top left. Select **About Us**.
+2. With the developer tools up, navigate to http://owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com and click on the hamburger button on the top left. Select **About Us**.
 3. In the middle of the Lorem Ipsum text, you'll see a hyperlink that says **Check out our boring terms of use if you are interested in such lame stuff**. Select that to activate the JS Challenge.
 
 Let's look at the images below to see what happened during our HTTP request.
