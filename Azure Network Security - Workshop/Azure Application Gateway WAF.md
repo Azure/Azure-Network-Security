@@ -14,7 +14,7 @@ In this scenario, we'll use the Web Application Firewall (WAF), applied to our A
 
 Let's verify the settings on the WAF associated with our Application Gateway v2 first:
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgwwhmzgkcjeovje**, select it.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_AT_DEPLOYMENT>>**, select it.
 3. Select **Custom rules** and click on the rule named **BlockFirefoxUserAgent**. You'll see that this rule is configured to check the **RequestHeader** portion of an HTTP request Whithin the 'RequestHeader', the WAF will look for the header called **User-Agent** and check if there is a value within the 'User-Agent'containing **rv:**, which are unique characters to Mozilla Firefox. If the value matches, then the request will be denied.
 
 > **Note:** The rv will change over time. As of now the rv is currently 109.0. The rules will be maintained to reflect the current running version of Mozilla.
@@ -42,7 +42,7 @@ In this scenario, we'll use the Web Application Firewall (WAF), applied to our A
 
 Let's verify the settings on the WAF associated with our Application Gateway v2 first:
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgwwhmzgkcjeovje**, select it.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_AT_DEPLOYMENT>>**, select it.
 3. Select **Managed rules** and change the grouping of the rules to **Group by Rule group**. Scroll down until you see **SQLI (40)** and click on the arrow to open the list. Ensure that the rules are all set to 'Anomaly score' and 'Enabled'.
 
 ![Sql-injection-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-1.png)
@@ -79,7 +79,7 @@ The Azure WAF JavaScript (JS) challenge feature is a non-interactive, invisible 
 
 Let's verify the settings on the WAF associated with our Application Gateway v2 first:
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgwwhmzgkcjeovje**, select it.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_AT_DEPLOYMENT>>**, select it.
 3. Select **Policy settings** to first look at how long a JS Challenge cookie will last for any given user who passes. In our policy, we have this set to 5 minutes. The default value is 30 minutes and can be configured to go up to 1440 minutes (24 hours).
 4. Select **Custom rules** and click on the rule named **JSChallenge**. You'll see that this rule is configured to check the **RequestUri** and to find a value of **/ftp**. If the request matches this condition, then the Azure WAF will JS Challenge the request. A bot will be unable to solve the challenge while an actual user using a browser will have no issues.
 
