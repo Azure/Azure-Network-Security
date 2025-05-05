@@ -49,6 +49,9 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 
 Now, let's test the Managed rule we just reviewed. First, we'll show what a successful SQL injection attack against the web application looks like when we bypass the WAF and go directly to the application and not the Application Gateway.
 1. Open your browser on your client machine and browse to https://webapp-<<ID_USED_AT_DEPLOYMENT>>.azurewebsites.net.
+
+![Sql-injection-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-7.png)
+
 2. Once the website is loaded, click on 'Account' and then 'Login'.
 3. At the Login page, for username, use **' or 1=1--** and anything can be used for the password.
 4. Click Log in and you'll see a successful SQL injection attack as you get logged in as the admin user.
@@ -59,6 +62,9 @@ Now, let's test the Managed rule we just reviewed. First, we'll show what a succ
 
 Next, we'll run the same test but this time, we'll go through the WAF applied to the Application Gateway.
 1. Open your browser on your client machine and browse to http://owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com.
+
+![Sql-injection-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-6.png)
+
 2. Once the website is loaded, click on 'Account' and then 'Login'.
 3. At the Login page, for username, use **'or1=1--** and anything can be used for the password.
 4. Click Log in and you should see a 405 Forbidden message at the log in prompt. The WAF has recognized the SQL injection attempt and has blocked the request.
