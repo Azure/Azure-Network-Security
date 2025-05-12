@@ -55,17 +55,19 @@ Now we'll explore the metrics to determine the mitigation thresholds and identif
   - Inbound SYN packets to trigger DDoS mitigation
   - Inbound packets DDoS
 
-!IMAGE[ddos-logs-metrics-1.png](instructions281582/ddos-logs-metrics-1.png)
+![Ddos-Logs-Metrics-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-4.png)
+
 !IMAGE[ddos-logs-metrics-2.png](instructions281582/ddos-logs-metrics-2.png)
 
 ### Logs
 Finally, let's explore the logs and get additional details of any DDoS attack that may have been mitigated by Azure DDoS Protection.
-1. In the search bar, search for the Log Analytics workspace, **CyberSOC**.
+1. In the search bar, search for the Log Analytics workspace, **law-'ID-USED-AT-DEPLOYMENT'**.
 2. Once selected, navigate to **Logs** under 'General' and close the Queries pop up window.
 3. Next, click on **Queries** and type 'ddos' in the filter. You should see a query called **DDoSQueries** under 'Security'. Hover over this and select 'Load to editor'. Our 4 queries should automatically populate into the editor window.
 4. Click on 'DDoSProtectionNotifications' in the editor window to highlight the entire query and click 'Run'. If you recently triggered an attack, you should you Start and Stop mitigation logs below, if not, you may have to customize the time range to find the most recent attack triggered.
 5. Click on 'DDoSMitigationReports' in the editor window to highlight the entire query and click 'Run'. Look for a report type of Incremental to get familiar with how a 5-minute aggregated report looks like. Then look for a report type of Post mitigation to get familiar with how a total time aggregated report looks like.
 6. Click on 'DDoSMitigationFlowLogs' in the editor window to highlight the entire query and click 'Run'. This particular query will generate thousands of logs and may show you only the first 30,000. Select any log and familiarize yourself how flows are analyzed, and actions chosen based off of packet details.
+
 !IMAGE[ddos-logs-metrics-3.png](instructions281582/ddos-logs-metrics-3.png)
 
 ### Kusto Queries
