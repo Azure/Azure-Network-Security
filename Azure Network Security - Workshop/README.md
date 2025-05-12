@@ -4,6 +4,8 @@
 
 If you want to learn more about Azure Network Security, including **Azure DDoS**, **Azure Firewall**, and **Azure Web Application Firewall**, before deploying this workshop, we recommend checking out our [Azure Network Security Ninja Training](https://aka.ms/aznetsecninja). This training covers basic to advanced scenarios for Azure network security. Ready to become an Azure NetSec ninja? Dive right in!
 
+![Ninja-Cat-Logo-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ninja-cat-logo-1.png)
+
 ## Objectives
 
 This Workshop is designed to be an immersive and collaborative experience focused on harnessing the power of Azure DDoS, Azure Firewall and Azure Web Application Firewall to improve security measures.
