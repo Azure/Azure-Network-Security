@@ -57,7 +57,7 @@ Now we'll explore the metrics to determine the mitigation thresholds and identif
 
 ![Ddos-Logs-Metrics-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-4.png)
 
-!IMAGE[ddos-logs-metrics-2.png](instructions281582/ddos-logs-metrics-2.png)
+![Ddos-Logs-Metrics-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-5.png)
 
 ### Logs
 Finally, let's explore the logs and get additional details of any DDoS attack that may have been mitigated by Azure DDoS Protection.
@@ -110,7 +110,7 @@ AzureDiagnostics
 In this scenario, we'll look at how to use Microsoft Sentinel to analyze a DDoS attack against your environment using a Workbook.
 
 1. In the search bar, search for 'Sentinel' and select **Microsoft Sentinel**.
-2. Select the Sentinel workspace, **CyberSOC**.
+2. Select the Sentinel workspace, **law-'ID-USED-AT-DEPLOYMENT'**.
 3. Once selected, click on **Workbooks** under 'Threat Management'.
 4. By default, we should be in the 'Templates' tab. In the search bar under 'Templates', search for 'ddos' and select the **Azure DDoS Protection Workbook**. Then select 'View saved workbook' in the bottom right.
 5. The Azure DDoS Protection Workbook has 3 tabs to help investigate a DDoS attack. These are:
