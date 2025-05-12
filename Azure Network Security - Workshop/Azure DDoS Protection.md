@@ -14,7 +14,7 @@ In this scenario, we'll verify that DDoS IP Protection is enabled on our Azure A
 1. In the search bar of the Azure Portal, search for **pip-appgw-<<ID-USED-AT-DEPLOYMENT>>-waf** and select it. This will bring you to the 'Overview' page for the public IP.
 2. Once there, select **Protect** under Overview > Get Started > Protect IP address. You should see **Protected: IP is DDoS protected**.
 
-!IMAGE[ddos-setup-1.png](instructions281582/ddos-setup-1.png)
+!IMAGE[ddos-setup-1.png](instructions281582/ddos-setup-7.png)
 
 4. After selecting ddosPlan-AlpineSkiHouse, you should be at the Overview blade for the DDoS Protection Plan. Under Settings, select **Protected resources** so we can identify exactly what resources are protected by this plan.
 5. The Protected resources blade will have 8 different tabs at the top, showing the different resource types that are covered by DDoS Network Protection. These are the resource types and expected resource names to be protected:
