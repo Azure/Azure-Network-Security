@@ -26,6 +26,8 @@ Now that we've verified that our resource is protected with DDoS IP protection, 
 
 ## Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations
 
+**Before you start this module, we recommend conducting your own DDoS simulation test. You can consider using any of the solution partners listed in our [public documentation](https://learn.microsoft.com/en-us/azure/ddos-protection/test-through-simulations), or any other trusted solution.**
+
 In this scenario, we'll first verify that diagnostic settings are enabled on the Public IP resources to ensure that we can see metrics and logs when a resource is under attack. We'll then show you how to determine if a resource is under attack, how to find the current threshold values as well as live traffic values with Metrics. After, we'll demonstrate how to use the Kusto queries to investigate a DDoS attack.
 1. In the search bar, search for the Application Gateway's Public IP resource, **pip-appgw-'ID-USED-AT-DEPLOYMENT'-waf**.
 2. Once selected, navigate to **Diagnostic settings** under 'Monitoring'. We should see a Diagnostic setting named **AppGwPipDiagLogs**. Select 'Edit setting' to view more.
@@ -43,17 +45,18 @@ Let's quickly touch on what kind of logs are generated for each of the log categ
 
 ### Metrics
 Now we'll explore the metrics to determine the mitigation thresholds and identify if a public IP is under attack.
-1. Select Metrics under 'Monitoring' to view Metrics.
+1. Select **Metrics** under 'Monitoring' to view Metrics.
 2. In the chart, click on the drop-down under Metric and select **Under DDoS attack or not**. You may need to change the time range to Last 30 days to find information, unless you just initiated an attack. The 'Under DDoS attack or not' metric has a value of either 0 or 1, 0 indicating that the resource is not under attack and 1 indicating that the resource is under attack.
-3. Select + New chart on the top left and select the Metrics below. You'll have to click 'Add metric' after each selection to add them all to the same chart. These are the current threshold values of this particular resource. All resources can have different threshold values based off their unique traffic patterns.
-  - Inbound SYN packets to trigger DDoS mitigation (10k/pps)
-  - Inbound TCP packets to trigger DDoS mitigation (50k/pps)
-  - Inbound UDP packets to trigger DDoS mitigation (40k/pps)
-4. Select + New chart again and select the Metrics below. We'll see that the Inbound packets greatly surpassed the threshold value for this specific resource, forcing DDoS mitigation upon the resource.
+3. Select **+ New chart** on the top left and select the Metrics below. You'll have to click 'Add metric' after each selection to add them all to the same chart. These are the current threshold values of this particular resource. All resources can have different threshold values based off their unique traffic patterns.
+  - Inbound SYN packets to trigger DDoS mitigation - Example: 10k/pps
+  - Inbound TCP packets to trigger DDoS mitigation - Example: 50k/pps
+  - Inbound UDP packets to trigger DDoS mitigation - Example: 40k/pps
+4. Select **+ New chart** again and select the Metrics below. We'll see that the Inbound packets greatly surpassed the threshold value for this specific resource, forcing DDoS mitigation upon the resource.
   - Inbound SYN packets to trigger DDoS mitigation
   - Inbound packets DDoS
-  !IMAGE[ddos-logs-metrics-1.png](instructions281582/ddos-logs-metrics-1.png)
-  !IMAGE[ddos-logs-metrics-2.png](instructions281582/ddos-logs-metrics-2.png)
+
+!IMAGE[ddos-logs-metrics-1.png](instructions281582/ddos-logs-metrics-1.png)
+!IMAGE[ddos-logs-metrics-2.png](instructions281582/ddos-logs-metrics-2.png)
 
 ### Logs
 Finally, let's explore the logs and get additional details of any DDoS attack that may have been mitigated by Azure DDoS Protection.
