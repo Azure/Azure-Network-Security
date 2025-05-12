@@ -9,12 +9,15 @@
 
 ## Verify DDoS Network Protection is associated with a public IP
 
-In this scenario, we'll verify that a DDoS Protection plan is associated with our virtual network using Azure Firewall Manager. Once a DDoS protection plan is enabled on a virtual network, all of the Public IP resources within that virtual network are automatically protected by that plan. Additionally, we'll show you how to check if a Public IP is being protected using DDoS IP Protection in the Azure Preview Portal.
+In this scenario, we'll verify that DDoS IP Protection is enabled on our Azure Application Gateway's public IP. To save costs, we are not using [DDoS Network Protection](https://learn.microsoft.com/en-us/azure/ddos-protection/ddos-protection-overview#ddos-network-protection).
 
-1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **DDoS Protection Plans** under Security. You should see a protection plan named **ddosPlan-AlpineSkiHouse**, select it.
-3. After selecting ddosPlan-AlpineSkiHouse, you should be at the Overview blade for the DDoS Protection Plan. Under Settings, select **Protected resources** so we can identify exactly what resources are protected by this plan.
-4. The Protected resources blade will have 8 different tabs at the top, showing the different resource types that are covered by DDoS Network Protection. These are the resource types and expected resource names to be protected:
+1. In the search bar of the Azure Portal, search for **pip-appgw-<<ID-USED-AT-DEPLOYMENT>>-waf** and select it. This will bring you to the 'Overview' page for the public IP.
+2. Once there, select **Protect** under Overview > Get Started > Protect IP address. You should see **Protected: IP is DDoS protected**.
+
+!IMAGE[ddos-setup-1.png](instructions281582/ddos-setup-1.png)
+
+4. After selecting ddosPlan-AlpineSkiHouse, you should be at the Overview blade for the DDoS Protection Plan. Under Settings, select **Protected resources** so we can identify exactly what resources are protected by this plan.
+5. The Protected resources blade will have 8 different tabs at the top, showing the different resource types that are covered by DDoS Network Protection. These are the resource types and expected resource names to be protected:
   - NET: vnet-hub-alpineSkiHouse, vnet-spoke-workload-1, vnet-spoke-workload-2
   !IMAGE[ddos-setup-1.png](instructions281582/ddos-setup-1.png)
 
