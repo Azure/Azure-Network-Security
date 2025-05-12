@@ -26,7 +26,7 @@ Now that we've verified that our resource is protected with DDoS IP protection, 
 
 ## Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations
 
-**Before you start this module, we recommend conducting your own DDoS simulation test. You can consider using any of the solution partners listed in our [public documentation](https://learn.microsoft.com/en-us/azure/ddos-protection/test-through-simulations), or any other trusted solution.**
+> **Note:** Before you start this module, we recommend conducting your own DDoS simulation test. You can consider using any of the solution partners listed in our [public documentation](https://learn.microsoft.com/en-us/azure/ddos-protection/test-through-simulations), or any other trusted solution.
 
 In this scenario, we'll first verify that diagnostic settings are enabled on the Public IP resources to ensure that we can see metrics and logs when a resource is under attack. We'll then show you how to determine if a resource is under attack, how to find the current threshold values as well as live traffic values with Metrics. After, we'll demonstrate how to use the Kusto queries to investigate a DDoS attack.
 1. In the search bar, search for the Application Gateway's Public IP resource, **pip-appgw-'ID-USED-AT-DEPLOYMENT'-waf**.
