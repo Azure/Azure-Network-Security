@@ -16,7 +16,7 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "@types/chai": "^5.2.1",
+    "@types/chai": "^5.2.2",
     "@types/chai-as-promised": "^8.0.2",
     "chai": "^5.2.0",
     "chai-as-promised": "^8.0.1"
