@@ -16,34 +16,9 @@ In this scenario, we'll verify that DDoS IP Protection is enabled on our Azure A
 
 ![DDoS-Setup-7](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-setup-7.png)
 
-4. After selecting ddosPlan-AlpineSkiHouse, you should be at the Overview blade for the DDoS Protection Plan. Under Settings, select **Protected resources** so we can identify exactly what resources are protected by this plan.
-5. The Protected resources blade will have 8 different tabs at the top, showing the different resource types that are covered by DDoS Network Protection. These are the resource types and expected resource names to be protected:
-  - NET: vnet-hub-alpineSkiHouse, vnet-spoke-workload-1, vnet-spoke-workload-2
-  !IMAGE[ddos-setup-1.png](instructions281582/ddos-setup-1.png)
+![DDoS-Setup-8](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-setup-8.png)
 
-  - Firewall: pip-azfw-hub-alpineSkiHouse
-  !IMAGE[ddos-setup-2.png](instructions281582/ddos-setup-2.png)
-
-  - Application Gateway: pip-appgw-whmzgkcjeovje-waf
-  !IMAGE[ddos-setup-3.png](instructions281582/ddos-setup-3.png)
-
-  - Bastion Host: pip-bastion-whmzgkcjeovje
-  !IMAGE[ddos-setup-4.png](instructions281582/ddos-setup-4.png)
-
-  - Load Balancer: None deployed in this lab
-  - NIC: None deployed in this lab
-  - Virtual Machine Scale Set: None deployed in this lab
-  - Virtual Network Gateway: None deployed in this lab
-
-Now let's check on how we can verify if a Public IP is protected using DDoS IP Protection rather than DDoS Network Protection.
-
-1. In the search bar, search for the Application Gateway's Public IP resource, **pip-appgw-whmzgkcjeovje-waf**.
-2. In the Overview blade for the Public IP, you'll see a button named **Protect**, select this.
-3. Once selected, you'll see a blade appear called **Configure DDoS Protection**. In our environment, we can see that the Protection status shows the Public IP as 'Protected: IP is DDoS protected'. The Protection type shows us that this resource is using the DDoS Network Protection plan from earlier, but if you wanted to use DDoS IP Protection, you can choose IP to utilize the other SKU.
-!IMAGE[ddos-setup-5.png](instructions281582/ddos-setup-5.png)
-!IMAGE[ddos-setup-6.png](instructions281582/ddos-setup-6.png)
-
-Now that we've verified that our resources are protected with a DDoS Protection Plan, let's move to the next module.
+Now that we've verified that our resource is protected with DDoS IP protection, let's move to the next module.
 
 **You've reached the end of this scenario**
 
