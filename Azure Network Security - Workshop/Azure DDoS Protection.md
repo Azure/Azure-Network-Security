@@ -3,11 +3,11 @@
 ⬅️[Return to the main page](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
 
 ## Scenarios
-- [Verify DDoS Network Protection is associated with a public IP](#verify-ddos-network-protection-is-associated-with-a-public-ip)
+- [Verify DDoS IP Protection is enabled on a public IP](#verify-ddos-ip-protection-is-enabled-on-a-public-ip)
 - [Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations](#use-azure-diagnostic-logs-and-metrics-to-analyze-azure-ddos-protection-mitigations)
 - [Use Microsoft Sentinel to analyze Azure DDoS Protection mitigations](#use-microsoft-sentinel-to-analyze-azure-ddos-protection-mitigations)
 
-## Verify DDoS Network Protection is associated with a public IP
+## Verify DDoS IP Protection is enabled on a public IP
 
 In this scenario, we'll verify that DDoS IP Protection is enabled on our Azure Application Gateway's public IP. To save costs, we are not using [DDoS Network Protection](https://learn.microsoft.com/en-us/azure/ddos-protection/ddos-protection-overview#ddos-network-protection).
 
@@ -27,13 +27,13 @@ Now that we've verified that our resource is protected with DDoS IP protection, 
 ## Use Azure Diagnostic logs and Metrics to analyze Azure DDoS Protection mitigations
 
 In this scenario, we'll first verify that diagnostic settings are enabled on the Public IP resources to ensure that we can see metrics and logs when a resource is under attack. We'll then show you how to determine if a resource is under attack, how to find the current threshold values as well as live traffic values with Metrics. After, we'll demonstrate how to use the Kusto queries to investigate a DDoS attack.
-1. In the search bar, search for the Application Gateway's Public IP resource, **pip-appgw-whmzgkcjeovje-waf**.
-2. Once selected, navigate to **Diagnostic settings** under 'Monitoring'. We should see a Diagnostic setting named **appgwPip-diag**. Select 'Edit setting' to view more.
+1. In the search bar, search for the Application Gateway's Public IP resource, **pip-appgw-<<ID-USED-AT-DEPLOYMENT>>-waf**.
+2. Once selected, navigate to **Diagnostic settings** under 'Monitoring'. We should see a Diagnostic setting named **AppGwPipDiagLogs**. Select 'Edit setting' to view more.
 3. Inside the Diagnostic setting, under 'Logs', we can see 3 category logs selected.
   - DDoS protection notifications (DDoSProtectionNotifications)
   - Flow logs of DDoS mitigation decisions (DDoSMitigationFlowLogs)
   - Reports of DDoS mitigations (DDoSMitigationReports)
-4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named '**CyberSOC**'.
+4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named '**law-<<ID-USED-AT-DEPLOYMENT>>**'.
 5. Metrics are enabled and visible by default. You do not need to send these to a Log Analytics workspace to view metrics.
 
 Let's quickly touch on what kind of logs are generated for each of the log categories.
