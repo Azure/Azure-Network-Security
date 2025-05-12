@@ -57,6 +57,8 @@ Now we'll explore the metrics to determine the mitigation thresholds and identif
 
 ![Ddos-Logs-Metrics-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-4.png)
 
+![Ddos-Logs-Metrics-6](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-6.png)
+
 ### Logs
 Finally, let's explore the logs and get additional details of any DDoS attack that may have been mitigated by Azure DDoS Protection.
 1. In the search bar, search for the Log Analytics workspace, **law-'ID-USED-AT-DEPLOYMENT'**.
