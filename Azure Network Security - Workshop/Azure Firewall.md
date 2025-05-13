@@ -40,7 +40,7 @@ In this scenario, we'll use Application rules to control internet bound traffic 
 Let's verify the Application rules configurations on the firewall policy first.
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
 2. Once there, select **Azure Firewall Policies** under Security. You should see a policy named **fwpol-premium-alpineSkiHouse**, select it.
-3. Select **Application rules** and you should see a list of rules from multiple Rule collections. We're going to focus on the Rules named **spoke1-to-OWASPJuiceShopAndMicrosoft** and **spoke1-to-SearchEnginesandNewsSites**. These rules allow HTTP/S traffic on port 80/443 from the **spoke1** virtual network to ***.microsoft.com** and **owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_OF_YOUR_DEPLOYMENT>>.cloudapp.azure.com** (FQDN) and to all sites that fall under the Web categories **News**​​​​​​​ and **Search engines + portals** (Web categories).
+3. Select **Application rules** and you should see a list of rules from multiple Rule collections. We're going to focus on the Rules named **spoke1-to-OWASPJuiceShopAndMicrosoft** and **spoke1-to-SearchEnginesandNewsSites**. These rules allow HTTP/S traffic on port 80/443 from the **spoke1** virtual network to ***.microsoft.com** and **owasp-<<ID_USED_FOR_DEPLOYMENT>>.<<REGION_OF_YOUR_DEPLOYMENT>>.cloudapp.azure.com** (FQDN) and to all sites that fall under the Web categories **News**​​​​​​​ and **Search engines + portals** (Web categories).
 
 ![AZFW-Internet_Outbound-Application-Rule-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-1.png)
 
@@ -142,14 +142,14 @@ For this scenario, we'll first verify that diagnostic settings are enabled on th
    - Azure Firewall Application Rule Aggregation (Policy Analytics) - *Used with Policy Analytics only*
    - Azure Firewall Nat Rule Aggregation (Policy Analytics) - *Used with Policy Analytics only*
    - Azure Firewall Flow Trace Log - AZFWFlowTrace
-4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named 'law-<<ID_USED_AT_DEPLOYMENT>>'. We also see the Destination table that allows you to choose Azure diagnostics or Resource specific.
+4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named 'law-<<ID_USED_FOR_DEPLOYMENT>>'. We also see the Destination table that allows you to choose Azure diagnostics or Resource specific.
 5. Metrics are enabled and visible by default. You do not need to send these to a Log Analytics workspace to view metrics.
 
 ![AZFW-Resource-Specific-Logs-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-resource-specific-logs-1.png)
 
 ### Logs
 
-1. Select **Logs** under 'Monitoring' to view Logs. These logs are being sent to the log analytics workspace 'law-<<ID_USED_AT_DEPLOYMENT>>' we saw in the diagnostic setting.
+1. Select **Logs** under 'Monitoring' to view Logs. These logs are being sent to the log analytics workspace 'law-<<ID_USED_FOR_DEPLOYMENT>>' we saw in the diagnostic setting.
 2. Copy and paste query **#1** from both of the 'Kusto Queries' sections below. This query will show all of the Allowed and Blocked traffic filtered by Network rules.
 3. Copy and paste query **#2** from both of the 'Kusto Queries' sections below. This query will show all of the Allowed and Blocked traffic filtered by Application rules.
 4. Copy and paste query **#3** from both of the 'Kusto Queries' sections below. This query will show all of the Blocked traffic filtered by Threat Intelligence.
