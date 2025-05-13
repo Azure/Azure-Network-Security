@@ -14,7 +14,7 @@ In this scenario, we'll use the Web Application Firewall (WAF), applied to our A
 
 Let's verify the settings on the WAF associated with our Application Gateway v2 first:
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_AT_DEPLOYMENT>>**, select it.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_FOR_DEPLOYMENT>>**, select it.
 3. Select **Custom rules** and click on the rule named **BlockFirefoxUserAgent**. You'll see that this rule is configured to check the **RequestHeader** portion of an HTTP request Whithin the 'RequestHeader', the WAF will look for the header called **User-Agent** and check if there is a value within the 'User-Agent'containing **rv:**, which are unique characters to Mozilla Firefox. If the value matches, then the request will be denied.
 
 > **Note:** The rv version in the image below may be different in your lab. As of now the rv is currently 127.0. The rules will be maintained to reflect the current running version of Mozilla.
@@ -24,7 +24,7 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 Now, let's test the Custom rule we just reviewed:
 1. To run through this scenario, you'll need Mozilla Firefox installed.
 2. Lauch the browser and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the bottom of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request.
-3. With the developer tools up, navigate to http://owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com, your request should have been blocked with a '403 Forbidden' status code.
+3. With the developer tools up, navigate to http://owasp-<<ID_USED_FOR_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com, your request should have been blocked with a '403 Forbidden' status code.
 
 Let's look at the images below to see what happened during our HTTP request.
 
@@ -40,7 +40,7 @@ In this scenario, we'll use the Web Application Firewall (WAF), applied to our A
 
 Let's verify the settings on the WAF associated with our Application Gateway v2 first:
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_AT_DEPLOYMENT>>**, select it.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_FOR_DEPLOYMENT>>**, select it.
 3. Select **Managed rules** and change the grouping of the rules to **Group by Rule group**. Scroll down until you see **SQLI (40)** and click on the arrow to open the list. Ensure that the rules are all set to 'Anomaly score' and 'Enabled'.
 
 ![Sql-injection-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-1.png)
@@ -48,7 +48,7 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 ![Sql-injection-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-2.png)
 
 Now, let's test the Managed rule we just reviewed. First, we'll show what a successful SQL injection attack against the web application looks like when we bypass the WAF and go directly to the application and not the Application Gateway.
-1. Open your browser on your client machine and browse to https://webapp-<<ID_USED_AT_DEPLOYMENT>>.azurewebsites.net.
+1. Open your browser on your client machine and browse to https://webapp-<<ID_USED_FOR_DEPLOYMENT>>.azurewebsites.net.
 
 ![Sql-injection-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-7.png)
 
@@ -61,7 +61,7 @@ Now, let's test the Managed rule we just reviewed. First, we'll show what a succ
 ![Sql-injection-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-4.png)
 
 Next, we'll run the same test but this time, we'll go through the WAF applied to the Application Gateway.
-1. Open your browser on your client machine and browse to http://owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com.
+1. Open your browser on your client machine and browse to http://owasp-<<ID_USED_FOR_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com.
 
 ![Sql-injection-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-6.png)
 
@@ -83,7 +83,7 @@ The Azure WAF JavaScript (JS) challenge feature is a non-interactive, invisible 
 
 Let's verify the settings on the WAF associated with our Application Gateway v2 first:
 1. In the search bar of the Azure Portal, search for **Firewall Manager** and select it. This will bring you to the 'Getting Started' page for Firewall Manager.
-2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_AT_DEPLOYMENT>>**, select it.
+2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_FOR_DEPLOYMENT>>**, select it.
 3. Select **Policy settings** to first look at how long a JS Challenge cookie will last for any given user who passes. In our policy, we have this set to 5 minutes. The default value is 30 minutes and can be configured to go up to 1440 minutes (24 hours).
 4. Select **Custom rules** and click on the rule named **JSChallenge**. You'll see that this rule is configured to check the **RequestUri** and to find a value of **/ftp**. If the request matches this condition, then the Azure WAF will JS Challenge the request. A bot will be unable to solve the challenge while an actual user using a browser will have no issues.
 
@@ -93,7 +93,7 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 
 Now, let's test the Customer rule we just reviewed.
 1. Launch Microsoft Edge and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the right of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request. This will look like a wi-fi icon.
-2. With the developer tools up, navigate to http://owasp-<<ID_USED_AT_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com and click on the hamburger button on the top left. Select **About Us**.
+2. With the developer tools up, navigate to http://owasp-<<ID_USED_FOR_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com and click on the hamburger button on the top left. Select **About Us**.
 3. In the middle of the Lorem Ipsum text, you'll see a hyperlink that says **Check out our boring terms of use if you are interested in such lame stuff**. Select that to activate the JS Challenge.
 
 Let's look at the images below to see what happened during our HTTP request.
