@@ -11,7 +11,7 @@
 
 In this scenario, we'll verify that DDoS IP Protection is enabled on our Azure Application Gateway's public IP. To save costs, we are not using [DDoS Network Protection](https://learn.microsoft.com/en-us/azure/ddos-protection/ddos-protection-overview#ddos-network-protection).
 
-1. In the search bar of the Azure Portal, search for **pip-appgw-'ID-USED-AT-DEPLOYMENT'-waf** and select it. This will bring you to the 'Overview' page for the public IP.
+1. In the search bar of the Azure Portal, search for **pip-appgw-<<ID_USED_FOR_DEPLOYMENT>>-waf** and select it. This will bring you to the 'Overview' page for the public IP.
 2. Once there, select **Protect** under Overview > Get Started > Protect IP address. You should see **Protected: IP is DDoS protected**.
 
 ![DDoS-Setup-7](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-setup-7.png)
@@ -29,13 +29,13 @@ Now that we've verified that our resource is protected with DDoS IP protection, 
 > **Note:** Before you start this module, we recommend conducting your own DDoS simulation test. You can consider using any of the solution partners listed in our [public documentation](https://learn.microsoft.com/en-us/azure/ddos-protection/test-through-simulations), or any other trusted solution.
 
 In this scenario, we'll first verify that diagnostic settings are enabled on the Public IP resources to ensure that we can see metrics and logs when a resource is under attack. We'll then show you how to determine if a resource is under attack, how to find the current threshold values as well as live traffic values with Metrics. After, we'll demonstrate how to use the Kusto queries to investigate a DDoS attack.
-1. In the search bar, search for the Application Gateway's Public IP resource, **pip-appgw-'ID-USED-AT-DEPLOYMENT'-waf**.
+1. In the search bar, search for the Application Gateway's Public IP resource, **pip-appgw-<<ID_USED_FOR_DEPLOYMENT>>-waf**.
 2. Once selected, navigate to **Diagnostic settings** under 'Monitoring'. We should see a Diagnostic setting named **AppGwPipDiagLogs**. Select 'Edit setting' to view more.
 3. Inside the Diagnostic setting, under 'Logs', we can see 3 category logs selected.
   - DDoS protection notifications (DDoSProtectionNotifications)
   - Flow logs of DDoS mitigation decisions (DDoSMitigationFlowLogs)
   - Reports of DDoS mitigations (DDoSMitigationReports)
-4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named '**law-'ID-USED-AT-DEPLOYMENT'**'.
+4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named '**law-<<ID_USED_FOR_DEPLOYMENT>>**'.
 5. Metrics are enabled and visible by default. You do not need to send these to a Log Analytics workspace to view metrics.
 
 Let's quickly touch on what kind of logs are generated for each of the log categories.
@@ -61,7 +61,7 @@ Now we'll explore the metrics to determine the mitigation thresholds and identif
 
 ### Logs
 Finally, let's explore the logs and get additional details of any DDoS attack that may have been mitigated by Azure DDoS Protection.
-1. In the search bar, search for the Log Analytics workspace, **law-'ID-USED-AT-DEPLOYMENT'**.
+1. In the search bar, search for the Log Analytics workspace, **law-<<ID_USED_FOR_DEPLOYMENT>>**.
 2. Once selected, navigate to **Logs** under 'General' and close the Queries pop up window.
 3. Next, click on **Queries** and type 'ddos' in the filter. You should see a query called **DDoSQueries** under 'Security'. Hover over this and select 'Load to editor'. Our 4 queries should automatically populate into the editor window.
 4. Click on 'DDoSProtectionNotifications' in the editor window to highlight the entire query and click 'Run'. If you recently triggered an attack, you should you Start and Stop mitigation logs below, if not, you may have to customize the time range to find the most recent attack triggered.
@@ -110,7 +110,7 @@ AzureDiagnostics
 In this scenario, we'll look at how to use Microsoft Sentinel to analyze a DDoS attack against your environment using a Workbook.
 
 1. In the search bar, search for 'Sentinel' and select **Microsoft Sentinel**.
-2. Select the Sentinel workspace, **law-'ID-USED-AT-DEPLOYMENT'**.
+2. Select the Sentinel workspace, **law-<<ID_USED_FOR_DEPLOYMENT>>**.
 3. Once selected, click on **Workbooks** under 'Threat Management'.
 4. By default, we should be in the 'Templates' tab. In the search bar under 'Templates', search for 'ddos' and select the **Azure DDoS Protection Workbook**. Then select 'View saved workbook' in the bottom right.
 5. The Azure DDoS Protection Workbook has 3 tabs to help investigate a DDoS attack. These are:
