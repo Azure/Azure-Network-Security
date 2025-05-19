@@ -1,8 +1,12 @@
 # Azure Network Security Workshop
 
+## Introduction
+
 👋 **Hi! Welcome to the Azure Network Security Workshop.**
 
-If you want to learn more about Azure Network Security, including **Azure DDoS**, **Azure Firewall**, and **Azure Web Application Firewall**, before deploying this workshop, we recommend checking out our [Azure Network Security Ninja Training](https://aka.ms/aznetsecninja). This training covers basic to advanced scenarios for Azure network security. Ready to become an Azure NetSec ninja? Dive right in!
+Our workshop is a project project that will help you get ramped up with Azure Network Security and provide hands-on practical experience for product features, capabilities, and scenarios. The labs are divided into 4 main tracks, being one track for each of the following products: Azure DDoS, Azure Firewall, Azure Application Gateway WAF and Azure Frontdoor WAF. The labs contain multiple scenarios covering features that will help you learn how to use and implement them in your own environment. We continually update the content to include the latest capabilities – please feel free to submit issue for any changes and suggestions.
+
+We also recommend you checking out our [Azure Network Security Ninja Training](https://aka.ms/aznetsecninja). This training covers basic to advanced scenarios for Azure network security. Ready to become an Azure NetSec ninja? Dive right in!
 
 ![Ninja-Cat-Logo-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ninja-cat-logo-2.png)
 
