@@ -2,7 +2,7 @@
 
 # WAF Workbook V1 deployment button
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520WAF%2520Monitor%2520Workbook%2FWAFWorkbook_ARM.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Frefs%2Fheads%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520App%2520GW%2520WAF%2520Monitor%2520-%2520Resource%2520Specific%2FAzure%2520App%2520GW%2520WAF%2520Monitor%2520Workbook%2520-%2520Resource%2520Specific%2520Logs%2520-%2520ARM.json)
 
 This is a New Monitor Workbook that supports Resource Specific Logs for Application Gateway WAF. This workbook visualizes security-relevant WAF events across several filterable panels. It only works with Application Gateway WAF and can be filtered based on WAF type or a specific WAF instance. Import via ARM Template or Gallery Template.
 
