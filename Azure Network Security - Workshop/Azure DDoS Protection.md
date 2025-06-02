@@ -107,8 +107,9 @@ AzureDiagnostics
 
 # Use Microsoft Sentinel to analyze Azure DDoS Protection mitigations
 
-In this scenario, we'll look at how to use Microsoft Sentinel to analyze a DDoS attack against your environment using a Workbook.
+Before you start this lab, make sure to go through the steps described in the following link to enable Microsoft Sentinel and use the Azure Log Analytics workspace that has been created when you first deployed the Azure Network Security Labs. **Reference**: [Quickstart: Onboard to Microsoft Sentinel | Microsoft Learn](https://learn.microsoft.com/en-us/azure/sentinel/quickstart-onboard?tabs=defender-portal#enable-microsoft-sentinel)
 
+In this scenario, we'll look at how to use Microsoft Sentinel to analyze a DDoS attack against your environment using a Workbook. Once Microsoft Sentinel is enabled and the workspace is attached you will:
 1. In the search bar, search for 'Sentinel' and select **Microsoft Sentinel**.
 2. Select the Sentinel workspace, **law-<<ID_USED_FOR_DEPLOYMENT>>**.
 3. Once selected, click on **Workbooks** under 'Threat Management'.
@@ -117,7 +118,7 @@ In this scenario, we'll look at how to use Microsoft Sentinel to analyze a DDoS 
   - **DDoS Summary** - Overview of the protocols, origin data, AS Numbers, and Drop Reasons for the selected DDoS attack.
   - **DDoS Metrics** - Shows Metrics values of the Public IP address that was under attack.
   - **DDoS Investigation** - This page allows you to dive deeper into specific Kusto queries for a specified attack.
-6. When you first open the Workbook, no workspace will be selected. Click on the drop-down and select **CyberSOC**. Change the time range to an appropriate time and you can either leave Public IP Addresses set to 'All' or you can select only **pip-appgw-whmzgkcjeovje-waf**.
+6. When you first open the Workbook, no workspace will be selected. Click on the drop-down and select **law-<<ID_USED_FOR_DEPLOYMENT>>**. Change the time range to an appropriate time and you can either leave Public IP Addresses set to 'All' or you can select only **pip-appgw-whmzgkcjeovje-waf**.
 
 Now, let's explore all the tabs in this Workbook, and find more information about the attacks mitigated.
 
