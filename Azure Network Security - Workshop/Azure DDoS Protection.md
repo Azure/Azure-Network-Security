@@ -130,21 +130,21 @@ This section provides a summary of the DDoS attacks mitigated by Azure DDoS Prot
   - **Location and Protocol details**: This section provides categorized details on the protocols involved in the DDoS attacks, the origins of these attacks, and the protocol violations that occurred during past DDoS incidents.
   - **Raw DDoS Mitigation and Flow Logs**: Furthermore, if we would like to take a look at the Raw DDoS Logs those are also available as part of the workbook so that we do not have to look for them in the log analytics workspace.
 
-!IMAGE[ddos-sentinel-1.png](instructions281582/ddos-sentinel-1.png)
+![DDoS-sentinel-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-1.png)
 
-!IMAGE[ddos-sentinel-2.png](instructions281582/ddos-sentinel-2.png)
+![DDoS-sentinel-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-2.png)
 
 ### DDoS Metrics
 
 The DDoS Metrics tab provides graphical representation of all the important metrics like Packet count, Syn packet thresholds to trigger DDoS mitigation, inbound DDoS TCP/UDP packets, and Under DDoS attack or not as shown below. Most of the metrics here are based on number of Packets Per Second (PPS) and Packets/Byte Counts.
 
-!IMAGE[ddos-sentinel-3.png](instructions281582/ddos-sentinel-3.png)
+![DDoS-sentinel-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-3.png)
 
 ### DDoS Investigation
 
 The Investigation Tab in the workbook offers specific details on the number of packets that were dropped or allowed during past DDoS attacks, including the ports involved. Additionally, this tab provides information on the top attacking IPs and the timeline of the mitigation activities, as illustrated below.
 
-!IMAGE[ddos-sentinel-4.png](instructions281582/ddos-sentinel-4.png)
+![DDoS-sentinel-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-4.png)
 
 **You've reached the end of this scenario**
 
