@@ -1,10 +1,10 @@
-# Azure Network Security Workshop
+# Azure Network Security Labs
 
 ## Introduction
 
-👋 **Hi! Welcome to the Azure Network Security Workshop.**
+👋 **Hi! Welcome to the Azure Network Security Labs.**
 
-Our workshop is a project that will help you get ramped up with Azure Network Security and provide hands-on practical experience for product features, capabilities, and scenarios. The labs are divided into 4 main tracks, being one track for each of the following products: Azure DDoS, Azure Firewall, Azure Application Gateway WAF and Azure Frontdoor WAF. The labs contain multiple scenarios covering features that will help you learn how to use and implement them in your own environment. We continually update the content to include the latest capabilities – please feel free to [submit issue](https://github.com/Azure/Azure-Network-Security/issues/new/choose) for any changes and suggestions.
+Our labs project will help you get ramped up with Azure Network Security and provide hands-on practical experience for product features, capabilities, and scenarios. The labs are divided into 4 main tracks, being one track for each of the following products: Azure DDoS, Azure Firewall, Azure Application Gateway WAF and Azure Frontdoor WAF. The labs contain multiple scenarios covering features that will help you learn how to use and implement them in your own environment. We continually update the content to include the latest capabilities – please feel free to [submit issue](https://github.com/Azure/Azure-Network-Security/issues/new/choose) for any changes and suggestions.
 
 We also recommend you checking out our [Azure Network Security Ninja Training](https://aka.ms/aznetsecninja). This training covers basic to advanced scenarios for Azure network security. Ready to become an Azure NetSec ninja? Dive right in!
 
@@ -12,7 +12,7 @@ We also recommend you checking out our [Azure Network Security Ninja Training](h
 
 ## Objectives
 
-This Workshop is designed to be an immersive and collaborative experience focused on harnessing the power of Azure DDoS, Azure Firewall and Azure Web Application Firewall to improve security measures.
+This project is designed to be an immersive and collaborative experience focused on harnessing the power of Azure DDoS, Azure Firewall and Azure Web Application Firewall to improve security measures.
 
 ## Acknowledgements
 
@@ -24,7 +24,7 @@ We would like to extend our gratitude to the following teams for their invaluabl
 
 ## Information
 
-This Workshop is a subset of the demos used by our internal teams to demonstrate the features available in our products.
+These labs are a subset of the demos used by our internal teams to demonstrate the features available in our products.
 
 ## Requirements
 
