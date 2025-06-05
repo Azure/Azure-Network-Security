@@ -1,6 +1,6 @@
 # Module 2 - Azure Application Gateway WAF
 
-⬅️[Return to the main page](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
+⬅️[Return to the main page](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
 
 ## Scenarios
 - [Block HTTP request from the Mozilla Firefox browser](#block-http-request-from-the-mozilla-firefox-browser)
@@ -19,7 +19,7 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 
 > **Note:** The rv version in the image below may be different in your lab. As of now the rv is currently 127.0. The rules will be maintained to reflect the current running version of Mozilla.
 
-![Mozilla-user-agent-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/mozilla-user-agent-1.png)
+![Mozilla-user-agent-1](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/mozilla-user-agent-1.png)
 
 Now, let's test the Custom rule we just reviewed:
 1. To run through this scenario, you'll need Mozilla Firefox installed.
@@ -28,7 +28,7 @@ Now, let's test the Custom rule we just reviewed:
 
 Let's look at the images below to see what happened during our HTTP request.
 
-![Mozilla-user-agent-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/mozilla-user-agent-2.png)
+![Mozilla-user-agent-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/mozilla-user-agent-2.png)
 
 **You've reached the end of this scenario**
 
@@ -43,33 +43,33 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 2. Once there, select **Web Application Firewall Policies** under Security. You should see a policy named **wafappgw<<ID_USED_FOR_DEPLOYMENT>>**, select it.
 3. Select **Managed rules** and change the grouping of the rules to **Group by Rule group**. Scroll down until you see **SQLI (40)** and click on the arrow to open the list. Ensure that the rules are all set to 'Anomaly score' and 'Enabled'.
 
-![Sql-injection-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-1.png)
+![Sql-injection-1](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-1.png)
 
-![Sql-injection-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-2.png)
+![Sql-injection-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-2.png)
 
 Now, let's test the Managed rule we just reviewed. First, we'll show what a successful SQL injection attack against the web application looks like when we bypass the WAF and go directly to the application and not the Application Gateway.
 1. Open your browser on your client machine and browse to https://webapp-<<ID_USED_FOR_DEPLOYMENT>>.azurewebsites.net.
 
-![Sql-injection-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-7.png)
+![Sql-injection-3](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-7.png)
 
 2. Once the website is loaded, click on 'Account' and then 'Login'.
 3. At the Login page, for username, use **' or 1=1--** and anything can be used for the password.
 4. Click Log in and you'll see a successful SQL injection attack as you get logged in as the admin user.
 
-![Sql-injection-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-3.png)
+![Sql-injection-3](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-3.png)
 
-![Sql-injection-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-4.png)
+![Sql-injection-4](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-4.png)
 
 Next, we'll run the same test but this time, we'll go through the WAF applied to the Application Gateway.
 1. Open your browser on your client machine and browse to http://owasp-<<ID_USED_FOR_DEPLOYMENT>>.<<REGION_CHOSEN>>.cloudapp.azure.com.
 
-![Sql-injection-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-6.png)
+![Sql-injection-3](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-6.png)
 
 2. Once the website is loaded, click on 'Account' and then 'Login'.
 3. At the Login page, for username, use **'or1=1--** and anything can be used for the password.
 4. Click Log in and you should see a 405 Forbidden message at the log in prompt. The WAF has recognized the SQL injection attempt and has blocked the request.
 
-![Sql-injection-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-5.png)
+![Sql-injection-5](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/sql-injection-5.png)
 
 **You've reached the end of this scenario**
 
@@ -87,9 +87,9 @@ Let's verify the settings on the WAF associated with our Application Gateway v2 
 3. Select **Policy settings** to first look at how long a JS Challenge cookie will last for any given user who passes. In our policy, we have this set to 5 minutes. The default value is 30 minutes and can be configured to go up to 1440 minutes (24 hours).
 4. Select **Custom rules** and click on the rule named **JSChallenge**. You'll see that this rule is configured to check the **RequestUri** and to find a value of **/ftp**. If the request matches this condition, then the Azure WAF will JS Challenge the request. A bot will be unable to solve the challenge while an actual user using a browser will have no issues.
 
-![Js-challenge-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-1.png)
+![Js-challenge-1](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-1.png)
 
-![Js-challenge-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-2.png)
+![Js-challenge-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-2.png)
 
 Now, let's test the Customer rule we just reviewed.
 1. Launch Microsoft Edge and hit **F12** on your keyboard before moving forward. This should pull up the browser's 'developer tools' on the right of the page. Make sure that you select the **Network** tab to see what happens with the HTTP request. This will look like a wi-fi icon.
@@ -100,16 +100,16 @@ Let's look at the images below to see what happened during our HTTP request.
 1. Our first image shows the actuall JS Challenge in effect. Users will see this appear on their screen for about 2-3 seconds and will not be required to interact with it. You'll notice that very quickly, a 403 Forbidden is seen in the Dev tools, this is expected.
 2. Once the challenge is complete, we'll see our JS challenge cookie get set in the Response Headers. Navigating to any other page on this site, you'll see this same cookie as part of the Request Headers. You'll also notice that the 403 is now gone and has been replaced with a 200 OK.
 
-![Js-challenge-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-3.png)
+![Js-challenge-3](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-3.png)
 
-![Js-challenge-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-4.png)
+![Js-challenge-4](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-4.png)
 
 Now let's take a look at the logs and metrics generated from JS Challenge.
 1. On Azure Portal search for the Application Gateway **appgw-whmzgkcjeovje-waf**, then select it.
 2. Once there, select **Metrics** under Monitoring.
 3. Select the metric **WAF JS Challenge Request Count**. This metric shows the count of all challenges that were made by the WAF, both pass and failed challenges.
 
-![Js-challenge-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-5.png)
+![Js-challenge-5](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-5.png)
 
 4. Next, select **Logs** under Monitoring.
 5. Using the query below, we'll be able to see what has happened with the challenges that were sent out. If a challenge is issued and it was passed, you'll be able to see this in the log. If the same user returns to the page that initiates a challenge and they still have an active cookie, you'll see that the message will say JSChallengeValid. You will not be able to see JS Challenges that have failed.
@@ -119,7 +119,7 @@ Now let's take a look at the logs and metrics generated from JS Challenge.
         | where action_s == "JSChallenge"
         | project TimeGenerated, clientIp_s, hostname_s, requestUri_s, ruleSetType_s, ruleSetVersion_s, ruleId_s, action_s, Message, details_message_s, details_file_s, details_line_s, transactionId_g
 
-![Js-challenge-6](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-6.png)
+![Js-challenge-6](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/js-challenge-6.png)
 
 **You've reached the end of this scenario**
 
@@ -146,7 +146,7 @@ Now, let's explore what the metrics are available for WAF:
 4. Select **+ New chart** on the top left and select **WAF Managed Rule Matches** for the Metric. We're going to **Apply splitting** and split by **Rule Id**. This will allow us to see what rules are being hit the most frequent.
 5. You can continue to create new charts for Custom Rule Matches and Bot Protection Matches to see all actions being taken by the WAF in a metric view.
 
-![Waf-diag-metrics-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/waf-diag-metrics-1.png)
+![Waf-diag-metrics-1](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/waf-diag-metrics-1.png)
 
 Next, we'll explore the logs and look for the logs showing the actions taken by WAF when we send the HTTP requests testing the Mozilla Firefox user agent and the SQL Injection attacks.
 
@@ -158,7 +158,7 @@ Next, we'll explore the logs and look for the logs showing the actions taken by 
 4. Copy and paste query #2 from the 'Kusto Queries' section below. This query will show you all requests that were blocked/matched by Custom rules within the time range specified. Open a log to get familiar with the section **Message** to understand what values matched the rule.
 5. Copy and paste query #3 from the 'Kusto Queries' section below. This query will show you all requests that were blocked/matched by Bot Manager rules. Open a log to get familiar with the section **Message, details_message_s, and details_file_s** to understand what values matched the rule.
 
-![Waf-diag-metrics-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/waf-diag-metrics-2.png)
+![Waf-diag-metrics-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/waf-diag-metrics-2.png)
 
 ### Kusto Queries
 1. **Default Rule Set**
