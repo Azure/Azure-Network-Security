@@ -1,6 +1,6 @@
 # Module 4 - Azure DDoS Protection
 
-⬅️[Return to the main page](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
+⬅️[Return to the main page](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
 
 ## Scenarios
 - [Verify DDoS IP Protection is enabled on a public IP](#verify-ddos-ip-protection-is-enabled-on-a-public-ip)
@@ -14,9 +14,9 @@ In this scenario, we'll verify that DDoS IP Protection is enabled on our Azure A
 1. In the search bar of the Azure Portal, search for **pip-appgw-<<ID_USED_FOR_DEPLOYMENT>>-waf** and select it. This will bring you to the 'Overview' page for the public IP.
 2. Once there, select **Protect** under Overview > Get Started > Protect IP address. You should see **Protected: IP is DDoS protected**.
 
-![DDoS-Setup-7](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-setup-7.png)
+![DDoS-Setup-7](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-setup-7.png)
 
-![DDoS-Setup-8](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-setup-8.png)
+![DDoS-Setup-8](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-setup-8.png)
 
 Now that we've verified that our resource is protected with DDoS IP protection, let's move to the next module.
 
@@ -55,9 +55,9 @@ Now we'll explore the metrics to determine the mitigation thresholds and identif
   - Inbound SYN packets to trigger DDoS mitigation
   - Inbound packets DDoS
 
-![Ddos-Logs-Metrics-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-4.png)
+![Ddos-Logs-Metrics-4](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-4.png)
 
-![Ddos-Logs-Metrics-6](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-6.png)
+![Ddos-Logs-Metrics-6](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-6.png)
 
 ### Logs
 Finally, let's explore the logs and get additional details of any DDoS attack that may have been mitigated by Azure DDoS Protection.
@@ -68,7 +68,7 @@ Finally, let's explore the logs and get additional details of any DDoS attack th
 5. Click on 'DDoSMitigationReports' in the editor window to highlight the entire query and click 'Run'. Look for a report type of Incremental to get familiar with how a 5-minute aggregated report looks like. Then look for a report type of Post mitigation to get familiar with how a total time aggregated report looks like.
 6. Click on 'DDoSMitigationFlowLogs' in the editor window to highlight the entire query and click 'Run'. This particular query will generate thousands of logs and may show you only the first 30,000. Select any log and familiarize yourself how flows are analyzed, and actions chosen based off of packet details.
 
-![Ddos-Logs-Metrics-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-5.png)
+![Ddos-Logs-Metrics-5](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-logs-metrics-5.png)
 
 ### Kusto Queries
 1. **DDoS Protection Notifications**
@@ -130,21 +130,21 @@ This section provides a summary of the DDoS attacks mitigated by Azure DDoS Prot
   - **Location and Protocol details**: This section provides categorized details on the protocols involved in the DDoS attacks, the origins of these attacks, and the protocol violations that occurred during past DDoS incidents.
   - **Raw DDoS Mitigation and Flow Logs**: Furthermore, if we would like to take a look at the Raw DDoS Logs those are also available as part of the workbook so that we do not have to look for them in the log analytics workspace.
 
-![DDoS-sentinel-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-1.png)
+![DDoS-sentinel-1](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-1.png)
 
-![DDoS-sentinel-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-2.png)
+![DDoS-sentinel-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-2.png)
 
 ### DDoS Metrics
 
 The DDoS Metrics tab provides graphical representation of all the important metrics like Packet count, Syn packet thresholds to trigger DDoS mitigation, inbound DDoS TCP/UDP packets, and Under DDoS attack or not as shown below. Most of the metrics here are based on number of Packets Per Second (PPS) and Packets/Byte Counts.
 
-![DDoS-sentinel-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-3.png)
+![DDoS-sentinel-3](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-3.png)
 
 ### DDoS Investigation
 
 The Investigation Tab in the workbook offers specific details on the number of packets that were dropped or allowed during past DDoS attacks, including the ports involved. Additionally, this tab provides information on the top attacking IPs and the timeline of the mitigation activities, as illustrated below.
 
-![DDoS-sentinel-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-4.png)
+![DDoS-sentinel-4](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ddos-sentinel-4.png)
 
 **You've reached the end of this scenario**
 
