@@ -8,7 +8,7 @@ Our labs project will help you get ramped up with Azure Network Security and pro
 
 We also recommend you checking out our [Azure Network Security Ninja Training](https://aka.ms/aznetsecninja). This training covers basic to advanced scenarios for Azure network security. Ready to become an Azure NetSec ninja? Dive right in!
 
-![Ninja-Cat-Logo-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ninja-cat-logo-2.png)
+![Ninja-Cat-Logo-2](https://github.com/Azure/Azure-Network-Security/tree/master/Azure%20Network%20Security%20-%20Workshop/Images/ninja-cat-logo-2.png)
 
 ## Objectives
 
@@ -38,7 +38,7 @@ Please note that all passwords must be provided at the time of deploying the ARM
 
 To start practicing your skills in Azure Network Security, including exploring Azure DDoS, Azure Firewall, and Azure Web Application Firewall, you will need to deploy the proposed environment using the **Deploy to Azure** button below.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2Fgumoden%2FAzure-Network-Security%2Fblob%2Fmaster%2FAzure%20Network%20Security%20-%20Workshop%2FTemplates%2Flabdeployment.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Frefs%2Fheads%2Fmaster%2FAzure%2520Network%2520Security%2520-%2520Workshop%2FTemplates%2Flabdeployment.json)
 
 Once the deployment is complete, you need to run the following PowerShell command on each of the four Windows virtual machines deployed. This PowerShell command will disable the Windows Firewall profiles, allowing you to practice the scenarios successfully.
 
@@ -50,10 +50,10 @@ Use the following documentation to learn how to run the PowerShell command by us
 
 ## Modules
 
-- [Module 1 - Azure Firewall](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
-- [Module 2 - Azure Application Gateway WAF](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Application%20Gateway%20WAF.md)
-- [Module 3 - Azure Front Door WAF](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Front%20Door%20WAF.md)
-- [Module 4 - Azure DDoS Protection](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Azure%20DDoS%20Protection.md)
+- [Module 1 - Azure Firewall](https://github.com/Azure/Azure-Network-Security/tree/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
+- [Module 2 - Azure Application Gateway WAF](https://github.com/Azure/Azure-Network-Security/tree/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Application%20Gateway%20WAF.md)
+- [Module 3 - Azure Front Door WAF](https://github.com/Azure/Azure-Network-Security/tree/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Front%20Door%20WAF.md)
+- [Module 4 - Azure DDoS Protection](https://github.com/Azure/Azure-Network-Security/tree/master/Azure%20Network%20Security%20-%20Workshop/Azure%20DDoS%20Protection.md)
 
 ## Contributing
 
