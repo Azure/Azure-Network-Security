@@ -8,7 +8,7 @@ Our labs project will help you get ramped up with Azure Network Security and pro
 
 We also recommend you checking out our [Azure Network Security Ninja Training](https://aka.ms/aznetsecninja). This training covers basic to advanced scenarios for Azure network security. Ready to become an Azure NetSec ninja? Dive right in!
 
-![Ninja-Cat-Logo-2](https://github.com/Azure/Azure-Network-Security/tree/master/Azure%20Network%20Security%20-%20Workshop/Images/ninja-cat-logo-2.png)
+![Ninja-Cat-Logo-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/ninja-cat-logo-2.png)
 
 ## Objectives
 
