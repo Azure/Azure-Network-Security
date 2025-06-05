@@ -1,0 +1,20 @@
+let targetCategories = dynamic([
+    "Attempted Administrator Privilege Gain",
+    "Attempted User Privilege Gain",
+    "Successful Administrator Privilege Gain",
+    "Successful User Privilege Gain",
+    "Unsucessful User Privilege Gain"
+]);
+AZFWIdpsSignature
+| where TimeGenerated > ago(3h)
+| where Category in (targetCategories)
+| summarize TriggerCount = count(), 
+            FirstSeen = min(TimeGenerated), 
+            LastSeen = max(TimeGenerated),
+            SourceIPs = make_set(SourceIp), 
+            DestPorts = make_set(DestinationPort),
+            Protocols = make_set(Protocol),
+            Msgs = make_set(Description)
+    by SignatureId, Description, DestinationIp
+| where TriggerCount >= 3
+| order by TriggerCount desc
