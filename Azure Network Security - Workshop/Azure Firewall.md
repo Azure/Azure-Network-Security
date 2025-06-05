@@ -1,6 +1,6 @@
 # Module 1 - Azure Firewall
 
-⬅️[Return to the main page](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
+⬅️[Return to the main page](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/README.md)
 
 ## Scenarios
 - [Controlling access between spoke virtual networks](#controlling-access-between-spoke-virtual-networks)
@@ -17,7 +17,7 @@ Let's verify the Network rules configurations on the firewall policy first.
 2. Once there, select **Azure Firewall Policies** under Security. You should see a policy named **fwpol-premium-alpineSkiHouse**, select it.
 3. Select Network rules and you should see a list of rules from a variety of Rule collections. We're going to focus on the Rule name **spoke1-to-spoke2-snet1-RDP**. This rule allows TCP traffic on port 3389 to the servers in spoke2 subnet 1.
 
-![AZFW-East_West-Network-Rule-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-1.png)
+![AZFW-East_West-Network-Rule-1](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-1.png)
 
 4. Next, we'll use Bastion to remote into one of the VMs and test network connectivity. In the search bar of the Azure Portal, search for **Virtual Machines** and select **vm-win11-1**.
 5. On the **vm-win11-1** Overview blade, select **Connect** and choose Bastion from the drop-down. For Username use **AzureUser**.
@@ -25,9 +25,9 @@ Let's verify the Network rules configurations on the firewall policy first.
 7. Now that you're in the VM, click on the Windows icon and open a Windows PowerShell prompt. Enter '**test-netconnection 10.0.200.4**' to initiate an ICMP ping to the remote VM. You'll see that the pings fail since there are no network rules to allow ICMP traffic.
 8. Next, click on the Windows icon, type RDP, and select **Remote Desktop Connection**. Enter 10.0.200.4 if it's not already populated and click Connect. You should be prompted to enter credentials for 10.0.200.4. This proves that we have connectivity between the servers on TCP port 3389. We'll be able to verify these tests in the logs.
 
-![AZFW-East_West-Network-Rule-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-2.png)
+![AZFW-East_West-Network-Rule-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-2.png)
 
-![AZFW-East_West-Network-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-3.png)
+![AZFW-East_West-Network-Rule-3](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-east-west-3.png)
 
 **You've reached the end of this scenario**
 
@@ -42,7 +42,7 @@ Let's verify the Application rules configurations on the firewall policy first.
 2. Once there, select **Azure Firewall Policies** under Security. You should see a policy named **fwpol-premium-alpineSkiHouse**, select it.
 3. Select **Application rules** and you should see a list of rules from multiple Rule collections. We're going to focus on the Rules named **spoke1-to-OWASPJuiceShopAndMicrosoft** and **spoke1-to-SearchEnginesandNewsSites**. These rules allow HTTP/S traffic on port 80/443 from the **spoke1** virtual network to ***.microsoft.com** and **owasp-<<ID_USED_FOR_DEPLOYMENT>>.<<REGION_OF_YOUR_DEPLOYMENT>>.cloudapp.azure.com** (FQDN) and to all sites that fall under the Web categories **News**​​​​​​​ and **Search engines + portals** (Web categories).
 
-![AZFW-Internet_Outbound-Application-Rule-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-1.png)
+![AZFW-Internet_Outbound-Application-Rule-1](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-1.png)
 
 Next, we'll use Bastion to remote into one of the VMs and test network connectivity. If you already have a Bastion session open from the previous scenario, you can jump to step #7.
 
@@ -53,9 +53,9 @@ Next, we'll use Bastion to remote into one of the VMs and test network connectiv
 8. Next, open another tab or Edge window and navigate to https://www.facebook.com​​​​​​​, you should now get an error when trying to get to the site. In the browser, you may see 'Can't connect securely to this page' or 'Action: Deny: No rule matched. Proceeding with default action.' 
 9. To force the 'Action: Deny' message, click on the Windows icon and open a Windows PowerShell prompt. Enter 'Invoke-WebRequest www.facebook.com' to initiate the call to the website. You should now see 'Action: Deny: No rule matched. Proceeding with default action.' if you didn't already in the browser.
 
-![AZFW-Internet_Outbound-Application-Rule-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-2.png)
+![AZFW-Internet_Outbound-Application-Rule-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-2.png)
 
-![AZFW-Internet_Outbound-Application-Rule-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-3.png)
+![AZFW-Internet_Outbound-Application-Rule-3](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-outbound-internet-3.png)
 
 **You've reached the end of this scenario**
 
@@ -70,7 +70,7 @@ In the search bar of the Azure Portal, search for **Firewall Manager** and selec
 2. Under Monitoring, select **Metrics**. Choose Latency Probe as the Metric in the drop-down.
 3. [Latency Probe](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#azfw-latency-probe) is designed to measure the overall latency of Azure Firewall and provide insight into the health of the service. Azure Firewall latency can be caused by various reasons, such as high CPU utilization, throughput, or networking issues. As an important note, this tool is powered by Ping Mesh technology, which means that it measures the average latency of the ping packets to the firewall itself. The metric does not measure end-to-end latency or the latency of individual packets. The average expected latency for a firewall may vary depending on deployment size and environment.
 
-![AZFW-Latency-and-Flow-Logs-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-1.png)
+![AZFW-Latency-and-Flow-Logs-1](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-1.png)
 
 Now, let’s trigger some asymmetric network flows and good network and check the new Flow Trace Log in our Log Analytics workspace.
 1. Next, we'll use Bastion to remote into one of the VMs and test network connectivity. In the search bar of the Azure Portal, search for **Virtual Machines** and select **vm-win11-2**.
@@ -80,7 +80,7 @@ Now, let’s trigger some asymmetric network flows and good network and check th
 5. Next, we'll use Bastion to remote into **vm-win11-1**. Repeat steps **#2** and **#3** to get in **vm-win11-1**.
 6. Once you're in the VM, open a a Windows PowerShell prompt and run **test-netconnection 10.0.200.4 -p 445**. This connection will succeed, and we’ll look at what these 2 requests look like in the logs.
 
-![AZFW-Latency-and-Flow-Logs-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-2.png)
+![AZFW-Latency-and-Flow-Logs-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-2.png)
 
 Navigate back to **Azure Firewall Manager > Azure Firewalls > azfw-hub-alpineSkiHouse**. Under Monitoring, select Logs.
 
@@ -98,7 +98,7 @@ AZFWNetworkRule
 | where DestinationIp == "10.0.200.4"
 ```
 
-![AZFW-Latency-and-Flow-Logs-3](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-3.png)
+![AZFW-Latency-and-Flow-Logs-3](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-3.png)
 
 **Query 2:**
 
@@ -109,7 +109,7 @@ AZFWFlowTrace
 | where DestinationPort == "62877"
 ```
 
-![AZFW-Latency-and-Flow-Logs-4](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-4.png)
+![AZFW-Latency-and-Flow-Logs-4](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-4.png)
 
 **Query 3:**
 
@@ -119,7 +119,7 @@ AZFWFlowTrace
 | where DestinationIp == "10.0.100.36"
 ```
 
-![AZFW-Latency-and-Flow-Logs-5](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-5.png)
+![AZFW-Latency-and-Flow-Logs-5](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-latency-flow-logs-5.png)
 
 **You've reached the end of this scenario**
 
@@ -145,7 +145,7 @@ For this scenario, we'll first verify that diagnostic settings are enabled on th
 4. Under 'Destination details', we see that the logs are being sent to a Log Analytics workspace named 'law-<<ID_USED_FOR_DEPLOYMENT>>'. We also see the Destination table that allows you to choose Azure diagnostics or Resource specific.
 5. Metrics are enabled and visible by default. You do not need to send these to a Log Analytics workspace to view metrics.
 
-![AZFW-Resource-Specific-Logs-1](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-resource-specific-logs-1.png)
+![AZFW-Resource-Specific-Logs-1](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-resource-specific-logs-1.png)
 
 ### Logs
 
@@ -155,7 +155,7 @@ For this scenario, we'll first verify that diagnostic settings are enabled on th
 4. Copy and paste query **#3** from both of the 'Kusto Queries' sections below. This query will show all of the Blocked traffic filtered by Threat Intelligence.
 5. Copy and paste query **#4** from both of the 'Kusto Queries' sections below. This query will show all of the Matched and Blocked traffic filtered by IDPS signature rules.
 
-![AZFW-Resource-Specific-Logs-2](https://github.com/gumoden/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-resource-specific-logs-2.png)
+![AZFW-Resource-Specific-Logs-2](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Images/Azfw-resource-specific-logs-2.png)
 
 ### Kusto Queries
 
