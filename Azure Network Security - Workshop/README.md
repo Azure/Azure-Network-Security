@@ -48,6 +48,10 @@ Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
 Use the following documentation to learn how to run the PowerShell command by using Azure Portal: https://learn.microsoft.com/en-us/azure/virtual-machines/windows/run-command
 
+## Last release notes
+
+- Version 1.0 - General availability of Azure Network Security Workshop Labs (June 2025)
+
 ## Modules
 
 - [Module 1 - Azure Firewall](https://github.com/Azure/Azure-Network-Security/tree/master/Azure%20Network%20Security%20-%20Workshop/Azure%20Firewall.md)
