@@ -36,7 +36,7 @@ Please note that all passwords must be provided at the time of deploying the ARM
 
 ## Before you Start
 
-To start practicing your skills in Azure Network Security, including exploring Azure DDoS, Azure Firewall, and Azure Web Application Firewall, you will need to deploy the proposed environment using the **Deploy to Azure** button below.
+To start practicing your skills in Azure Network Security, including exploring Azure DDoS, Azure Firewall, and Azure Web Application Firewall, you will need to deploy the proposed environment using the **Deploy to Azure** button below. Please be aware that this deployment **includes multiple resources, which will incur costs**. It's important check the [list of resources](https://github.com/Azure/Azure-Network-Security/blob/master/Azure%20Network%20Security%20-%20Workshop/Templates/Resource.md) and consider these expenses before proceeding.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Frefs%2Fheads%2Fmaster%2FAzure%2520Network%2520Security%2520-%2520Workshop%2FTemplates%2Flabdeployment.json)
 
