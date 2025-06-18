@@ -1,0 +1,3 @@
+# JSChallengeBlock Detection in Azure Application Gateway WAF
+
+This detection query identifies and summarizes instances where the Azure Application Gateway Web Application Firewall (WAF) issued a JavaScript challenge and the request was blocked (`JSChallengeBlock`). It helps detect potential bot activity by aggregating repeated challenge failures from the same source.
