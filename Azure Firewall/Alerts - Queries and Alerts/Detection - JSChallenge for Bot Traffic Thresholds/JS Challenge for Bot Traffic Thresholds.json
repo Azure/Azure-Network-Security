@@ -1,0 +1,18 @@
+let targetMessages = dynamic([
+    "JSChallengeBlock"
+]);
+AzureDiagnostics
+| where TimeGenerated > ago(3h)
+| where Category == "ApplicationGatewayFirewallLog"
+| where action_s == "JSChallenge"
+| where message has_any (targetMessages)
+| summarize TriggerCount = count(),
+            FirstSeen = min(TimeGenerated),
+            LastSeen = max(TimeGenerated),
+            SourceIPs = make_set(clientIP_s),
+            URIs = make_set(requestUri_s),
+            UserAgents = make_set(userAgent_s),
+            Msgs = make_set(message)
+    by ruleId_s, message
+| where TriggerCount >= 3
+| order by TriggerCount desc
