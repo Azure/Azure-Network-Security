@@ -69,7 +69,7 @@ WARNING: The version '1.9.4' of module 'Az.Accounts' is currently in use. Retry 
 
 **Steps to use the tool in local machine.**
 
-1. Run the follwomg command in powershell.
+1. Run the following command in powershell.
   ```powershell
   Install-Module -Name AzDanglingDomain
   Import-Module  -Name AzDanglingDomain
