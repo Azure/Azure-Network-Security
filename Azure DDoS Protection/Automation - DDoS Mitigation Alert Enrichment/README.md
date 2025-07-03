@@ -2,11 +2,11 @@
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520DDoS%2520Protection%2FAutomation%2520-%2520DDoS%2520Mitigation%2520Alert%2520Enrichment%2FEnrich-DDoSAlert.json)
 
-This template deploys the necessary components of an enriched DDoS mitigation alert: Azure Monitor alert rule, action group, and Logic App. The result of the process is an email alert with details about the IP address under attack, including information about the resource associated with the IP. The owner of the resource is added as a recipient of the email, along with the security team. A basic application availability test is also performed and the results are included in the email alert.
+This template deploys the necessary components of an enriched DDoS mitigation alert: Azure Monitor alert rule, action group, and Logic App. The result of the process is an email alert with details about the IP address under attack, Top Attacking IPs and another Email with Post DDoS Mitigation Analysis Report. The owner of the resource is added as a recipient of the email, along with the security team. A basic application availability test is also performed and the results are included in the email alert.
 
 The Log Analytics alert runs every 5 minutes and looks for DDoS MitigationStarted events.
 The action group calls the webhook associated with the Logic App trigger.
-The Logic App queries the Azure Resource Graph to enrich the alert, attempts an HTTP test against the attacked IP address (assuming the IP is listening for HTTP), and sends an enriched alert.
+The Logic App queries the Azure Resource Graph to enrich the alert, attempts an HTTP test against the attacked IP address (assuming the IP is listening for HTTP), Queries Log Analytics for Top Attacking IPs and Mitigation reports and sends an enriched alert as well as an Email for Post Mitigation DDoS reports. 
 
 ## Prerequisites
 
@@ -35,7 +35,8 @@ There are steps that must me done to configure the Logic App after it is deploye
 7. For the first Send Email step (Connections), click Add New.
 8. Authenticate with the account that will be used to send the notification emails.
 9. Select the same account for the second Send Email step.
-10. Save the Logic App.
+10. Authenticate Azure Monitor Logs API Connector
+11. Save the Logic App.
 
 ## Step-by-step documentation
 If you'd like more detailed step-by-step instructions on how to deploy this template, visit our Tech Community blog post https://aka.ms/ddosalert-techcommunity.
