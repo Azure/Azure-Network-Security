@@ -13,7 +13,7 @@
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
     "@types/chai": "^5.2.2",
