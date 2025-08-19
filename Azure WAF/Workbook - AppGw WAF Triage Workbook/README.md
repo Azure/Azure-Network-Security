@@ -1,8 +1,20 @@
 # Application Gateway WAF Triage Workbook
 
-Author: [Christof Claessens](https://github.com/xstof), [Camila Martins](https://github.com/ccmartins)  
+Author: [Christof Claessens](https://github.com/xstof), [Camila Martins](https://github.com/ccmartins) \
+Contributor: [Martin Buna](https://github.com/MartinBuna)
+
+# Quick deploy to Azure
+
+## WAF Triage Workbook - using AzureDiagnostics table
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520AppGw%2520WAF%2520Triage%2520Workbook%2FWAFTriageWorkbook_ARM.json)
+
+## WAF Triage Workbook - using Resource specific tables
+This template uses the resource specific tables AGWAccessLogs and AGWFirewallLogs.\
+\
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520WAF%2FWorkbook%2520-%2520AppGw%2520WAF%2520Triage%2520Workbook%2FWAFTriageWorkbook_ResourceSpecificTables_ARM.json)
+
+# Description
 
 This workbook visualizes Application Gateway WAF rule violations and helps with triaging those so to facilitate tuning the WAF against valid traffic.
 
@@ -25,7 +37,7 @@ To deploy this workbook, click the button "Deploy to Azure".  Fill in the reques
 Then click "Review + create".
 
 
-_**Note**: If you need to use the transaction ID in the ApplicationGatewayAccessLog, then replace "host_s" with "originalHost_s" in the join between ApplicationGatewayAccessLog and ApplicationGatewayFirewallLog_
+_**Note**: If you need to use the transaction ID in the ApplicationGatewayAccessLog, then replace "host_s" with "originalHost_s" in the join between ApplicationGatewayAccessLog and ApplicationGatewayFirewallLog.
 
 ## Contributing
 
