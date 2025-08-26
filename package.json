@@ -19,7 +19,7 @@
     "@types/chai": "^5.2.2",
     "@types/chai-as-promised": "^8.0.2",
     "chai": "^5.2.1",
-    "chai-as-promised": "^8.0.1"
+    "chai-as-promised": "^8.0.2"
   },
   "scripts": {
     "tsc": "tsc",
