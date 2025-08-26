@@ -1,3 +1,9 @@
+# Azure Monitor Workbook V2 for DDoS
+
+The new Azure DDoS Workbook V2 comes with improvements and fixes.
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Network-Security%2Fmaster%2FAzure%2520DDoS%2520Protection%2FWorkbook%2520-%2520Azure%2520DDOS%2520monitor%2520workbook%2FAzureDDoSWorkbookV2_ARM.json)
+
 # Azure Monitor Workbook for DDoS
 &nbsp;
 
