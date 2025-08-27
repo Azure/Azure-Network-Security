@@ -18,5 +18,3 @@ This policy helps ensure:
 - Security compliance by maintaining clean WAF configurations
 - Proper utilization of Azure Front Door Standard/Premium features
 
-## Deployment
-This policy can be deployed using Azure Portal, PowerShell, CLI, or ARM templates.
