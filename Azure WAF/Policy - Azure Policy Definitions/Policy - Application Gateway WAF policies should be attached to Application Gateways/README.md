@@ -12,5 +12,3 @@ This policy helps ensure:
 - Resource governance through proper WAF policy management
 - Security compliance by maintaining clean WAF configurations
 
-## Deployment
-This policy can be deployed using Azure Portal, PowerShell, CLI, or ARM templates.
