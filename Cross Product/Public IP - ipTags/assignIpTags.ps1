@@ -1,7 +1,7 @@
 Connect-AzAccount -Identity
 
 # Create the ipTag once
-$ipTag = New-AzPublicIpTag -IpTagType "FirstPartyUsage" -Tag "/NonProd"
+$ipTag = New-AzPublicIpTag -IpTagType "TagUsage" -Tag "Environment"
 
 # Get all resource groups in the subscription
 $resourceGroups = Get-AzResourceGroup
