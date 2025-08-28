@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "displayName": "Application Gateway WAF policies should be attached to Application Gateways",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "This policy identifies Application Gateway WAF policies that are not attached to any Application Gateways, indicating they may be orphaned and not protecting any resources. Orphaned WAF policies can result in unnecessary costs and should be reviewed for removal or proper assignment.",
+    "metadata": {
+      "category": "Network Security",
+      "version": "1.0.0"
+    },
+    "version": "1.0.0",
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "The effect of the policy - audit identifies non-compliant resources without blocking operations"
+        },
+        "allowedValues": [
+          "Audit",
+          "audit",
+          "Disabled",
+          "disabled"
+        ],
+        "defaultValue": "audit"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies"
+          },
+          {
+            "count": {
+              "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/applicationGateways[*]"
+            },
+            "equals": 0
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  }
+}
