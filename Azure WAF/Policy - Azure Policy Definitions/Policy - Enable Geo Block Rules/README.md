@@ -1,4 +1,4 @@
-# Azure Policy - Enagle Geo Block Rules
+# Azure Policy - Enable Geo Block Rules
 
 ## Description
 This policy identifies Web Application Firewall (WAF) configurations that lack a Geo-Block rule, which may indicate that inbound traffic from all locations is being permitted unnecessarily.
