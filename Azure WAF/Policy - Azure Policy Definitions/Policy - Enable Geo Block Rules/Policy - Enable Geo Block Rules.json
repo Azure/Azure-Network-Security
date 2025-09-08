@@ -1,0 +1,30 @@
+{
+  "properties": {
+    "displayName": "Audit WAF policies with custom rules using GeoMatch",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "Audits Application Gateway WAF policies that contain custom rules using GeoMatch criteria.",
+    "metadata": {
+      "version": "1.0.0",
+      "category": "Network"
+    },
+    "parameters": {},
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies"
+          },
+          {
+            "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/customRules[*].matchConditions[*].operator",
+            "equals": "GeoMatch"
+          }
+        ]
+      },
+      "then": {
+        "effect": "audit"
+      }
+    }
+  }
+}
