@@ -1,0 +1,12 @@
+// Description: Scan AGWFirewallLogs for mentions of known malware families and count by name.
+AGWFirewallLogs
+| where DetailedData matches regex @"(?i)(Emotet|Zeus|TrickBot|Satori|Gootkit|Qbot|Ramnit|Necurs|Andromeda|DarkComet|Hajime|Reaper|VPNFilter|Carbanak|Dridex|Kovter|ZLoader|Agent Tesla|FormBook|spider|robot)"
+   or Message matches regex @"(?i)(Emotet|Zeus|TrickBot|Satori|Gootkit|Qbot|Ramnit|Necurs|Andromeda|DarkComet|Hajime|Reaper|VPNFilter|Carbanak|Dridex|Kovter|ZLoader|Agent Tesla|FormBook|spider|robot)"
+   or DetailedMessage matches regex @"(?i)(Emotet|Zeus|TrickBot|Satori|Gootkit|Qbot|Ramnit|Necurs|Andromeda|DarkComet|Hajime|Reaper|VPNFilter|Carbanak|Dridex|Kovter|ZLoader|Agent Tesla|FormBook|spider|robot)"
+| extend CombinedDetails = strcat(Message, " ", DetailedMessage, " ", DetailedData)
+| summarize 
+    Count   = count(), 
+    Details = make_list(CombinedDetails) 
+  by Threat = extract(@"(?i)(Emotet|Zeus|TrickBot|Satori|Gootkit|Qbot|Ramnit|Necurs|Andromeda|DarkComet|Hajime|Reaper|VPNFilter|Carbanak|Dridex|Kovter|ZLoader|Agent Tesla|FormBook|spider|robot)", 1, CombinedDetails)
+| project Threat, Count, Details
+| order by Count desc

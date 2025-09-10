@@ -1,0 +1,118 @@
+// Description: This Detection utilizes the resource specific Azure WAF logs from Application Gateway to detect anomalous IP traffic patterns. It applies advanced time series analysis to identify potential security threats and web vulnerabilities.
+// Alerts are triggered when the anomaly score exceeds a predefined threshold, signalling unusual activity that may require immediate attention and investigation by the security team.
+let percentTotalThreshold = 25;
+let timeframe             = 1h;
+let starttime             = 14d;
+let endtime               = 1d;
+let scoreThreshold        = 5;
+let baselineThreshold     = 10;
+let CombinedLogs = union
+(
+  AGWFirewallLogs
+  | project
+      TimeGenerated,
+      ClientIp      = ClientIp,
+      Port          = ClientPort,
+      RequestUri    = RequestUri,
+      TransactionId = TransactionId,
+      ResourceId    = _ResourceId,
+      Rule          = RuleId,
+      Host          = Hostname,
+      Action        = Action
+),
+(
+  AGWAccessLogs
+  | project
+      TimeGenerated,
+      ClientIp      = ClientIp,
+      Port          = UpstreamSourcePort,
+      RequestUri    = RequestUri,
+      TransactionId = TransactionId,
+      ResourceId    = _ResourceId,
+      Rule          = RuleName,
+      Host          = Host,
+      Action        = ""        // no action in access logs
+);
+let TimeSeriesData = CombinedLogs
+  | where isnotempty(ClientIp)
+  | make-series Total = count()
+      on TimeGenerated
+      from ago(starttime) to ago(endtime)
+      step timeframe
+      by ClientIp;
+let TimeSeriesAlerts = TimeSeriesData
+  | extend (anomalies, score, baseline) = series_decompose_anomalies(
+      Total, scoreThreshold, 1, 'linefit'
+    )
+  | mv-expand
+      Total to typeof(double),
+      TimeGenerated to typeof(datetime),
+      anomalies to typeof(double),
+      score to typeof(double),
+      baseline to typeof(long)
+  | where anomalies > 0 and baseline > baselineThreshold
+  | extend
+      score       = round(toreal(score), 2),
+      AnomalyHour = TimeGenerated
+  | project ClientIp, AnomalyHour, Total, baseline, anomalies, score;
+TimeSeriesAlerts
+| join (
+    CombinedLogs
+    | where TimeGenerated > ago(endtime)
+    | summarize
+        HourlyCount      = count(),
+        TimeGeneratedMax = arg_max(TimeGenerated, *),
+        ClientIPlist     = make_set(ClientIp),
+        Portlist         = make_set(Port),
+        RequestUris      = make_set(RequestUri),
+        TransactionIds   = make_set(TransactionId)
+      by ClientIp,
+         TimeGeneratedHour = bin(TimeGenerated, timeframe),
+         ResourceId,
+         Rule,
+         Host,
+         Action
+    | extend AnomalyHour = TimeGeneratedHour
+  ) on ClientIp
+| extend PercentTotal = round((todouble(HourlyCount) / todouble(Total)) * 100.0, 3)
+| where PercentTotal > percentTotalThreshold
+| project
+    AnomalyHour,
+    ClientIp,
+    ResourceId,
+    Host,
+    Rule,
+    Action,
+    HourlyCount,
+    PercentTotal,
+    Total,
+    baseline,
+    score,
+    anomalies,
+    ClientIPlist,
+    Portlist,
+    RequestUris,
+    TransactionIds,
+    TimeGeneratedMax
+| summarize
+    HourlyCount    = sum(HourlyCount),
+    StartTimeUtc   = min(TimeGeneratedMax),
+    EndTimeUtc     = max(TimeGeneratedMax),
+    SourceIPlist   = make_set(ClientIp),
+    Portlist       = make_set(Portlist),
+    RequestUris    = make_set(RequestUris),
+    TransactionIds = make_set(TransactionIds)
+  by
+    ClientIp,
+    AnomalyHour,
+    ResourceId,
+    Host,
+    Rule,
+    Action,
+    Total,
+    baseline,
+    score,
+    anomalies
+| extend
+    HostCustomEntity = ResourceId,
+    IPCustomEntity  = ClientIp;
