@@ -1,0 +1,20 @@
+let Threshold = 3;
+AGWFirewallLogs
+| where Action == "Matched"
+| where Message has "XSS"
+| project TransactionId, Hostname, RequestUri, TimeGenerated, ClientIp, Message, DetailedMessage, DetailedData
+| join kind=inner (
+    AGWFirewallLogs
+    | where Action == "Blocked"
+) on TransactionId
+| extend Uri = strcat(Hostname, RequestUri)
+| summarize
+    StartTime = min(TimeGenerated),
+    EndTime = max(TimeGenerated),
+    TransactionID = make_set(TransactionId, 100),
+    Message = make_set(Message, 100),
+    Detail_Message = make_set(DetailedMessage, 100),
+    Detail_Data = make_set(DetailedData, 100),
+    Total_TransactionId = dcount(TransactionId)
+  by ClientIp, Uri, Action
+| where Total_TransactionId >= Threshold

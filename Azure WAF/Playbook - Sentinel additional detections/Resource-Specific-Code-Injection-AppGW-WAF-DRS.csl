@@ -1,0 +1,36 @@
+let Threshold = 3;
+let TargetRuleIds = dynamic([
+    // RCE
+    932100, 932105, 932110, 932115,
+    // RFI
+    931100, 931105, 931110,
+    // PHP
+    933100, 933110, 933120,
+    // SQLI
+    942100, 942110, 942120, 942130,
+    // PROTOCOL-ATTACK
+    921100, 921110, 921120,
+    // XSS
+    941100, 941110, 941120, 941130
+]);
+AGWFirewallLogs
+| where Action == "Matched"
+| where Message has "Injection" or Message has "File Inclusion"
+| where RuleId in (TargetRuleIds)
+| project TransactionId, Hostname, RequestUri, TimeGenerated, ClientIp, Message, DetailedMessage, DetailedData
+| join kind=inner (
+    AGWFirewallLogs
+    | where Action == "Blocked"
+    | where RuleId in (TargetRuleIds)
+) on TransactionId
+| extend Uri = strcat(Hostname, RequestUri)
+| summarize
+    StartTime = min(TimeGenerated),
+    EndTime = max(TimeGenerated),
+    TransactionID = make_set(TransactionId, 100),
+    Message = make_set(Message, 100),
+    Detail_Message = make_set(DetailedMessage, 100),
+    Detail_Data = make_set(DetailedData, 100),
+    Total_TransactionId = dcount(TransactionId)
+  by ClientIp, Uri, Action
+| where Total_TransactionId >= Threshold

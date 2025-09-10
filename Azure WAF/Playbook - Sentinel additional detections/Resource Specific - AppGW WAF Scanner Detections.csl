@@ -1,0 +1,21 @@
+let Threshold = 3;
+AGWFirewallLogs
+| where Action == "Matched"
+| where Message contains "Found User-Agent associated with security scanner"
+| where RuleSetType == "REQUEST-913-SCANNER-DETECTION"
+| project TransactionId, Hostname, RequestUri, TimeGenerated, ClientIp, Message, DetailedMessage, DetailedData
+| join kind = inner (
+    AGWFirewallLogs
+    | where Action == "Blocked"
+) on TransactionId
+| extend Uri = strcat(Hostname, RequestUri)
+| summarize
+    StartTime = min(TimeGenerated),
+    EndTime = max(TimeGenerated),
+    TransactionID = make_set(TransactionId),
+    Message = make_set(Message),
+    Detail_Message = make_set(DetailedMessage),
+    Detail_Data = make_set(DetailedData),
+    Total_TransactionId = dcount(TransactionId)
+    by ClientIp, Uri, Action
+| where Total_TransactionId >= Threshold

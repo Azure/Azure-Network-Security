@@ -1,0 +1,32 @@
+let Threshold = 3;
+let LfiRuleIds = dynamic([930100, 930110, 930120, 930130, 930140, 930150]);
+let PathTraversalPatterns = dynamic([
+    "path traversal attack",
+    "../",
+    "..\\",
+    "%2e%2e%2f",
+    "%2e%2e\\",   
+    "/etc/passwd",
+    "c:\\windows\\system32"
+]);
+AGWFirewallLogs
+| where Action == "Matched"
+| where tolower(Message) has_any (PathTraversalPatterns)
+| where RuleId in (LfiRuleIds)
+| project TransactionId, Hostname, RequestUri, TimeGenerated, ClientIp, Message, DetailedMessage, DetailedData
+| join kind=inner (
+    AGWFirewallLogs
+    | where Action == "Blocked"
+    | where RuleId in (LfiRuleIds)
+) on TransactionId
+| extend Uri = strcat(Hostname, RequestUri)
+| summarize
+    StartTime = min(TimeGenerated),
+    EndTime = max(TimeGenerated),
+    TransactionID = make_set(TransactionId, 100),
+    Message = make_set(Message, 100),
+    Detail_Message = make_set(DetailedMessage, 100),
+    Detail_Data = make_set(DetailedData, 100),
+    Total_TransactionId = dcount(TransactionId)
+  by ClientIp, Uri, Action
+| where Total_TransactionId >= Threshold
