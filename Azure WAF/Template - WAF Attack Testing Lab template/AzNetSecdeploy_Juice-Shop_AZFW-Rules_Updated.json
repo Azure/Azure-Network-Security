@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "DefaultUserName": {
@@ -68,6 +68,13 @@
     "VN-Name3Subnet1Prefix": "10.0.28.0/26",
     "VN-Name3Subnet2Name": "SPOKE2-SUBNET2",
     "VN-Name3Subnet2Prefix": "10.0.28.64/26",
+	"afdProfileName": "[concat('afd-owasp-', variables('FrontDoorName'))]",
+    "afdEndpointName": "[concat('afd-owasp-', variables('FrontDoorName'))]",
+    "afdOriginGroupName": "OwaspBackend",
+    "afdOriginName": "OwaspJuiceShop",
+    "afdRouteName": "MainRoute",
+   "afdSecurityPolicyName": "[concat('sp-afd-owasp-', variables('FrontDoorName'))]",
+    "afdDiagnosticSettingsName": "[concat(variables('FrontDoorName'), '-diagnostics')]",
     "Subnet_serviceEndpoints": [
       {
         "service": "Microsoft.Web"
@@ -110,7 +117,7 @@
     "NIC-Name2Ipaddress": "10.0.27.68",
     "NIC-Name3Ipaddress": "10.0.28.4",
     "DDoSPlanName": "SOCNSDDOSPLAN",
-    "VM-Name1": "VM-Win10",
+    "VM-Name1": "VM-Win11",
     "VM-Name2": "VM-Kali",
     "VM-Name3": "VM-Win2019",
     "workspaceid": "[concat('/subscriptions/',parameters('DiagnosticsWorkspaceSubscription'),'/resourcegroups/', parameters('DiagnosticsWorkspaceResourceGroup'), '/providers/Microsoft.OperationalInsights/workspaces/',parameters('DiagnosticsWorkspaceName'))]"
@@ -1158,137 +1165,56 @@
           "exclusions": [],
           "managedRuleSets": [
             {
-              "ruleSetType": "OWASP",
-              "ruleSetVersion": "3.1",
+              "ruleSetType": "Microsoft_DefaultRuleSet",
+              "ruleSetVersion": "2.1",
               "ruleGroupOverrides": [
                 {
-                  "ruleGroupName": "REQUEST-920-PROTOCOL-ENFORCEMENT",
+                  "ruleGroupName": "PROTOCOL-ENFORCEMENT",
                   "rules": [
                     {
                       "ruleId": "920350",
-                      "state": "Disabled"
+                      "state": "Disabled",
+                      "action": "AnomalyScoring"
                     },
                     {
                       "ruleId": "920320",
-                      "state": "Disabled"
+                      "state": "Disabled",
+                      "action": "AnomalyScoring"
                     }
                   ]
                 }
               ]
+            },
+            {
+              "ruleSetType": "Microsoft_BotManagerRuleSet",
+              "ruleSetVersion": "1.0",
+              "ruleGroupOverrides": []
             }
           ]
         }
       }
     },
     {
-      "type": "Microsoft.Network/frontdoors",
-      "apiVersion": "2019-04-01",
-      "dependsOn": [ "[concat(resourceGroup().id, '/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/',variables('FrontDoorPolicyName'))]" ],
-      "name": "[variables('FrontDoorName')]",
-      "location": "global",
-      "tags": {},
-      "properties": {
-        "friendlyName": "[variables('FrontDoorName')]",
-        "enabledState": "Enabled",
-        "healthProbeSettings": [
-          {
-            "name": "healthProbeSettings1",
-            "properties": {
-              "path": "/",
-              "protocol": "Http",
-              "intervalInSeconds": 30
-            }
-          }
-        ],
-        "loadBalancingSettings": [
-          {
-            "name": "loadBalancingSettings1",
-            "properties": {
-              "sampleSize": 4,
-              "successfulSamplesRequired": 2
-            }
-          }
-        ],
-        "frontendEndpoints": [
-          {
-            "id": "[concat(resourceId('Microsoft.Network/frontdoors', variables('FrontDoorName')), concat('/FrontendEndpoints/', variables('FrontDoorName'), '-azurefd-net'))]",
-            "name": "[concat(variables('FrontDoorName'), '-azurefd-net')]",
-            "properties": {
-              "hostName": "[concat(variables('FrontDoorName'), '.azurefd.net')]",
-              "sessionAffinityEnabledState": "Disabled",
-              "sessionAffinityTtlSeconds": 0,
-              "webApplicationFirewallPolicyLink": {
-                "id": "[concat(resourceGroup().id, '/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/',variables('FrontDoorPolicyName'))]"
-              },
-              "resourceState": "Enabled"
-            }
-          }
-        ],
-        "backendPools": [
-          {
-            "name": "OWASP",
-            "properties": {
-              "backends": [
-                {
-                  "address": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIpAddressName2'))).IpAddress]",
-                  "enabledState": "Enabled",
-                  "httpPort": 80,
-                  "httpsPort": 443,
-                  "priority": 1,
-                  "weight": 50,
-                  "backendHostHeader": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIpAddressName2'))).IpAddress]"
-                }
-              ],
-              "loadBalancingSettings": {
-                "id": "[resourceId('Microsoft.Network/frontDoors/loadBalancingSettings', variables('FrontDoorName'), 'loadBalancingSettings1')]"
-              },
-              "healthProbeSettings": {
-                "id": "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', variables('FrontDoorName'), 'healthProbeSettings1')]"
-              }
-            }
-          }
-        ],
-        "routingRules": [
-          {
-            "name": "AppGW",
-            "properties": {
-              "frontendEndpoints": [
-                {
-                  "id": "[concat(resourceId('Microsoft.Network/frontdoors', variables('frontdoorname')), concat('/frontendEndpoints/', variables('frontdoorname'), '-azurefd-net'))]"
-                }
-              ],
-              "acceptedProtocols": [
-                "Http",
-                "Https"
-              ],
-              "patternsToMatch": [
-                "/*"
-              ],
-              "enabledState": "Enabled",
-              "routeConfiguration": {
-                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
-                "forwardingProtocol": "HttpOnly",
-                "backendPool": {
-                  "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', variables('FrontDoorName'), 'OWASP')]"
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
       "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
-      "apiVersion": "2019-10-01",
+      "apiVersion": "2024-02-01",
       "name": "[variables('FrontdoorPolicyName')]",
       "location": "Global",
+      "sku": {
+        "name": "Premium_AzureFrontDoor"
+      },
       "properties": {
         "policySettings": {
-                    "enabledState": "Enabled",
-                    "mode": "Prevention",
-                    "redirectUrl": "https://www.microsoft.com/en-us/edge",
-                    "customBlockResponseStatusCode": 403,
-                    "customBlockResponseBody": "QmxvY2tlZCBieSBmcm9udCBkb29yIFdBRg=="
+          "enabledState": "Enabled",
+          "mode": "Prevention",
+          "redirectUrl": "https://www.microsoft.com/en-us/edge",
+          "customBlockResponseStatusCode": 403,
+          "customBlockResponseBody": "QmxvY2tlZCBieSBmcm9udCBkb29yIFdBRg==",
+          "requestBodyCheck": "Enabled",
+          "javascriptChallengeExpirationInMinutes": 5,
+          "logScrubbing": {
+            "state": "Enabled",
+            "scrubbingRules": []
+          }
         },
         "customRules": {
           "rules": [
@@ -1297,8 +1223,6 @@
               "enabledState": "Enabled",
               "priority": 10,
               "ruleType": "MatchRule",
-              "rateLimitDurationInMinutes": 1,
-              "rateLimitThreshold": 100,
               "matchConditions": [
                 {
                   "matchVariable": "RemoteAddr",
@@ -1310,15 +1234,14 @@
                   "transforms": []
                 }
               ],
-              "action": "Block"
+              "action": "Block",
+              "groupBy": []
             },
             {
               "name": "RedirectInternetExplorerUserAgent",
               "enabledState": "Enabled",
               "priority": 20,
               "ruleType": "MatchRule",
-              "rateLimitDurationInMinutes": 1,
-              "rateLimitThreshold": 100,
               "matchConditions": [
                 {
                   "matchVariable": "RequestHeader",
@@ -1331,15 +1254,16 @@
                   "transforms": []
                 }
               ],
-              "action": "Redirect"
+              "action": "Redirect",
+              "groupBy": []
             },
             {
               "name": "RateLimitRequest",
               "enabledState": "Enabled",
               "priority": 30,
               "ruleType": "RateLimitRule",
-              "rateLimitDurationInMinutes": 1,
-              "rateLimitThreshold": 1,
+              "rateLimitDurationInMinutes": 5,
+              "rateLimitThreshold": 3,
               "matchConditions": [
                 {
                   "matchVariable": "RequestUri",
@@ -1351,47 +1275,186 @@
                   "transforms": []
                 }
               ],
-              "action": "Block"
+              "action": "Block",
+              "groupBy": [
+                {
+                  "variableName": "SocketAddr"
+                }
+              ]
             }
           ]
         },
         "managedRules": {
           "managedRuleSets": [
             {
-              "ruleSetType": "DefaultRuleSet",
-              "ruleSetVersion": "1.0"
-
+              "ruleSetType": "Microsoft_DefaultRuleSet",
+              "ruleSetVersion": "2.1",
+              "ruleSetAction": "Block",
+              "ruleGroupOverrides": [],
+              "exclusions": []
             },
             {
-              "ruleSetType": "BotProtection",
-              "ruleSetVersion": "preview-0.1"
+              "ruleSetType": "Microsoft_BotManagerRuleSet",
+              "ruleSetVersion": "1.1",
+              "ruleGroupOverrides": [],
+              "exclusions": []
             }
           ]
         }
       }
     },
     {
-      "type": "Microsoft.Network/frontdoors/providers/diagnosticSettings",
-      "name": "[concat(variables('FrontDoorName'),'/microsoft.insights/', 'FrontDoorDiagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "type": "Microsoft.Cdn/profiles",
+      "apiVersion": "2024-09-01",
+      "name": "[variables('afdProfileName')]",
+      "location": "Global",
+      "sku": {
+        "name": "Premium_AzureFrontDoor"
+      },
+      "kind": "frontdoor",
+      "properties": {
+        "originResponseTimeoutSeconds": 30
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/afdendpoints",
+      "apiVersion": "2024-09-01",
+      "name": "[format('{0}/{1}', variables('afdProfileName'), variables('afdEndpointName'))]",
+      "location": "Global",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/frontdoors', variables('FrontDoorName'))]"
+        "[resourceId('Microsoft.Cdn/profiles', variables('afdProfileName'))]"
       ],
       "properties": {
-        "name": "DiagService",
+        "enabledState": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/origingroups",
+      "apiVersion": "2024-09-01",
+      "name": "[format('{0}/{1}', variables('afdProfileName'), variables('afdOriginGroupName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', variables('afdProfileName'))]"
+      ],
+      "properties": {
+        "loadBalancingSettings": {
+          "sampleSize": 4,
+          "successfulSamplesRequired": 3,
+          "additionalLatencyInMilliseconds": 0
+        },
+        "healthProbeSettings": {
+          "probePath": "/",
+          "probeRequestType": "HEAD",
+          "probeProtocol": "Http",
+          "probeIntervalInSeconds": 100
+        },
+        "sessionAffinityState": "Disabled"
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/origingroups/origins",
+      "apiVersion": "2024-09-01",
+      "name": "[format('{0}/{1}/{2}', variables('afdProfileName'), variables('afdOriginGroupName'), variables('afdOriginName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles/origingroups', variables('afdProfileName'), variables('afdOriginGroupName'))]",
+        "[resourceId('Microsoft.Cdn/profiles', variables('afdProfileName'))]",
+        "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName2'))]"
+      ],
+      "properties": {
+        "hostName": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName2'))).ipAddress]",
+        "httpPort": 80,
+        "httpsPort": 443,
+        "originHostHeader": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName2'))).ipAddress]",
+        "priority": 1,
+        "weight": 1000,
+        "enabledState": "Enabled",
+        "enforceCertificateNameCheck": false
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/securitypolicies",
+      "apiVersion": "2024-09-01",
+      "name": "[format('{0}/{1}', variables('afdProfileName'), variables('afdSecurityPolicyName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', variables('afdProfileName'))]",
+        "[resourceId('Microsoft.Cdn/profiles/afdendpoints', variables('afdProfileName'), variables('afdEndpointName'))]",
+        "[resourceId('Microsoft.Network/frontdoorwebapplicationfirewallpolicies', variables('FrontdoorPolicyName'))]"
+      ],
+      "properties": {
+        "parameters": {
+          "wafPolicy": {
+            "id": "[resourceId('Microsoft.Network/frontdoorwebapplicationfirewallpolicies', variables('FrontdoorPolicyName'))]"
+          },
+          "type": "WebApplicationFirewall",
+          "associations": [
+            {
+              "domains": [
+                {
+                  "id": "[resourceId('Microsoft.Cdn/profiles/afdendpoints', variables('afdProfileName'), variables('afdEndpointName'))]"
+                }
+              ],
+              "patternsToMatch": [
+                "/*"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Cdn/profiles/afdendpoints/routes",
+      "apiVersion": "2024-09-01",
+      "name": "[format('{0}/{1}/{2}', variables('afdProfileName'), variables('afdEndpointName'), variables('afdRouteName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles/afdendpoints', variables('afdProfileName'), variables('afdEndpointName'))]",
+        "[resourceId('Microsoft.Cdn/profiles', variables('afdProfileName'))]",
+        "[resourceId('Microsoft.Cdn/profiles/origingroups', variables('afdProfileName'), variables('afdOriginGroupName'))]",
+        "[resourceId('Microsoft.Cdn/profiles/origingroups/origins', variables('afdProfileName'), variables('afdOriginGroupName'), variables('afdOriginName'))]"
+      ],
+      "properties": {
+        "customDomains": [],
+        "originGroup": {
+          "id": "[resourceId('Microsoft.Cdn/profiles/origingroups', variables('afdProfileName'), variables('afdOriginGroupName'))]"
+        },
+        "ruleSets": [],
+        "supportedProtocols": [
+          "Http",
+          "Https"
+        ],
+        "patternsToMatch": [
+          "/*"
+        ],
+        "forwardingProtocol": "HttpOnly",
+        "linkToDefaultDomain": "Enabled",
+        "httpsRedirect": "Enabled",
+        "enabledState": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Cdn/profiles/{0}', variables('afdProfileName'))]",
+      "name": "[variables('afdDiagnosticSettingsName')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', variables('afdProfileName'))]"
+      ],
+      "properties": {
         "workspaceId": "[variables('workspaceId')]",
         "logs": [
           {
-            "category": "FrontdoorAccessLog",
+            "category": "FrontDoorAccessLog",
             "enabled": true
           },
           {
-            "category": "FrontdoorWebApplicationFirewallLog",
+            "category": "FrontDoorHealthProbeLog",
+            "enabled": true
+          },
+          {
+            "category": "FrontDoorWebApplicationFirewallLog",
             "enabled": true
           }
         ]
-      }
-    },
+	  }
+	   },
     {
       "type": "Microsoft.Network/routeTables",
       "apiVersion": "2019-02-01",
@@ -1674,7 +1737,7 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B2s"
+          "vmSize": "Standard_D2s_v3"
         },
         "storageProfile": {
           "osDisk": {
@@ -1686,8 +1749,8 @@
           },
           "imageReference": {
             "publisher": "MicrosoftWindowsDesktop",
-            "offer": "Windows-10",
-            "sku": "20h2-pro",
+            "offer": "Windows-11",
+            "sku": "win11-24h2-pro",
             "version": "latest"
           }
         },
@@ -1718,13 +1781,13 @@
         "[concat('Microsoft.Network/networkInterfaces/', variables('NIC-Name2'))]"
       ],
       "plan": {
-        "name": "kali",
+        "name": "kali-2025-3",
         "publisher": "kali-linux",
-        "product": "kali"
+        "product": "kali" 
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B2s"
+          "vmSize": "Standard_D2s_v3"
         },
         "storageProfile": {
           "osDisk": {
@@ -1737,8 +1800,8 @@
           "imageReference": {
             "publisher": "kali-linux",
             "offer": "kali",
-            "sku": "kali",
-            "version": "latest"
+            "sku": "kali-2025-3",
+            "version": "2025.3.0"
           }
         },
         "networkProfile": {
@@ -1765,7 +1828,7 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B2s"
+          "vmSize": "Standard_D2s_v3"
         },
         "storageProfile": {
           "osDisk": {
@@ -1804,5 +1867,14 @@
   ],
 
 
-    "outputs": {}
+    "outputs": {
+		    "afdEndpointUrl": {
+      "type": "string",
+      "value": "[concat('https://', reference(resourceId('Microsoft.Cdn/profiles/afdendpoints', variables('afdProfileName'), variables('afdEndpointName'))).hostName)]"
+    },
+    "applicationGatewayUrl": {
+      "type": "string",
+      "value": "[concat('http://', reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName2'))).IpAddress)]"
+    }
+	}
   }
