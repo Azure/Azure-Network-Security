@@ -127,7 +127,7 @@
       "name": "[variables('VN-Name1')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[resourceGroup().location]",
-      "apiVersion": "2020-03-01",
+      "apiVersion": "2023-11-01",
       "dependsOn": [ "[resourceid('Microsoft.Network/ddosProtectionPlans', variables('DDoSPlanName'))]" ],
       "tags": {
         "displayName": "[variables('VN-Name1')]"
@@ -146,7 +146,7 @@
       },
       "resources": [
         {
-          "apiVersion": "2020-03-01",
+          "apiVersion": "2023-11-01",
           "type": "subnets",
           "location": "[resourceGroup().location]",
           "name": "[variables('VN-Name1Subnet1Name')]",
@@ -159,7 +159,7 @@
           }
         },
         {
-          "apiVersion": "2020-03-01",
+          "apiVersion": "2023-11-01",
           "type": "subnets",
           "location": "[resourceGroup().location]",
           "name": "[variables('VN-Name1Subnet2Name')]",
@@ -177,7 +177,7 @@
     {
       "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
       "name": "[concat(variables('VN-Name1'),'/microsoft.insights/', 'VN1Diagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]"
       ],
@@ -196,7 +196,7 @@
       "name": "[variables('VN-Name2')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[resourceGroup().location]",
-      "apiVersion": "2020-03-01",
+      "apiVersion": "2023-11-01",
       "dependsOn": [
         "[resourceId('Microsoft.Network/routeTables', variables('RT-Name1'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name1'))]"
@@ -247,7 +247,7 @@
     {
       "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
       "name": "[concat(variables('VN-Name2'),'/microsoft.insights/', 'VN2Diagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name2'))]"
       ],
@@ -266,7 +266,7 @@
       "name": "[variables('VN-Name3')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[resourceGroup().location]",
-      "apiVersion": "2020-03-01",
+      "apiVersion": "2023-11-01",
       "dependsOn": [
         "[resourceId('Microsoft.Network/routeTables', variables('RT-Name1'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name2'))]"
@@ -317,7 +317,7 @@
     {
       "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
       "name": "[concat(variables('VN-Name3'),'/microsoft.insights/', 'VN3Diagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name3'))]"
       ],
@@ -334,7 +334,7 @@
     },
     {
       "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-      "apiVersion": "2020-04-01",
+      "apiVersion": "2023-11-01",
       "name": "[concat(variables('VN-Name1'), '/', variables('VN-Name1'), '-Peering-To-', variables('VN-NAME2'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]",
@@ -361,7 +361,7 @@
     },
     {
       "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-      "apiVersion": "2020-04-01",
+      "apiVersion": "2023-11-01",
       "name": "[concat(variables('VN-Name1'), '/', variables('VN-Name1'), '-Peering-To-', variables('VN-NAME3'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]",
@@ -388,7 +388,7 @@
     },
     {
       "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-      "apiVersion": "2020-04-01",
+      "apiVersion": "2023-11-01",
       "name": "[concat(variables('VN-Name2'), '/', variables('VN-Name2'), '-Peering-To-', variables('VN-NAME1'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]",
@@ -415,7 +415,7 @@
     },
     {
       "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-      "apiVersion": "2020-04-01",
+      "apiVersion": "2023-11-01",
       "name": "[concat(variables('VN-Name3'), '/', variables('VN-Name3'), '-Peering-To-', variables('VN-NAME1'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('VN-Name1'))]",
@@ -442,7 +442,7 @@
     },
     {
       "type": "Microsoft.Network/publicIpAddresses",
-      "apiVersion": "2019-02-01",
+      "apiVersion": "2023-11-01",
       "name": "[variables('publicIpAddressName1')]",
       "location": "[resourceGroup().location]",
       "tags": {},
@@ -458,7 +458,7 @@
     {
       "type": "Microsoft.Network/publicIpAddresses/providers/diagnosticSettings",
       "name": "[concat(variables('publicIpAddressName1'),'/microsoft.insights/', 'PIP1Diagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName1'))]"
       ],
@@ -483,7 +483,7 @@
     },
     {
       "type": "Microsoft.Network/publicIpAddresses",
-      "apiVersion": "2019-02-01",
+      "apiVersion": "2023-11-01",
       "name": "[variables('publicIpAddressName2')]",
       "location": "[resourceGroup().location]",
       "tags": {},
@@ -499,7 +499,7 @@
     {
       "type": "Microsoft.Network/publicIpAddresses/providers/diagnosticSettings",
       "name": "[concat(variables('publicIpAddressName2'),'/microsoft.insights/', 'PIP2Diagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName2'))]"
       ],
@@ -557,7 +557,7 @@
     {
       "type": "Microsoft.Network/azureFirewalls/providers/diagnosticSettings",
       "name": "[concat(variables('FW-name'),'/microsoft.insights/', 'FirewallDiagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "dependsOn": [
         "[resourceId('Microsoft.Network/azureFirewalls', variables('FW-name'))]"
       ],
@@ -1057,7 +1057,7 @@
     {
       "type": "Microsoft.Network/applicationGateways/providers/diagnosticSettings",
       "name": "[concat(variables('AG-Name'),'/microsoft.insights/', 'AppGatewayDiagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "dependsOn": [
         "[resourceId('Microsoft.Network/applicationGateways', variables('AG-Name'))]"
       ],
@@ -1196,7 +1196,7 @@
     },
     {
       "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
-      "apiVersion": "2024-02-01",
+      "apiVersion": "2022-05-01",
       "name": "[variables('FrontdoorPolicyName')]",
       "location": "Global",
       "sku": {
@@ -1209,12 +1209,7 @@
           "redirectUrl": "https://www.microsoft.com/en-us/edge",
           "customBlockResponseStatusCode": 403,
           "customBlockResponseBody": "QmxvY2tlZCBieSBmcm9udCBkb29yIFdBRg==",
-          "requestBodyCheck": "Enabled",
-          "javascriptChallengeExpirationInMinutes": 5,
-          "logScrubbing": {
-            "state": "Enabled",
-            "scrubbingRules": []
-          }
+          "requestBodyCheck": "Enabled"
         },
         "customRules": {
           "rules": [
@@ -1234,8 +1229,7 @@
                   "transforms": []
                 }
               ],
-              "action": "Block",
-              "groupBy": []
+              "action": "Block"
             },
             {
               "name": "RedirectInternetExplorerUserAgent",
@@ -1254,8 +1248,7 @@
                   "transforms": []
                 }
               ],
-              "action": "Redirect",
-              "groupBy": []
+              "action": "Redirect"
             },
             {
               "name": "RateLimitRequest",
@@ -1275,12 +1268,7 @@
                   "transforms": []
                 }
               ],
-              "action": "Block",
-              "groupBy": [
-                {
-                  "variableName": "SocketAddr"
-                }
-              ]
+              "action": "Block"
             }
           ]
         },
@@ -1305,7 +1293,7 @@
     },
     {
       "type": "Microsoft.Cdn/profiles",
-      "apiVersion": "2024-09-01",
+      "apiVersion": "2023-05-01",
       "name": "[variables('afdProfileName')]",
       "location": "Global",
       "sku": {
@@ -1317,8 +1305,8 @@
       }
     },
     {
-      "type": "Microsoft.Cdn/profiles/afdendpoints",
-      "apiVersion": "2024-09-01",
+      "type": "Microsoft.Cdn/profiles/afdEndpoints",
+      "apiVersion": "2023-05-01",
       "name": "[format('{0}/{1}', variables('afdProfileName'), variables('afdEndpointName'))]",
       "location": "Global",
       "dependsOn": [
@@ -1330,7 +1318,7 @@
     },
     {
       "type": "Microsoft.Cdn/profiles/origingroups",
-      "apiVersion": "2024-09-01",
+      "apiVersion": "2023-05-01",
       "name": "[format('{0}/{1}', variables('afdProfileName'), variables('afdOriginGroupName'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Cdn/profiles', variables('afdProfileName'))]"
@@ -1352,7 +1340,7 @@
     },
     {
       "type": "Microsoft.Cdn/profiles/origingroups/origins",
-      "apiVersion": "2024-09-01",
+      "apiVersion": "2023-05-01",
       "name": "[format('{0}/{1}/{2}', variables('afdProfileName'), variables('afdOriginGroupName'), variables('afdOriginName'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Cdn/profiles/origingroups', variables('afdProfileName'), variables('afdOriginGroupName'))]",
@@ -1372,11 +1360,11 @@
     },
     {
       "type": "Microsoft.Cdn/profiles/securitypolicies",
-      "apiVersion": "2024-09-01",
+      "apiVersion": "2023-05-01",
       "name": "[format('{0}/{1}', variables('afdProfileName'), variables('afdSecurityPolicyName'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Cdn/profiles', variables('afdProfileName'))]",
-        "[resourceId('Microsoft.Cdn/profiles/afdendpoints', variables('afdProfileName'), variables('afdEndpointName'))]",
+        "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', variables('afdProfileName'), variables('afdEndpointName'))]",
         "[resourceId('Microsoft.Network/frontdoorwebapplicationfirewallpolicies', variables('FrontdoorPolicyName'))]"
       ],
       "properties": {
@@ -1389,7 +1377,7 @@
             {
               "domains": [
                 {
-                  "id": "[resourceId('Microsoft.Cdn/profiles/afdendpoints', variables('afdProfileName'), variables('afdEndpointName'))]"
+                  "id": "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', variables('afdProfileName'), variables('afdEndpointName'))]"
                 }
               ],
               "patternsToMatch": [
@@ -1401,11 +1389,11 @@
       }
     },
     {
-      "type": "Microsoft.Cdn/profiles/afdendpoints/routes",
-      "apiVersion": "2024-09-01",
+      "type": "Microsoft.Cdn/profiles/afdEndpoints/routes",
+      "apiVersion": "2023-05-01",
       "name": "[format('{0}/{1}/{2}', variables('afdProfileName'), variables('afdEndpointName'), variables('afdRouteName'))]",
       "dependsOn": [
-        "[resourceId('Microsoft.Cdn/profiles/afdendpoints', variables('afdProfileName'), variables('afdEndpointName'))]",
+        "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', variables('afdProfileName'), variables('afdEndpointName'))]",
         "[resourceId('Microsoft.Cdn/profiles', variables('afdProfileName'))]",
         "[resourceId('Microsoft.Cdn/profiles/origingroups', variables('afdProfileName'), variables('afdOriginGroupName'))]",
         "[resourceId('Microsoft.Cdn/profiles/origingroups/origins', variables('afdProfileName'), variables('afdOriginGroupName'), variables('afdOriginName'))]"
@@ -1523,7 +1511,7 @@
     {
       "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
       "name": "[concat(variables('NSG-Name1'),'/microsoft.insights/', 'NSG1Diagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name1'))]"
       ],
@@ -1590,7 +1578,7 @@
     {
       "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
       "name": "[concat(variables('NSG-Name2'),'/microsoft.insights/', 'NSG2Diagnostics')]",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSG-Name2'))]"
       ],
@@ -1870,7 +1858,7 @@
     "outputs": {
 		    "afdEndpointUrl": {
       "type": "string",
-      "value": "[concat('https://', reference(resourceId('Microsoft.Cdn/profiles/afdendpoints', variables('afdProfileName'), variables('afdEndpointName'))).hostName)]"
+      "value": "[concat('https://', reference(resourceId('Microsoft.Cdn/profiles/afdEndpoints', variables('afdProfileName'), variables('afdEndpointName'))).hostName)]"
     },
     "applicationGatewayUrl": {
       "type": "string",
