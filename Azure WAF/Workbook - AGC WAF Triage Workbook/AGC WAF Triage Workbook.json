@@ -1,0 +1,1030 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Application Gateway WAF triage workbook\n---\n\nThis workbook will help you triage Application Gateway WAF violations."
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "63ea93e5-3270-4447-9572-ad9e62095e7b",
+            "version": "KqlParameterItem/1.0",
+            "name": "subscription",
+            "label": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "/subscriptions/4bfa4e52-8afd-4875-8c36-d126070a6333"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "includeAll": false
+            }
+          },
+          {
+            "id": "12476248-81b7-46af-a9b4-790f93306442",
+            "version": "KqlParameterItem/1.0",
+            "name": "workspace",
+            "label": "Workspace",
+            "type": 5,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id",
+            "crossComponentResources": [
+              "{subscription}"
+            ],
+            "value": "/subscriptions/4bfa4e52-8afd-4875-8c36-d126070a6333/resourceGroups/agc/providers/Microsoft.OperationalInsights/workspaces/log8240",
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "f451ddc5-00e3-4fe7-908e-22d0be9ab59c",
+            "version": "KqlParameterItem/1.0",
+            "name": "detectionTime",
+            "label": "Detection Time",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 14400000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AGCFirewallLogs \n// |where Category == \"ApplicationGatewayFirewallLog\"\n| where TimeGenerated {detectionTime}\n| extend Id = new_guid()\n| project-reorder Id, _ResourceId, PolicyScopeName, Action\n//| summarize count() by _ResourceId, PolicyScopeName, Action\n| evaluate pivot(Action, count(), _ResourceId, PolicyScopeName)",
+        "size": 1,
+        "title": "Select the scope of the WAF policy",
+        "exportedParameters": [
+          {
+            "fieldName": "PolicyScopeName",
+            "parameterName": "PolicyScope",
+            "parameterType": 1
+          },
+          {
+            "fieldName": "_ResourceId",
+            "parameterName": "ResourceId",
+            "parameterType": 1
+          }
+        ],
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{workspace}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "$gen_group",
+              "formatter": 13,
+              "formatOptions": {
+                "linkTarget": null,
+                "showIcon": true
+              }
+            },
+            {
+              "columnMatch": "_ResourceId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Matched",
+              "formatter": 8,
+              "formatOptions": {
+                "palette": "greenRed"
+              }
+            },
+            {
+              "columnMatch": "Blocked",
+              "formatter": 8,
+              "formatOptions": {
+                "palette": "greenRed"
+              }
+            }
+          ],
+          "rowLimit": 500,
+          "hierarchySettings": {
+            "treeType": 1,
+            "groupBy": [
+              "ResourceId"
+            ]
+          },
+          "labelSettings": [
+            {
+              "columnId": "PolicyScopeName",
+              "label": "Policy Scope"
+            }
+          ]
+        },
+        "tileSettings": {
+          "showBorder": false
+        }
+      },
+      "name": "query-app-gateway-resources"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "14e61d36-d59a-405d-8363-ac1aa8a2f491",
+            "cellValue": "SelectedTabPage",
+            "linkTarget": "parameter",
+            "linkLabel": "Triage by Rule",
+            "subTarget": "triage-by-rule",
+            "preText": "Triage by Rule",
+            "style": "link"
+          },
+          {
+            "id": "93464fc4-d183-4d74-9e06-111c6de081a9",
+            "cellValue": "SelectedTabPage",
+            "linkTarget": "parameter",
+            "linkLabel": "Triage by URL",
+            "subTarget": "triage-by-url",
+            "preText": "Triage ",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "TabNavigation"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AGCFirewallLogs \r\n// |where Category == \"ApplicationGatewayFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where _ResourceId == '{ResourceId}' and PolicyScopeName == '{PolicyScope}'\r\n| summarize Count = count() by RuleSetType, RuleSetVersion, RuleId, FileDetails, LineDetails, Action\r\n| order by Count desc\r\n| project-reorder Count\r\n//| extend ruleidentif = RuleId\r\n//| extend ruleSetVersionss = RuleSetVersion, ruleSetTypess = RuleSetType\r\n| extend normalizedRuleSetVersion = case(isempty(RuleSetVersion), \"\",\r\n                                         // old engine: RuleSetVersion looks like \"3.1.0\" while type is \"OWASP_CRS\" => leave untouched, can use this as-is\r\n                                         //             final url to GH is like: https://github.com/coreruleset/coreruleset/blob/v3.1.0/rules/REQUEST-913-SCANNER-DETECTION.conf#L56\r\n                                         RuleSetVersion matches regex \"[0-9]+.[0-9]+.[0-9]+\", RuleSetVersion,\r\n                                         // new engine: RuleSetVersion looks like \"3.2\" while type is \"OWASP CRS\" => need a version that looks like \"3.2.0\"\r\n                                         //             final url to GH is like: https://github.com/coreruleset/coreruleset/blob/v3.2.0/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf#L56\r\n                                         RuleSetVersion matches regex \"[0-9]+.[0-9]+\", strcat(RuleSetVersion, \".0\"),\r\n                                         \"\")\r\n| extend normalizedDetailsFile = case(  RuleSetType == \"OWASP_CRS\", replace(@'rules/', '', FileDetails),   // old engine: details_files_s looks like \"rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf\" while type is \"OWASP_CRS\"\r\n                                        RuleSetType == \"OWASP CRS\", FileDetails,                           // new engine: details_files_s looks like \"REQUEST-920-PROTOCOL-ENFORCEMENT.conf\" while type is \"OWASP CRS\"\r\n                                        FileDetails)\r\n| extend Url = iif(isnotempty(RuleSetVersion), strcat('https://github.com/coreruleset/coreruleset/blob/', 'v', normalizedRuleSetVersion, '/rules/', normalizedDetailsFile, '#L', LineDetails), '')\r\n// add sparklines\r\n| join kind=inner (AGCFirewallLogs // |where Category == \"ApplicationGatewayFirewallLog\" | where TimeGenerated {detectionTime} | where _ResourceId == '{ResourceId}' and PolicyScopeName == '{PolicyScope}'\r\n                                    | make-series Trend = count() on TimeGenerated from {detectionTime:start} to {detectionTime:end} step (time({detectionTime:seconds} seconds) / 20)  by RuleId\r\n    ) on RuleId\r\n| extend Id = new_guid()",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "Rules that got triggered",
+              "exportedParameters": [
+                {
+                  "fieldName": "RuleId",
+                  "parameterName": "RuleId"
+                },
+                {
+                  "fieldName": "Url",
+                  "parameterName": "SpiderLabsUrl",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "RuleSetVersion",
+                  "parameterName": "RuleSetVersion",
+                  "parameterType": 1
+                }
+              ],
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Count",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    }
+                  },
+                  {
+                    "columnMatch": "RuleSetType",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "RuleId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Url",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "Url",
+                      "linkLabel": "Go to Core Rule Set Project GitHub for this rule"
+                    }
+                  },
+                  {
+                    "columnMatch": "Trend",
+                    "formatter": 10,
+                    "formatOptions": {
+                      "palette": "yellowOrangeRed"
+                    }
+                  },
+                  {
+                    "columnMatch": "TimeGenerated",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Id",
+                    "formatter": 5
+                  }
+                ],
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_heatmap_Count_0",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "RuleSetVersion",
+                    "label": "Ruleset Version"
+                  },
+                  {
+                    "columnId": "RuleId",
+                    "label": "Rule Id"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_heatmap_Count_0",
+                  "sortOrder": 2
+                }
+              ]
+            },
+            "customWidth": "100",
+            "name": "query - violated rules"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AGCFirewallLogs\r\n// |where Category == \"ApplicationGatewayFirewallLog\"\r\n| where _ResourceId == '{ResourceId}' and PolicyScopeName == '{PolicyScope}' and RuleId == '{RuleId}' and RuleSetVersion == '{RuleSetVersion}'\r\n| where TimeGenerated {detectionTime}\r\n// at this point hostname_s can still contain both hostname and port; for example: www.myhost.com:80 -> we need to split this up to match on just the host later\r\n| extend splittedhost = split(hostname_s, ':')\r\n| extend hostname_s_noport = tostring(splittedhost[0]) //override hostname_s to just contain host; drop the port section\r\n| extend port =  tostring(splittedhost[1])\r\n| distinct hostname_s, hostname_s_noport",
+              "size": 0,
+              "title": "Hosts Affected",
+              "exportedParameters": [
+                {
+                  "fieldName": "hostname_s",
+                  "parameterName": "HostName"
+                },
+                {
+                  "fieldName": "hostname_s_noport",
+                  "parameterName": "HostNameNoPort",
+                  "parameterType": 1
+                }
+              ],
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "hostname_s_noport",
+                    "formatter": 5
+                  }
+                ]
+              }
+            },
+            "customWidth": "15",
+            "showPin": true,
+            "name": "Affected Hosts"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AGCFirewallLogs\r\n// |where Category == \"ApplicationGatewayFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where _ResourceId == '{ResourceId}' and PolicyScopeName == '{PolicyScope}' and RuleId == '{RuleId}'\r\n| where hostname_s == '{HostName}'\r\n| project-reorder hostname_s, transactionId_g\r\n| join kind=inner (AGCFirewallLogs | where Category == \"ApplicationGatewayAccessLog\" | where TimeGenerated {detectionTime}) on transactionId_g\r\n| distinct host_s1, httpMethod_s1, requestUri_s1, originalRequestUriWithArgs_s1\r\n| order by host_s1, requestUri_s1, httpMethod_s1, originalRequestUriWithArgs_s1\r\n| extend id = new_guid()",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "Hosts and urls impacted by selected rule",
+              "exportedParameters": [
+                {
+                  "fieldName": "httpMethod_s1",
+                  "parameterName": "Method",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "originalRequestUriWithArgs_s1",
+                  "parameterName": "FullUri",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "requestUri_s1",
+                  "parameterName": "RequestUri",
+                  "parameterType": 1
+                }
+              ],
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "requestUri_s",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "encodedRequestUri",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "id",
+                    "formatter": 5
+                  }
+                ],
+                "rowLimit": 1000,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "requestUri_s1"
+                  ],
+                  "expandTopLevel": true,
+                  "finalBy": "requestUri_s"
+                }
+              }
+            },
+            "customWidth": "60",
+            "name": "affected urls"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AGCFirewallLogs\r\n// |where Category == \"ApplicationGatewayFirewallLog\"\r\n| where _ResourceId == '{ResourceId}' and PolicyScopeName == '{PolicyScope}'\r\n| where TimeGenerated {detectionTime}\r\n| distinct transactionId_g\r\n| join kind=inner (AGCFirewallLogs | where Category == \"ApplicationGatewayAccessLog\" | where TimeGenerated {detectionTime}) \r\n  on transactionId_g\r\n| where originalHost_s == '{HostNameNoPort}' and httpMethod_s == '{Method}' and requestUri_s == ```{RequestUri}``` and originalRequestUriWithArgs_s == ```{FullUri}```\r\n| project transactionId_g\r\n| extend access_log = strcat(\"AGCFirewallLogs | where Category == \\\"ApplicationGatewayAccessLog\\\" | where TimeGenerated {detectionTime} | where transactionId_g == \\\"\", transactionId_g, \"\\\"\")\r\n| extend firewall_log = strcat(\"AGCFirewallLogs | where Category == \\\"ApplicationGatewayFirewallLog\\\" | where TimeGenerated {detectionTime} | where transactionId_g == \\\"\", transactionId_g, \"\\\"\")\r\n//let transIdsWithFirewallLog = AGCFirewallLogs\r\n//// |where Category == \"ApplicationGatewayFirewallLog\"\r\n//| where _ResourceId == '{ResourceId}' and PolicyScopeName == '{PolicyScope}'\r\n//| where TimeGenerated {detectionTime}\r\n//| distinct transactionId_g;\r\n//AGCFirewallLogs\r\n//| where Category == \"ApplicationGatewayAccessLog\"\r\n//| where TimeGenerated {detectionTime}\r\n//| where host_s == '{HostName}' and httpMethod_s == '{Method}' and requestUri_s == '{RequestUri}' and originalRequestUriWithArgs_s == '{FullUri}'\r\n//| distinct transactionId_g\r\n//| where transactionId_g in (transIdsWithFirewallLog) // TODO: how to get tenant id in here?\r\n//| extend access_log = strcat(\"AGCFirewallLogs | where Category == \\\"ApplicationGatewayAccessLog\\\" | where TimeGenerated {detectionTime} | where transactionId_g == \\\"\", transactionId_g, \"\\\"\")\r\n//| extend firewall_log = strcat(\"AGCFirewallLogs | where Category == \\\"ApplicationGatewayFirewallLog\\\" | where TimeGenerated {detectionTime} | where transactionId_g == \\\"\", transactionId_g, \"\\\"\")",
+              "size": 0,
+              "title": "Requests on selected host and url",
+              "exportFieldName": "transactionId_g",
+              "exportParameterName": "TransactionId",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "transactionId_g",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "40%"
+                    }
+                  },
+                  {
+                    "columnMatch": "access_log",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "OpenBlade",
+                      "linkLabel": "Find in Access Log",
+                      "linkIsContextBlade": true,
+                      "bladeOpenContext": {
+                        "bladeName": "LogsBlade",
+                        "extensionName": "Microsoft_Azure_Monitoring_Logs",
+                        "bladeParameters": [
+                          {
+                            "name": "resourceId",
+                            "source": "parameter",
+                            "value": "workspace"
+                          },
+                          {
+                            "name": "source",
+                            "source": "static",
+                            "value": "Microsoft_Azure_Monitoring_Logs/LogsBlade"
+                          },
+                          {
+                            "name": "query",
+                            "source": "cell",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "firewall_log",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "OpenBlade",
+                      "linkLabel": "Find in Firewall Log",
+                      "linkIsContextBlade": true,
+                      "bladeOpenContext": {
+                        "bladeName": "LogsBlade",
+                        "extensionName": "Microsoft_Azure_Monitoring_Logs",
+                        "bladeParameters": [
+                          {
+                            "name": "resourceId",
+                            "source": "parameter",
+                            "value": "workspace"
+                          },
+                          {
+                            "name": "source",
+                            "source": "static",
+                            "value": "Microsoft_Azure_Monitoring_Logs/LogsBlade"
+                          },
+                          {
+                            "name": "query",
+                            "source": "cell",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "ImpactedRequestsFromSelectedUri"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AGCFirewallLogs \r\n// |where Category == \"ApplicationGatewayFirewallLog\"\r\n| where transactionId_g == '{TransactionId}'\r\n| extend Id = new_guid()\r\n| project-reorder Id, Action, RuleSetType, RuleSetVersion, RuleId, Message, hostname_s, requestUri_s, details_message_s, details_data_s, FileDetails, LineDetails, transactionId_g\r\n| extend normalizedRuleSetVersion = case(isempty(RuleSetVersion), \"\",\r\n                                         // old engine: RuleSetVersion looks like \"3.1.0\" while type is \"OWASP_CRS\" => leave untouched, can use this as-is\r\n                                         //             final url to GH is like: https://github.com/coreruleset/coreruleset/blob/v3.1.0/rules/REQUEST-913-SCANNER-DETECTION.conf#L56\r\n                                         RuleSetVersion matches regex \"[0-9]+.[0-9]+.[0-9]+\", RuleSetVersion,\r\n                                         // new engine: RuleSetVersion looks like \"3.2\" while type is \"OWASP CRS\" => need a version that looks like \"3.2.0\"\r\n                                         //             final url to GH is like: https://github.com/coreruleset/coreruleset/blob/v3.2.0/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf#L56\r\n                                         RuleSetVersion matches regex \"[0-9]+.[0-9]+\", strcat(RuleSetVersion, \".0\"),\r\n                                         \"\")\r\n| extend normalizedDetailsFile = case(  RuleSetType == \"OWASP_CRS\", replace(@'rules/', '', FileDetails),   // old engine: details_files_s looks like \"rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf\" while type is \"OWASP_CRS\"\r\n                                        RuleSetType == \"OWASP CRS\", FileDetails,                           // new engine: details_files_s looks like \"REQUEST-920-PROTOCOL-ENFORCEMENT.conf\" while type is \"OWASP CRS\"\r\n                                        FileDetails)\r\n| extend Url = iif(isnotempty(RuleSetVersion), strcat('https://github.com/coreruleset/coreruleset/blob/', 'v', normalizedRuleSetVersion, '/rules/', normalizedDetailsFile, '#L', LineDetails), '')\r\n| project Action, RuleId, Message, details_message_s, details_data_s, Url, TimeGenerated\r\n",
+              "size": 0,
+              "title": "Rules that got triggered for selected request",
+              "exportedParameters": [
+                {
+                  "fieldName": "transactionId_g",
+                  "parameterName": "TransactionId"
+                },
+                {
+                  "fieldName": "Message",
+                  "parameterName": "message",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "details_message_s",
+                  "parameterName": "details",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "details_data_s",
+                  "parameterName": "matcheddata",
+                  "parameterType": 1
+                }
+              ],
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Action",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Matched",
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Blocked",
+                          "representation": "4",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "more",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "RuleId",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "colors",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "{RuleId}",
+                          "representation": "yellow",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "Url",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "Url",
+                      "linkLabel": "Go to Core Rule Set Project GitHub for this rule"
+                    }
+                  },
+                  {
+                    "columnMatch": "statusFromAction",
+                    "formatter": 5,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "Action",
+                    "label": "action"
+                  },
+                  {
+                    "columnId": "RuleId",
+                    "label": "rule id"
+                  },
+                  {
+                    "columnId": "Message",
+                    "label": "message"
+                  },
+                  {
+                    "columnId": "details_message_s",
+                    "label": "details"
+                  },
+                  {
+                    "columnId": "details_data_s",
+                    "label": "matched data"
+                  },
+                  {
+                    "columnId": "TimeGenerated",
+                    "label": "time generated"
+                  }
+                ]
+              }
+            },
+            "name": "TriggeredRules"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "## Selection Summary:\r\n\r\nYou were looking for example requests which were impacted by WAF rule with id: **{RuleId}**.  \r\n\r\nMore information on the selected rule which impacted this url, can be found on the [Core Rule Set Project](https://coreruleset.org/) GitHub page, here:, here: {SpiderLabsUrl}\r\n\r\nOn the host with name \"*{HostName}*\" and url \"*{FullUri}*\" you have found an HTTP request, impacted by this rule, with transaction id equal to *{TransactionId}*.  \r\n\r\nMore info on this request and the selected rule:\r\n- Message: {message}\r\n- Details: {details}\r\n- Matched Data: {matcheddata}"
+            },
+            "name": "text - 7"
+          }
+        ],
+        "exportParameters": true
+      },
+      "conditionalVisibility": {
+        "parameterName": "SelectedTabPage",
+        "comparison": "isEqualTo",
+        "value": "triage-by-rule"
+      },
+      "name": "Triage by rule"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AGCFirewallLogs \r\n// |where Category == \"ApplicationGatewayFirewallLog\"\r\n| where _ResourceId == '{ResourceId}' and PolicyScopeName == '{PolicyScope}'\r\n| where TimeGenerated {detectionTime}\r\n| distinct hostname_s",
+              "size": 0,
+              "title": "Hostnames with entries in Firewall Log",
+              "exportFieldName": "hostname_s",
+              "exportParameterName": "HostName",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "hostname_s",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "100%"
+                    }
+                  }
+                ],
+                "sortBy": [
+                  {
+                    "itemKey": "hostname_s",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "hostname_s",
+                  "sortOrder": 1
+                }
+              ]
+            },
+            "customWidth": "10",
+            "name": "Hostnames with entries in Firewall Log"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AGCFirewallLogs\r\n// |where Category == \"ApplicationGatewayFirewallLog\"\r\n| where _ResourceId == '{ResourceId}' and PolicyScopeName == '{PolicyScope}'\r\n| where hostname_s == '{HostName}'\r\n| where TimeGenerated {detectionTime}\r\n| join kind=inner (AGCFirewallLogs | where Category == \"ApplicationGatewayAccessLog\" | where _ResourceId == '{ResourceId}')\r\n  on transactionId_g\r\n| distinct  requestUri_s, httpMethod_s1, originalRequestUriWithArgs_s1, httpStatus_d1\r\n| extend Id = new_guid()\r\n",
+              "size": 0,
+              "title": "Paths which have triggered firewall rules",
+              "exportedParameters": [
+                {
+                  "fieldName": "requestUri_s",
+                  "parameterName": "RequestUri"
+                },
+                {
+                  "fieldName": "originalRequestUriWithArgs_s1",
+                  "parameterName": "RequestUriWithArgs",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "httpMethod_s1",
+                  "parameterName": "HttpMethod",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "httpStatus_d1",
+                  "parameterName": "HttpStatus",
+                  "parameterType": 1
+                },
+                {
+                  "parameterType": 1
+                }
+              ],
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "encodedRequestUriWithArgs",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Id",
+                    "formatter": 5
+                  }
+                ],
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "requestUri_s",
+                    "httpMethod_s1"
+                  ],
+                  "finalBy": "httpStatus_d1"
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "httpStatus_d1",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "httpStatus_d1",
+                  "sortOrder": 1
+                }
+              ]
+            },
+            "customWidth": "60",
+            "name": "Paths which have triggered firewall rules"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AGCFirewallLogs\r\n// |where Category == \"ApplicationGatewayFirewallLog\"\r\n| where _ResourceId == '{ResourceId}' and PolicyScopeName == '{PolicyScope}'\r\n| where hostname_s == '{HostName}'\r\n| where TimeGenerated {detectionTime}\r\n| join kind=inner (AGCFirewallLogs | where Category == \"ApplicationGatewayAccessLog\" | where _ResourceId == '{ResourceId}')\r\n  on transactionId_g\r\n| where originalRequestUriWithArgs_s1 == ```{RequestUriWithArgs}``` and httpMethod_s1 == '{HttpMethod}' and httpStatus_d1 == '{HttpStatus}'\r\n| distinct transactionId_g\r\n| extend access_log = strcat(\"AGCFirewallLogs | where Category == \\\"ApplicationGatewayAccessLog\\\" | where TimeGenerated {detectionTime} | where transactionId_g == \\\"\", transactionId_g, \"\\\"\")\r\n| extend firewall_log = strcat(\"AGCFirewallLogs | where Category == \\\"ApplicationGatewayFirewallLog\\\" | where TimeGenerated {detectionTime} | where transactionId_g == \\\"\", transactionId_g, \"\\\"\")",
+              "size": 0,
+              "title": "Requests on selected host and url",
+              "exportFieldName": "transactionId_g",
+              "exportParameterName": "TransactionId",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "transactionId_g",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "40%"
+                    }
+                  },
+                  {
+                    "columnMatch": "access_log",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "OpenBlade",
+                      "linkLabel": "Find in Access Log",
+                      "linkIsContextBlade": true,
+                      "bladeOpenContext": {
+                        "bladeName": "LogsBlade",
+                        "extensionName": "Microsoft_Azure_Monitoring_Logs",
+                        "bladeParameters": [
+                          {
+                            "name": "resourceId",
+                            "source": "parameter",
+                            "value": "workspace"
+                          },
+                          {
+                            "name": "source",
+                            "source": "static",
+                            "value": "Microsoft_Azure_Monitoring_Logs/LogsBlade"
+                          },
+                          {
+                            "name": "query",
+                            "source": "cell",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "firewall_log",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "OpenBlade",
+                      "linkLabel": "Find in Firewall Log",
+                      "linkIsContextBlade": true,
+                      "bladeOpenContext": {
+                        "bladeName": "LogsBlade",
+                        "extensionName": "Microsoft_Azure_Monitoring_Logs",
+                        "bladeParameters": [
+                          {
+                            "name": "resourceId",
+                            "source": "parameter",
+                            "value": "workspace"
+                          },
+                          {
+                            "name": "source",
+                            "source": "static",
+                            "value": "Microsoft_Azure_Monitoring_Logs/LogsBlade"
+                          },
+                          {
+                            "name": "query",
+                            "source": "cell",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "query - 3"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AGCFirewallLogs \r\n// |where Category == \"ApplicationGatewayFirewallLog\"\r\n//| where TimeGenerated {detectionTime}\r\n| where transactionId_g == '{TransactionId}'\r\n| extend Id = new_guid()\r\n| project-reorder Id, Action, RuleSetType, RuleSetVersion, RuleId, Message, hostname_s, requestUri_s, details_message_s, details_data_s, FileDetails, LineDetails, transactionId_g\r\n| extend normalizedRuleSetVersion = case(isempty(RuleSetVersion), \"\",\r\n                                         // old engine: RuleSetVersion looks like \"3.1.0\" while type is \"OWASP_CRS\" => leave untouched, can use this as-is\r\n                                         //             final url to GH is like: https://github.com/coreruleset/coreruleset/blob/v3.1.0/rules/REQUEST-913-SCANNER-DETECTION.conf#L56\r\n                                         RuleSetVersion matches regex \"[0-9]+.[0-9]+.[0-9]+\", RuleSetVersion,\r\n                                         // new engine: RuleSetVersion looks like \"3.2\" while type is \"OWASP CRS\" => need a version that looks like \"3.2.0\"\r\n                                         //             final url to GH is like: https://github.com/coreruleset/coreruleset/blob/v3.2.0/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf#L56\r\n                                         RuleSetVersion matches regex \"[0-9]+.[0-9]+\", strcat(RuleSetVersion, \".0\"),\r\n                                         \"\")\r\n| extend normalizedDetailsFile = case(  RuleSetType == \"OWASP_CRS\", replace(@'rules/', '', FileDetails),   // old engine: details_files_s looks like \"rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf\" while type is \"OWASP_CRS\"\r\n                                        RuleSetType == \"OWASP CRS\", FileDetails,                           // new engine: details_files_s looks like \"REQUEST-920-PROTOCOL-ENFORCEMENT.conf\" while type is \"OWASP CRS\"\r\n                                        FileDetails)\r\n| extend Url = iif(isnotempty(RuleSetVersion), strcat('https://github.com/coreruleset/coreruleset/blob/', 'v', normalizedRuleSetVersion, '/rules/', normalizedDetailsFile, '#L', LineDetails), '')\r\n| project Action, RuleId, Message, details_message_s, details_data_s, Url, TimeGenerated, RuleSetType, normalizedRuleSetVersion\r\n",
+              "size": 0,
+              "title": "Rules that got triggered for selected request",
+              "exportedParameters": [
+                {
+                  "fieldName": "transactionId_g",
+                  "parameterName": "TransactionId"
+                },
+                {
+                  "fieldName": "Message",
+                  "parameterName": "message",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "details_message_s",
+                  "parameterName": "details",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "details_data_s",
+                  "parameterName": "matcheddata",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "Url",
+                  "parameterName": "SpiderLabsUrl",
+                  "parameterType": 1
+                }
+              ],
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Action",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Matched",
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Blocked",
+                          "representation": "4",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "more",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "RuleId",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "colors",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "{RuleId}",
+                          "representation": "yellow",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "Url",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "Url",
+                      "linkLabel": "Go to Core Rule Set Project GitHub for this rule"
+                    }
+                  },
+                  {
+                    "columnMatch": "statusFromAction",
+                    "formatter": 5,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "Action",
+                    "label": "action"
+                  },
+                  {
+                    "columnId": "RuleId",
+                    "label": "rule id"
+                  },
+                  {
+                    "columnId": "Message",
+                    "label": "message"
+                  },
+                  {
+                    "columnId": "details_message_s",
+                    "label": "details"
+                  },
+                  {
+                    "columnId": "details_data_s",
+                    "label": "matched data"
+                  },
+                  {
+                    "columnId": "TimeGenerated",
+                    "label": "time generated"
+                  }
+                ]
+              }
+            },
+            "name": "TriggeredRules - By Url"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "## Selection Summary:\r\n\r\nYou were looking for requests which triggered a WAF rule on url: _{RequestUri}_.  \r\nYou have found an HTTP request, impacted by this rule, with transaction id equal to *{TransactionId}*.  \r\n\r\nMore information on the selected rule which impacted this url, can be found on the [Core Rule Set Project](https://coreruleset.org) GitHub page, here: {SpiderLabsUrl}\r\n\r\n\r\n\r\nMore info on this request and the selected rule:\r\n- Message: {message}\r\n- Details: {details}\r\n- Matched Data: {matcheddata}"
+            },
+            "name": "text - 7 - Copy"
+          }
+        ],
+        "exportParameters": true
+      },
+      "conditionalVisibility": {
+        "parameterName": "SelectedTabPage",
+        "comparison": "isEqualTo",
+        "value": "triage-by-url"
+      },
+      "name": "Triage by URL"
+    }
+  ],
+  "defaultResourceIds": [
+    "value::all"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
