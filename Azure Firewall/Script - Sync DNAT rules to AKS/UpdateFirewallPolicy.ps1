@@ -1,5 +1,13 @@
-# Constants
-$automationAccount = "aksautomation"
+##############################################
+# Script to sync Azure Firewall DNAT rules
+#    to AKS services exposed via an Internal
+#    Azure Load Balancer.
+#
+# Jose Moreno, 2025
+##############################################
+
+
+# Constants - consider moving some of these to parameters
 $resourceGroup = "akstest"
 $aksName = "aks"
 $azfwPolicyResourceGroup = "akstest"
@@ -15,7 +23,7 @@ $null = Disable-AzContextAutosave -Scope Process
 # Connect using a Managed Service Identity
 try {
     Write-Output "Authenticating to Azure..."
-    $AzureConnection = (Connect-AzAccount -Identity).context
+    Connect-AzAccount -Identity
 }
 catch {
     Write-Output "There is no system-assigned user identity. Aborting." 
@@ -29,7 +37,7 @@ catch {
 # Getting AKS information about the node RG and the load balancer
 try {
     $aks = Get-AzAksCluster -Name $aksName -ResourceGroupName $resourceGroup
-    if ($aks.Name -ne $null) {
+    if ($null -ne $aks.Name) {
         Write-Output "AKS cluster $($aks.Name) found successfully in resource group $($resourceGroup)."
     }
     else {
@@ -46,7 +54,7 @@ Write-Output "$($aksALBs.Length) Load Balancers found in node resource group $($
 # Make sure the Azure Firewall policy and the RCG/RC exist
 try {
     $policy = Get-AzFirewallPolicy -Name $azfwPolicyName -ResourceGroupName $azfwPolicyResourceGroup
-    if ($policy.Name -ne $null) {
+    if ($null -ne $policy.Name) {
         Write-Output "Azure Firewall Policy $($policy.Name) found successfully in resource group $($azfwPolicyResourceGroup)."
     }
     else {
@@ -60,7 +68,7 @@ catch {
 }
 try {
     $rcg = Get-AzFirewallPolicyRuleCollectionGroup -Name $azfwRCG -AzureFirewallPolicyName $azfwPolicyName -ResourceGroupName $azfwPolicyResourceGroup
-    if ($rcg.Name -ne $null) {
+    if ($null -ne $rcg.Name) {
         Write-Output "Rule Collection Group $($rcg.Name) in Azure Firewall Policy $($policy.Name) found successfully."
     }
     else {
@@ -88,7 +96,7 @@ foreach ($ALB in $aksALBs) {
     if ($ALB.Name -eq "kube-apiserver") {
         Write-Output "System ALB $($ALB.Name) found in node resource group $($aks.NodeResourceGroup), skipping"
     }
-    elseif ($ALB.FrontendIpConfigurations[0].PrivateIpAddress -ne $null) {
+    elseif ($null -ne $ALB.FrontendIpConfigurations[0].PrivateIpAddress) {
         $ALBIPAddress = $ALB.FrontendIpConfigurations[0].PrivateIpAddress
         Write-Output "Internal ALB $($ALB.Name) found in node resource group $($aks.NodeResourceGroup) with private IP address $($ALBIPAddress), processing rules..."
         $ALBrules = $ALB.LoadBalancingRules
@@ -171,7 +179,7 @@ Write-Output "Rule collection now has $($rc.Rules.Length.Length) rules."
 # Apply changes
 try {
     Set-AzFirewallPolicyRuleCollectionGroup -Name $azfwRCG -FirewallPolicyObject $policy -Priority $rcg.Properties.Priority -RuleCollection $rc
-    Write-Host "Firewall policy updated successfully."
+    Write-Output "Firewall policy updated successfully."
 } catch {
     Write-Error "Failed to update firewall policy: $($_.Exception.Message)"
 }
