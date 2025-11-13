@@ -26,7 +26,7 @@ try {
     Connect-AzAccount -Identity
 }
 catch {
-    Write-Output "There is no system-assigned user identity. Aborting." 
+    Write-Output "There is no system-assigned user identity. Aborting."
     exit
 }
 
@@ -183,3 +183,4 @@ try {
 } catch {
     Write-Error "Failed to update firewall policy: $($_.Exception.Message)"
 }
+
