@@ -190,9 +190,9 @@
               "label": "WAF Items",
               "type": 5,
               "isRequired": true,
-              "query": "Resources\r\n| where type =~ case('{WAFType}' == 'Application Gateway', 'Microsoft.Network/ApplicationGateways', '{WAFType}' == 'Front Door and CDN Profile', 'Microsoft.Network/Frontdoors', 'Microsoft.Cdn/Profiles')\r\n| project id, name",
+              "query": "resources\r\n| where type =~ iif(\r\n    '{WAFType}' == 'Application Gateway',\r\n    'Microsoft.Network/ApplicationGateways',\r\n    'Microsoft.Cdn/Profiles'\r\n)\r\n| project id, name\r\n",
               "crossComponentResources": [
-                "{Workspaces}"
+                "{Subscription}"
               ],
               "typeSettings": {
                 "additionalResourceOptions": [],
@@ -1188,4 +1188,5 @@
         "name": "query - 13"
       }
     ]
+
   }
