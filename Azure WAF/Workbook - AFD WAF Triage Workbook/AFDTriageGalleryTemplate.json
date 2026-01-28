@@ -123,12 +123,12 @@
         "type": 3,
         "content": {
           "version": "KqlItem/1.0",
-          "query": "AzureDiagnostics \n| where Category == \"FrontDoorWebApplicationFirewallLog\"\n| where TimeGenerated {detectionTime}\n| extend Id = new_guid()\n| project-reorder Id, ResourceId, policyScopeName_s, action_s\n//| summarize count() by ResourceId, policyScopeName_s, action_s\n| evaluate pivot(action_s, count(), ResourceId, policyScopeName_s)",
+          "query": "AzureDiagnostics \n| where Category == \"FrontDoorWebApplicationFirewallLog\"\n| where TimeGenerated {detectionTime}\n| extend Id = new_guid()\n| project-reorder Id, ResourceId, policy_s, action_s\n//| summarize count() by ResourceId, policy_s, action_s\n| evaluate pivot(action_s, count(), ResourceId, policy_s)",
           "size": 1,
           "title": "Select the scope of the WAF policy",
           "exportedParameters": [
             {
-              "fieldName": "policyScopeName_s",
+              "fieldName": "policy_s",
               "parameterName": "PolicyScope",
               "parameterType": 1
             },
@@ -200,7 +200,7 @@
                 "label": "Azure Front Door"
               },
               {
-                "columnId": "policyScopeName_s",
+                "columnId": "policy_s",
                 "label": "Policy Scope"
               }
             ]
@@ -249,7 +249,7 @@
               "type": 3,
               "content": {
                 "version": "KqlItem/1.0",
-                "query": "AzureDiagnostics \r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| summarize Count = count() by ruleName_s, action_s\r\n| order by Count desc\r\n| project-reorder Count\r\n| extend Id = new_guid()",
+                "query": "AzureDiagnostics \r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policy_s == '{PolicyScope}'\r\n| summarize Count = count() by ruleName_s, action_s\r\n| order by Count desc\r\n| project-reorder Count\r\n| extend Id = new_guid()",
                 "size": 0,
                 "showAnalytics": true,
                 "title": "Rules that got triggered",
@@ -322,7 +322,7 @@
               "type": 3,
               "content": {
                 "version": "KqlItem/1.0",
-                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}' and ruleName_s == '{RuleName}'\r\n| where TimeGenerated {detectionTime}\r\n| distinct host_s",
+                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policy_s == '{PolicyScope}' and ruleName_s == '{RuleName}'\r\n| where TimeGenerated {detectionTime}\r\n| distinct host_s",
                 "size": 0,
                 "title": "Hosts Affected",
                 "exportFieldName": "host_s",
@@ -350,7 +350,7 @@
               "type": 3,
               "content": {
                 "version": "KqlItem/1.0",
-                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}' \r\n| where host_s == '{HostName}'\r\n| project-reorder host_s, trackingReference_s\r\n| join kind=inner (AzureDiagnostics | where Category == \"FrontDoorAccessLog\" | where TimeGenerated {detectionTime}) on trackingReference_s\r\n| distinct host_s1, httpMethod_s1, requestUri_s1\r\n| order by host_s1, requestUri_s1, httpMethod_s1\r\n| extend id = new_guid()",
+                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policy_s == '{PolicyScope}' \r\n| where host_s == '{HostName}'\r\n| project-reorder host_s, trackingReference_s\r\n| join kind=inner (AzureDiagnostics | where Category == \"FrontDoorAccessLog\" | where TimeGenerated {detectionTime}) on trackingReference_s\r\n| distinct host_s1, httpMethod_s1, requestUri_s1\r\n| order by host_s1, requestUri_s1, httpMethod_s1\r\n| extend id = new_guid()",
                 "size": 0,
                 "showAnalytics": true,
                 "title": "Hosts and urls impacted by selected rule",
@@ -405,7 +405,7 @@
               "type": 3,
               "content": {
                 "version": "KqlItem/1.0",
-                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| where TimeGenerated {detectionTime}\r\n| distinct trackingReference_s\r\n| join kind=inner (AzureDiagnostics | where Category == \"FrontDoorAccessLog\" | where TimeGenerated {detectionTime}) \r\n  on trackingReference_s\r\n| where hostName_s == '{HostName}' and httpMethod_s == '{Method}' and requestUri_s == ```{RequestUri}```\r\n| project trackingReference_s\r\n| extend access_log = strcat(\"AzureDiagnostics | where Category == \\\"FrontDoorAccessLog\\\" | where TimeGenerated {detectionTime} | where trackingReference_s == \\\"\", trackingReference_s, \"\\\"\")\r\n| extend firewall_log = strcat(\"AzureDiagnostics | where Category == \\\"FrontDoorWebApplicationFirewallLog\\\" | where TimeGenerated {detectionTime} | where trackingReference_s == \\\"\", trackingReference_s, \"\\\"\")\r\n",
+                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policy_s == '{PolicyScope}'\r\n| where TimeGenerated {detectionTime}\r\n| distinct trackingReference_s\r\n| join kind=inner (AzureDiagnostics | where Category == \"FrontDoorAccessLog\" | where TimeGenerated {detectionTime}) \r\n  on trackingReference_s\r\n| where hostName_s == '{HostName}' and httpMethod_s == '{Method}' and requestUri_s == ```{RequestUri}```\r\n| project trackingReference_s\r\n| extend access_log = strcat(\"AzureDiagnostics | where Category == \\\"FrontDoorAccessLog\\\" | where TimeGenerated {detectionTime} | where trackingReference_s == \\\"\", trackingReference_s, \"\\\"\")\r\n| extend firewall_log = strcat(\"AzureDiagnostics | where Category == \\\"FrontDoorWebApplicationFirewallLog\\\" | where TimeGenerated {detectionTime} | where trackingReference_s == \\\"\", trackingReference_s, \"\\\"\")\r\n",
                 "size": 0,
                 "title": "Requests on selected host and url",
                 "exportFieldName": "trackingReference_s",
@@ -639,7 +639,7 @@
               "type": 3,
               "content": {
                 "version": "KqlItem/1.0",
-                "query": "AzureDiagnostics \r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| where TimeGenerated {detectionTime}\r\n| distinct host_s",
+                "query": "AzureDiagnostics \r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policy_s == '{PolicyScope}'\r\n| where TimeGenerated {detectionTime}\r\n| distinct host_s",
                 "size": 0,
                 "title": "Hostnames with entries in Firewall Log",
                 "exportFieldName": "host_s",
@@ -669,7 +669,7 @@
               "type": 3,
               "content": {
                 "version": "KqlItem/1.0",
-                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| where host_s == '{HostName1}'\r\n| where TimeGenerated {detectionTime}\r\n| join kind=inner (AzureDiagnostics | where Category == \"FrontDoorAccessLog\" | where ResourceId == '{ResourceId}')\r\n  on trackingReference_s\r\n| distinct  requestUri_s, httpMethod_s1, httpStatusCode_s1\r\n| extend Id = new_guid()\r\n",
+                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policy_s == '{PolicyScope}'\r\n| where host_s == '{HostName1}'\r\n| where TimeGenerated {detectionTime}\r\n| join kind=inner (AzureDiagnostics | where Category == \"FrontDoorAccessLog\" | where ResourceId == '{ResourceId}')\r\n  on trackingReference_s\r\n| distinct  requestUri_s, httpMethod_s1, httpStatusCode_s1\r\n| extend Id = new_guid()\r\n",
                 "size": 0,
                 "title": "Paths which have triggered firewall rules",
                 "exportedParameters": [
@@ -726,7 +726,7 @@
               "type": 3,
               "content": {
                 "version": "KqlItem/1.0",
-                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| where host_s == '{HostName1}'\r\n| where TimeGenerated {detectionTime}\r\n| join kind=inner (AzureDiagnostics | where Category == \"FrontDoorAccessLog\" | where ResourceId == '{ResourceId}')\r\n  on trackingReference_s\r\n| where requestUri_s == ```{RequestUri}``` and httpMethod_s1 == '{HttpMethod}' and httpStatusCode_s1 == '{HttpStatus}'\r\n| distinct trackingReference_s\r\n| extend access_log = strcat(\"AzureDiagnostics | where Category == \\\"FrontDoorAccessLog\\\" | where TimeGenerated {detectionTime} | where trackingReference_s == \\\"\", trackingReference_s, \"\\\"\")\r\n| extend firewall_log = strcat(\"AzureDiagnostics | where Category == \\\"FrontDoorWebApplicationFirewallLog\\\" | where TimeGenerated {detectionTime} | where trackingReference_s == \\\"\", trackingReference_s, \"\\\"\")",
+                "query": "AzureDiagnostics\r\n| where Category == \"FrontDoorWebApplicationFirewallLog\"\r\n| where ResourceId == '{ResourceId}' and policy_s == '{PolicyScope}'\r\n| where host_s == '{HostName1}'\r\n| where TimeGenerated {detectionTime}\r\n| join kind=inner (AzureDiagnostics | where Category == \"FrontDoorAccessLog\" | where ResourceId == '{ResourceId}')\r\n  on trackingReference_s\r\n| where requestUri_s == ```{RequestUri}``` and httpMethod_s1 == '{HttpMethod}' and httpStatusCode_s1 == '{HttpStatus}'\r\n| distinct trackingReference_s\r\n| extend access_log = strcat(\"AzureDiagnostics | where Category == \\\"FrontDoorAccessLog\\\" | where TimeGenerated {detectionTime} | where trackingReference_s == \\\"\", trackingReference_s, \"\\\"\")\r\n| extend firewall_log = strcat(\"AzureDiagnostics | where Category == \\\"FrontDoorWebApplicationFirewallLog\\\" | where TimeGenerated {detectionTime} | where trackingReference_s == \\\"\", trackingReference_s, \"\\\"\")",
                 "size": 0,
                 "title": "Requests on selected host and url",
                 "exportFieldName": "trackingReference_s",
@@ -971,4 +971,5 @@
       "value::all"
     ],
     "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+
   }
