@@ -1,0 +1,39 @@
+let TimeWindow   = 90d;    // How far back to look
+let HitThreshold = 10;     // Minimum hits to alert per SourceIp + Category
+let MinSeverity  = 2;      // Set Minimum Severity
+let EnableCategoryFilter    = true;  // Filter 1: Change to true for filtering based on Categoriesofinterest defined below
+let EnableDescriptionFilter = false;  // Filter 2: Change to true for filtering based on Descriptionsofinterest defined below
+let EnableActionFilter      = false;  // Filter 3: Change to true for filtering based on a MatchActions defined below
+let CategoriesOfInterest    = dynamic(["Possibly Unwanted Program Detected", "Possible Social Engineering Attempted", "Crypto Currency Mining Activity Detected", "A suspicious filename was detected", "A system call was detected"]); // Filter 1
+let DescriptionsOfInterest  = dynamic(["pup-activity", "social-engineering", "coin-mining", "suspicious-filename-detect", "system-call-detect"]); // Filter 2
+let MatchActions            = dynamic(["Deny", "alert"]);   // Filter 3 
+AZFWIdpsSignature
+| where TimeGenerated >= ago(TimeWindow)
+| where Severity >= MinSeverity
+// Filter 1: Category filter (optional)
+| where (EnableCategoryFilter == false) or (Category has_any (CategoriesOfInterest))
+// Filter 2: Description filter (optional)
+| where (EnableDescriptionFilter == false) or (Description has_any (DescriptionsOfInterest))
+// Filter 3: Action filter (optional)
+| where (EnableActionFilter == false) or (Action in~ (MatchActions))
+| summarize
+    StartTime = min(TimeGenerated),
+    EndTime = max(TimeGenerated),
+    TotalHits = count(),
+    MaxSeverity  = max(Severity),
+    Actions = make_set(Action, 5),
+    Signatures   = make_set(SignatureId, 20),
+    Description  = make_set(substring(tostring(Description), 0, 120), 3)
+    by SourceIp, ThreatCategory = Category
+| where TotalHits >= HitThreshold
+| project
+    StartTime,
+    EndTime,
+    SourceIp,
+    ThreatCategory,
+    TotalHits,
+    MaxSeverity,
+    Actions,
+    Signatures,
+    Description
+| order by MaxSeverity desc, TotalHits desc
