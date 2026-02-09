@@ -29,6 +29,7 @@ These labs are a subset of the demos used by our internal teams to demonstrate t
 ## Requirements
 
 You must own or have access to an Azure subscription where you will deploy the resources used in this Workshop. While we strive to keep the materials updated, we cannot guarantee their accuracy at all times.
+You can create an [Azure Free Account](https://go.microsoft.com/fwlink/?linkid=2227353&clcid=0x409&l=en-us) which provides you $200 credit to get started with this lab.
 
 **User, passwords and other useful resources**
 
