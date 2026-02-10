@@ -139,7 +139,7 @@ The script provides:
 
 ## Known Limitations
 
-- Basic SKU Public IPs cannot use DDoS IP Protection (Standard SKU required)
+- Basic SKU Public IPs cannot be protected by Azure DDoS Protection (upgrade to Standard SKU required)
 - Resources in different subscriptions than their VNETs may show "Access Denied"
 
 ## Contributing
