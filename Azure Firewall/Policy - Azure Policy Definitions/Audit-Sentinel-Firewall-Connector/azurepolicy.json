@@ -1,0 +1,42 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.OperationsManagement/solutions"
+        },
+        {
+          "field": "Microsoft.OperationsManagement/solutions/plan.product",
+          "equals": "OMSGallery/SecurityInsights"
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]",
+      "details": {
+        "type": "Microsoft.SecurityInsights/dataConnectors",
+        "existenceScope": "subscription",
+        "existenceCondition": {
+          "field": "kind",
+          "equals": "AzureFirewall"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "Enable or disable the execution of the policy"
+      },
+      "allowedValues": [
+        "AuditIfNotExists",
+        "Disabled"
+      ],
+      "defaultValue": "AuditIfNotExists"
+    }
+  }
+}
