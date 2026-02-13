@@ -1,0 +1,17 @@
+//This detection identifies source IPs repeatedly served a CAPTCHA challenge by Azure Front Door WAF within the selected lookback window (default 90 days). It groups Front Door WAF events by socketIP_s (labeled as SourceIp) and raises findings for any IP that hit the CAPTCHA action ≥ 3 times. For each flagged IP, it provides the first/last seen times, total challenge count, and unique URIs the IP requested. This helps surface persistent or recurring bot/automated traffic that was challenged by the WAF, so analysts can decide whether to block, rate‑limit, or tune bot protections.
+
+let lookback = 90d;
+let minChallenges = 3;
+AzureDiagnostics
+| where Category =~ "FrontDoorWebApplicationFirewallLog"
+| where TimeGenerated > ago(lookback)
+| where (action_s in~ ("Captcha") 
+        or tostring(details_msg_s) contains "captcha")
+| project TimeGenerated, clientIp_s, requestUri_s, socketIP_s
+| summarize Count = count(),
+            FirstSeen = min(TimeGenerated),
+            LastSeen = max(TimeGenerated),
+            URIs = make_set(requestUri_s)
+    by SourceIp=socketIP_s
+| where Count >= minChallenges
+| order by Count desc
