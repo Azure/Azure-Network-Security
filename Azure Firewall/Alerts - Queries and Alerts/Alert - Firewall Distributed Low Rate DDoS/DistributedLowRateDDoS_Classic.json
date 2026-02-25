@@ -1,0 +1,119 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Name of the Log Analytics workspace"
+            }
+        },
+        "TimeWindowMinutes": {
+            "type": "string",
+            "defaultValue": "5",
+            "metadata": {
+                "Description": "Analysis time window in minutes. Shorter windows detect faster attacks, longer windows catch slower carpet bombing."
+            }
+        },
+        "MinDistinctSources": {
+            "type": "string",
+            "defaultValue": "50",
+            "metadata": {
+                "Description": "Minimum number of unique source IPs required to trigger alert. Higher values reduce false positives but may miss smaller botnets."
+            }
+        },
+        "MaxEventsPerSource": {
+            "type": "string",
+            "defaultValue": "10",
+            "metadata": {
+                "Description": "Maximum events allowed per source IP to qualify as 'low rate'. Sources exceeding this are not considered low-rate attackers."
+            }
+        },
+        "MinProtocols": {
+            "type": "string",
+            "defaultValue": "2",
+            "metadata": {
+                "Description": "Minimum number of distinct protocols (TCP/UDP/ICMP) required. Protocol diversity indicates coordinated multi-vector attack."
+            }
+        },
+        "MaxProtocolSharePct": {
+            "type": "string",
+            "defaultValue": "80",
+            "metadata": {
+                "Description": "Maximum percentage any single protocol can represent. True rotation means no protocol dominates (e.g., not >80% TCP)."
+            }
+        },
+        "MinTotalEvents": {
+            "type": "string",
+            "defaultValue": "500",
+            "metadata": {
+                "Description": "Minimum aggregate events required. Ensures the attack has enough volume to potentially impact the target."
+            }
+        },
+        "MinDistinctCountries": {
+            "type": "string",
+            "defaultValue": "3",
+            "metadata": {
+                "Description": "Minimum number of distinct source countries. Higher geo-diversity indicates distributed botnet vs regional traffic."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location must match the location of the workspace - Do not edit this parameter."
+            }
+        }
+    },
+    "variables": {
+        "alertLocation": "[parameters('location')]",
+        "alertName": "Distributed Low Rate DDoS - Carpet Bombing Detection",
+        "alertDescription": "Detects distributed low-rate DDoS attacks (carpet bombing) where many source IPs each send low-rate traffic to the same destination, evading per-IP thresholds while the aggregate impacts availability.\n\nDetection Indicators:\n- Many unique source IPs targeting same destination\n- Each source sends low-rate traffic (below individual thresholds)\n- Multiple protocols used (TCP/UDP/ICMP rotation)\n- No single protocol dominates (true rotation vs incidental)\n- Aggregate volume sufficient to cause impact\n- Geographic diversity of sources\n\nConfigurable Parameters:\n- Time window: Analysis period (default 5 minutes)\n- Min distinct sources: Minimum unique IPs (default 50)\n- Max events per source: Low-rate threshold (default 10)\n- Min protocols: Protocol diversity (default 2)\n- Max protocol share: Max single protocol % (default 80%)\n- Min total events: Aggregate threshold (default 500)\n- Min countries: Geo-diversity threshold (default 3)",
+        "alertStatus": "true",
+        "alertSource": {
+            "Query": "[concat('let TimeWindow = ', parameters('TimeWindowMinutes'), 'm; let MinDistinctSources = ', parameters('MinDistinctSources'), '; let MaxEventsPerSource = ', parameters('MaxEventsPerSource'), '; let MinProtocols = ', parameters('MinProtocols'), '; let MaxProtocolSharePct = ', parameters('MaxProtocolSharePct'), '.0; let MinTotalEvents = ', parameters('MinTotalEvents'), '; let MinDistinctCountries = ', parameters('MinDistinctCountries'), '; let StartTime = ago(TimeWindow); let TrafficLogs = AzureDiagnostics | where TimeGenerated >= StartTime | where OperationName == \"AzureFirewallNetworkRuleLog\" or OperationName == \"AzureFirewallApplicationRuleLog\" | parse msg_s with * \"from \" srcip \":\" srcport \" to \" dstip \":\" dstport \". Action: \" action \".\" * | extend Protocol = case(msg_s has \"UDP\", \"UDP\", msg_s has \"TCP\", \"TCP\", msg_s has \"ICMP\", \"ICMP\", \"Other\") | extend SourceCountry = tostring(geo_info_from_ip_address(srcip).country) | where isnotempty(srcip) and isnotempty(dstip); let DestStats = TrafficLogs | summarize TotalEvents = count(), DistinctSources = dcount(srcip), DistinctProtocols = dcount(Protocol), DistinctCountries = dcount(SourceCountry), Protocols = make_set(Protocol), SampleSources = make_set(srcip, 10), Countries = make_set(SourceCountry, 20), AllowedCount = countif(action == \"Allow\"), DeniedCount = countif(action == \"Deny\") by dstip; let MaxPerSource = TrafficLogs | summarize EventsFromSource = count() by dstip, srcip | summarize MaxEventsFromSingleSource = max(EventsFromSource) by dstip; let ProtocolDominance = TrafficLogs | summarize EventsByProtocol = count() by dstip, Protocol | summarize TotalEventsProto = sum(EventsByProtocol), MaxProtocolEvents = max(EventsByProtocol) by dstip | extend MaxProtocolPct = round(100.0 * MaxProtocolEvents / TotalEventsProto, 2); DestStats | join kind=inner (MaxPerSource) on dstip | join kind=inner (ProtocolDominance) on dstip | where TotalEvents >= MinTotalEvents | where DistinctSources >= MinDistinctSources | where MaxEventsFromSingleSource <= MaxEventsPerSource | where DistinctProtocols >= MinProtocols | where MaxProtocolPct <= MaxProtocolSharePct | where DistinctCountries >= MinDistinctCountries | project TargetDestination = dstip, TotalEvents, UniqueSourceIPs = DistinctSources, MaxEventsFromSingleSource, ProtocolsObserved = Protocols, DistinctProtocols, MaxProtocolDominancePct = MaxProtocolPct, UniqueCountries = DistinctCountries, CountriesList = Countries, SampleSourceIPs = SampleSources, AllowedTraffic = AllowedCount, DeniedTraffic = DeniedCount | extend AlertSeverity = case(TotalEvents > 5000 and UniqueSourceIPs > 200, \"High\", TotalEvents > 2000 and UniqueSourceIPs > 100, \"Medium\", \"Low\") | extend AlertDescription = strcat(\"Potential distributed low-rate DDoS (carpet bombing) detected targeting \", TargetDestination, \". \", UniqueSourceIPs, \" unique source IPs from \", UniqueCountries, \" countries generated \", TotalEvents, \" events. Max events per source: \", MaxEventsFromSingleSource, \". Protocols: \", tostring(ProtocolsObserved), \" (max dominance: \", MaxProtocolDominancePct, \"%). Allowed: \", AllowedTraffic, \", Denied: \", DeniedTraffic)')]",
+            "SourceId": "[resourceId('Microsoft.OperationalInsights/workspaces',parameters('workspaceName'))]",
+            "Type": "ResultCount"
+        },
+        "alertSchedule": {
+            "Frequency": 5,
+            "Time": 60
+        },
+        "alertActions": {
+            "SeverityLevel": "2"
+        },
+        "alertTrigger": {
+            "Operator": "GreaterThan",
+            "Threshold": "0"
+        }
+    },
+    "resources": [
+        {
+            "name": "[variables('alertName')]",
+            "type": "Microsoft.Insights/scheduledQueryRules",
+            "apiVersion": "2018-04-16",
+            "location": "[variables('alertLocation')]",
+            "properties": {
+                "description": "[variables('alertDescription')]",
+                "enabled": "[variables('alertStatus')]",
+                "source": {
+                    "query": "[variables('alertSource').Query]",
+                    "dataSourceId": "[variables('alertSource').SourceId]",
+                    "queryType": "[variables('alertSource').Type]"
+                },
+                "schedule": {
+                    "frequencyInMinutes": "[variables('alertSchedule').Frequency]",
+                    "timeWindowInMinutes": "[variables('alertSchedule').Time]"
+                },
+                "action": {
+                    "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                    "severity": "[variables('alertActions').SeverityLevel]",
+                    "trigger": {
+                        "thresholdOperator": "[variables('alertTrigger').Operator]",
+                        "threshold": "[variables('alertTrigger').Threshold]"
+                    }
+                }
+            }
+        }
+    ]
+}
