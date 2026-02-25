@@ -1,4 +1,4 @@
-### Azure Firewall IP Group Auto‑Block Playbook (REST API)
+# Azure Firewall IP Group Auto‑Block Playbook (REST API)
 
 ## Overview
 
