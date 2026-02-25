@@ -1,9 +1,8 @@
-## Azure Firewall IP Group Auto‑Block Playbook (REST API)
+### Azure Firewall IP Group Auto‑Block Playbook (REST API)
 
 ## Overview
 
-This Microsoft Sentinel playbook automates **malicious IP containment** by dynamically updating an **Azure Firewall IP Group** when an incident is created.  
-Instead of modifying firewall rules directly, the playbook updates a referenced **IP Group**, ensuring **safe, scalable, and atomic enforcement** across all firewall rules that consume the group.
+This Microsoft Sentinel playbook automates **malicious IP containment** by dynamically updating an **Azure Firewall IP Group** when an incident is created.  Instead of modifying firewall rules directly, the playbook updates a referenced **IP Group**, ensuring **safe, scalable, and atomic enforcement** across all firewall rules that consume the group.
 
 The playbook:
 
