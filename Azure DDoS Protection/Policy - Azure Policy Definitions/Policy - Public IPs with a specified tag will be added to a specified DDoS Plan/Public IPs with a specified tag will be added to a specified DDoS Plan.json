@@ -1,0 +1,73 @@
+{
+  "properties": {
+    "displayName": "Enforce DDoS IP Protection on tagged Public IPs",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "Automatically enables DDoS IP Protection on Public IP addresses that are tagged with a specified key/value and associates them with a provided DDoS Protection Plan.",
+    "metadata": {
+      "category": "Network Security",
+      "version": "1.0.0"
+    },
+    "parameters": {
+      "tagName": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Name",
+          "description": "Tag key used to identify which Public IPs should have DDoS IP Protection enabled."
+        }
+      },
+      "tagValue": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Value",
+          "description": "Tag value that must match for the policy to apply."
+        }
+      },
+      "ddosPlanId": {
+        "type": "String",
+        "metadata": {
+          "displayName": "DDoS Protection Plan Resource ID",
+          "description": "Resource ID of an existing Azure DDoS Protection Plan."
+        }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/publicIPAddresses"
+          },
+          {
+            "field": "[concat('tags[', parameters('tagName'), ']')]",
+            "equals": "[parameters('tagValue')]"
+          },
+          {
+            "field": "Microsoft.Network/publicIPAddresses/ddosSettings.protectionMode",
+            "notEquals": "Enabled"
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+          ],
+          "operations": [
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Network/publicIPAddresses/ddosSettings.protectionMode",
+              "value": "Enabled"
+            },
+            {
+              "operation": "addOrReplace",
+              "field": "Microsoft.Network/publicIPAddresses/ddosSettings.ddosProtectionPlan.id",
+              "value": "[parameters('ddosPlanId')]"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
