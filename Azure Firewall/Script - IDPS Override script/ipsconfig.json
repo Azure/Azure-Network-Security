@@ -1,0 +1,9 @@
+{
+    "subs": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" ,
+    "rg": "TEST-RG",
+    "fw": "fw",
+    "fwp": "fw-policy",
+    "location" : "CentralUS",
+    "rcg" : "DefaultNetworkRuleCollectionGroup"
+    
+}
