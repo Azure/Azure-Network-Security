@@ -44,7 +44,6 @@ To function correctly, the following requirements must be met:
 - Public IPs must be tagged with the configured tag key and value
 
 ---
-
 ## Parameters
 
 | Parameter | Description |
@@ -61,6 +60,7 @@ To function correctly, the following requirements must be met:
   "tagValue": "true",
   "ddosPlanId": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Network/ddosProtectionPlans/<plan-name>"
 }
+```
 
 ## Contributing
 
