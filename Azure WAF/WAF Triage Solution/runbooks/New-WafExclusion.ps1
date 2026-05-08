@@ -5,11 +5,11 @@
 .DESCRIPTION
     This runbook modifies Azure Application Gateway WAF policies.
     It can be triggered manually, via webhook, or from Azure Logic Apps.
-    
+
     Supported actions:
     - createExclusion (default): Creates per-rule, per-group, or global exclusions
     - disableRule: Disables a specific managed rule in the WAF policy
-    
+
     Match Variables (for createExclusion):
     - RequestHeaderValues, RequestHeaderNames, RequestHeaderKeys
     - RequestCookieValues, RequestCookieNames, RequestCookieKeys
@@ -146,7 +146,7 @@ function Get-RuleGroupFromRuleId {
         [string]$RuleId,
         [string]$RuleSetType = 'OWASP'
     )
-    
+
     # OWASP CRS uses full prefix format: REQUEST-920-PROTOCOL-ENFORCEMENT
     $owaspGroupMap = @{
         '920' = 'REQUEST-920-PROTOCOL-ENFORCEMENT'
@@ -188,21 +188,21 @@ function Get-RuleGroupFromRuleId {
         '911' = 'METHOD-ENFORCEMENT'
         '612' = 'NODEJS'
     }
-    
+
     $prefix = $RuleId.Substring(0, 3)
-    
+
     # Select the appropriate map based on RuleSetType
     if ($RuleSetType -eq 'Microsoft_DefaultRuleSet') {
         if ($drsGroupMap.ContainsKey($prefix)) {
             return $drsGroupMap[$prefix]
         }
     }
-    
+
     # OWASP CRS map (also used as fallback for DRS)
     if ($owaspGroupMap.ContainsKey($prefix)) {
         return $owaspGroupMap[$prefix]
     }
-    
+
     # Default fallback - return provided group name or throw error
     return $null
 }
@@ -219,12 +219,12 @@ function Test-ExclusionExists {
         [string]$Selector,
         [string]$RuleId
     )
-    
+
     foreach ($exclusion in $WafPolicy.ManagedRules.Exclusions) {
-        if ($exclusion.MatchVariable -eq $MatchVariable -and 
+        if ($exclusion.MatchVariable -eq $MatchVariable -and
             $exclusion.SelectorMatchOperator -eq $SelectorMatchOperator -and
             $exclusion.Selector -eq $Selector) {
-            
+
             # Check if it's for the same rule
             if ($RuleId) {
                 foreach ($ruleSet in $exclusion.ExclusionManagedRuleSets) {
@@ -244,7 +244,7 @@ function Test-ExclusionExists {
             }
         }
     }
-    
+
     return $false
 }
 
@@ -281,10 +281,10 @@ try {
 
     # Connect to Azure using Managed Identity (for Automation Account)
     Write-Log "Connecting to Azure..."
-    
+
     try {
         # Try Managed Identity first (for Azure Automation)
-        $connection = Connect-AzAccount -Identity -ErrorAction Stop
+        $null = Connect-AzAccount -Identity -ErrorAction Stop
         Write-Log "Connected using Managed Identity"
     }
     catch {
@@ -475,7 +475,7 @@ try {
     if ($RuleId) {
         # Per-rule exclusion
         Write-Log "Creating per-rule exclusion for Rule ID: $RuleId"
-        
+
         # Create rule entry
         $ruleEntry = New-AzApplicationGatewayFirewallPolicyExclusionManagedRule `
             -RuleId $RuleId
@@ -501,7 +501,7 @@ try {
     elseif ($RuleGroupName) {
         # Per-rule-group exclusion
         Write-Log "Creating per-rule-group exclusion for group: $RuleGroupName"
-        
+
         # Create rule group entry without specific rules
         $ruleGroupEntry = New-AzApplicationGatewayFirewallPolicyExclusionManagedRuleGroup `
             -RuleGroupName $RuleGroupName
@@ -522,7 +522,7 @@ try {
     else {
         # Global exclusion
         Write-Log "Creating global exclusion (applies to all rules)"
-        
+
         $exclusionEntry = New-AzApplicationGatewayFirewallPolicyExclusion `
             -MatchVariable $MatchVariable `
             -SelectorMatchOperator $SelectorMatchOperator `
@@ -531,17 +531,17 @@ try {
 
     # Add exclusion to policy
     Write-Log "Adding exclusion to WAF policy..."
-    
+
     # Build a properly-typed exclusions list (fixes System.Object[] cast error)
     $typedExclusions = [System.Collections.Generic.List[Microsoft.Azure.Commands.Network.Models.PSApplicationGatewayFirewallPolicyExclusion]]::new()
-    
+
     # Copy any existing exclusions
     if ($wafPolicy.ManagedRules.Exclusions -and $wafPolicy.ManagedRules.Exclusions.Count -gt 0) {
         foreach ($existing in $wafPolicy.ManagedRules.Exclusions) {
             $typedExclusions.Add($existing)
         }
     }
-    
+
     # Add the new exclusion
     $typedExclusions.Add($exclusionEntry)
     $wafPolicy.ManagedRules.Exclusions = $typedExclusions
@@ -578,14 +578,14 @@ try {
 catch {
     Write-Log "ERROR: $($_.Exception.Message)" -Level "ERROR"
     Write-Log "Stack Trace: $($_.ScriptStackTrace)" -Level "ERROR"
-    
+
     $errorResult = @{
         Status = "Failed"
         Message = $_.Exception.Message
         PolicyName = $WafPolicyName
         Timestamp = (Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
     }
-    
+
     Write-Output ($errorResult | ConvertTo-Json)
     throw
 }
