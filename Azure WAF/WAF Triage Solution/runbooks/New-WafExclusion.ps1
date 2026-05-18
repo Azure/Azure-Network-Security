@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Azure Automation Runbook to create WAF exclusions or disable rules for Application Gateway WAF policies.
 
