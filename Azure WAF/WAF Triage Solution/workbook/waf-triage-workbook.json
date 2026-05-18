@@ -1,0 +1,1324 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# WAF False Positive Auto-Tuning (vNext)\n---\nThis workbook uses an **evidence-based FP Confidence score** to identify WAF tuning candidates from diagnostic logs. It traces blocked transactions back to contributing `Matched` rules, groups recurring selector-level patterns, scores confidence using breadth/recurrence/concentration signals, and lets operators apply reviewed changes from the workbook."
+      },
+      "name": "Title"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "p-sub-001",
+            "version": "KqlParameterItem/1.0",
+            "name": "subscription",
+            "label": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "includeAll": false
+            }
+          },
+          {
+            "id": "p-ws-002",
+            "version": "KqlParameterItem/1.0",
+            "name": "workspace",
+            "label": "Workspace",
+            "type": 5,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id",
+            "crossComponentResources": [
+              "{subscription}"
+            ],
+            "value": "",
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "p-dt-003",
+            "version": "KqlParameterItem/1.0",
+            "name": "detectionTime",
+            "label": "Time Range",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 86400000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2592000000
+                }
+              ]
+            }
+          },
+          {
+            "id": "p-la-005",
+            "version": "KqlParameterItem/1.0",
+            "name": "logicApp",
+            "label": "Logic App",
+            "type": 1,
+            "isRequired": true,
+            "value": "__LOGIC_APP_RESOURCE_ID__",
+            "isHiddenWhenLocked": true
+          },
+          {
+            "id": "p-act-006",
+            "version": "KqlParameterItem/1.0",
+            "name": "actionFilter",
+            "label": "Actions",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "jsonData": "[{\"value\":\"Blocked\",\"label\":\"Blocked\",\"selected\":true},{\"value\":\"Matched\",\"label\":\"Matched\",\"selected\":true},{\"value\":\"Detected\",\"label\":\"Detected\",\"selected\":true}]",
+            "value": [
+              "Blocked",
+              "Matched",
+              "Detected"
+            ]
+          },
+          {
+            "id": "p-tab-default",
+            "version": "KqlParameterItem/1.0",
+            "name": "SelectedTab",
+            "type": 1,
+            "isRequired": false,
+            "value": "auto-exclusion",
+            "isHiddenWhenLocked": true
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "Parameters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AzureDiagnostics\n| where Category == \"ApplicationGatewayFirewallLog\"\n| where TimeGenerated {detectionTime}\n| where action_s in ({actionFilter})\n| extend Id = new_guid()\n| project-reorder Id, ResourceId, policyScopeName_s, action_s\n| evaluate pivot(action_s, count(), ResourceId, policyScopeName_s)",
+        "size": 1,
+        "title": "Step 1 — Select listener scope (click a row)",
+        "exportedParameters": [
+          {
+            "fieldName": "policyScopeName_s",
+            "parameterName": "PolicyScope",
+            "parameterType": 1
+          },
+          {
+            "fieldName": "ResourceId",
+            "parameterName": "ResourceId",
+            "parameterType": 1
+          }
+        ],
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{workspace}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "$gen_group",
+              "formatter": 13,
+              "formatOptions": {
+                "linkTarget": null,
+                "showIcon": true
+              }
+            },
+            {
+              "columnMatch": "ResourceId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Blocked",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "colors",
+                "thresholdsGrid": [
+                  {
+                    "operator": "Default",
+                    "representation": "redBright",
+                    "text": "{0}{1}"
+                  }
+                ]
+              }
+            },
+            {
+              "columnMatch": "Detected",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "colors",
+                "thresholdsGrid": [
+                  {
+                    "operator": "Default",
+                    "representation": "yellow",
+                    "text": "{0}{1}"
+                  }
+                ]
+              }
+            },
+            {
+              "columnMatch": "Matched",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "colors",
+                "thresholdsGrid": [
+                  {
+                    "operator": "Default",
+                    "representation": "blue",
+                    "text": "{0}{1}"
+                  }
+                ]
+              }
+            }
+          ],
+          "rowLimit": 500,
+          "hierarchySettings": {
+            "treeType": 1,
+            "groupBy": [
+              "ResourceId"
+            ]
+          },
+          "labelSettings": [
+            {
+              "columnId": "ResourceId",
+              "label": "App Gateway"
+            },
+            {
+              "columnId": "policyScopeName_s",
+              "label": "Policy Scope"
+            }
+          ]
+        }
+      },
+      "name": "ScopeSelection"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "p-wafname-008",
+            "version": "KqlParameterItem/1.0",
+            "name": "wafPolicyName",
+            "label": "WAF Policy",
+            "type": 2,
+            "isRequired": false,
+            "query": "resources\r\n| where type =~ 'microsoft.network/applicationgateways'\r\n| where id =~ '{ResourceId}'\r\n| extend gwPol = tostring(properties.firewallPolicy.id)\r\n| mv-expand listener = properties.httpListeners\r\n| extend listenerName = tostring(listener.name), listenerPol = tostring(listener.properties.firewallPolicy.id)\r\n| summarize gwPol = take_any(gwPol), listenerPol = max(iff(listenerName =~ '{PolicyScope}', listenerPol, ''))\r\n| extend resolvedPol = iff(isnotempty(listenerPol), listenerPol, gwPol)\r\n| project value = tostring(split(resolvedPol, '/')[8]), label = tostring(split(resolvedPol, '/')[8]), selected = true",
+            "crossComponentResources": [
+              "{subscription}"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "p-wafrg-009",
+            "version": "KqlParameterItem/1.0",
+            "name": "wafPolicyRG",
+            "type": 2,
+            "isRequired": false,
+            "query": "resources\r\n| where type =~ 'microsoft.network/applicationgateways'\r\n| where id =~ '{ResourceId}'\r\n| extend gwPol = tostring(properties.firewallPolicy.id)\r\n| mv-expand listener = properties.httpListeners\r\n| extend listenerName = tostring(listener.name), listenerPol = tostring(listener.properties.firewallPolicy.id)\r\n| summarize gwPol = take_any(gwPol), listenerPol = max(iff(listenerName =~ '{PolicyScope}', listenerPol, ''))\r\n| extend resolvedPol = iff(isnotempty(listenerPol), listenerPol, gwPol)\r\n| project value = tostring(split(resolvedPol, '/')[4]), label = tostring(split(resolvedPol, '/')[4]), selected = true",
+            "crossComponentResources": [
+              "{subscription}"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "p-wafid-010",
+            "version": "KqlParameterItem/1.0",
+            "name": "wafPolicyId",
+            "type": 2,
+            "isRequired": false,
+            "query": "resources\r\n| where type =~ 'microsoft.network/applicationgateways'\r\n| where id =~ '{ResourceId}'\r\n| extend gwPol = tostring(properties.firewallPolicy.id)\r\n| mv-expand listener = properties.httpListeners\r\n| extend listenerName = tostring(listener.name), listenerPol = tostring(listener.properties.firewallPolicy.id)\r\n| summarize gwPol = take_any(gwPol), listenerPol = max(iff(listenerName =~ '{PolicyScope}', listenerPol, ''))\r\n| extend resolvedPol = iff(isnotempty(listenerPol), listenerPol, gwPol)\r\n| project value = resolvedPol, label = resolvedPol, selected = true",
+            "crossComponentResources": [
+              "{subscription}"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "conditionalVisibility": {
+        "parameterName": "ResourceId",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "WafPolicyResolver"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "ℹ️ **Scope precedence:** When a WAF policy is assigned at both the gateway level (*Global*) and an individual listener, the **listener-level policy takes precedence**. WAF logs will only record hits against the listener scope; the Global row will show 0 hits in that case.\n\n### 🛡️ Selected WAF Policy: **{wafPolicyName}**\n| | |\n|---|---|\n| **Resource Group** | {wafPolicyRG} |"
+      },
+      "conditionalVisibility": {
+        "parameterName": "ResourceId",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "ScopePrecedenceNote"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "tab-auto",
+            "cellValue": "SelectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "⚡ Auto-Tuning",
+            "subTarget": "auto-exclusion",
+            "style": "link",
+            "preText": ""
+          },
+          {
+            "id": "tab-lookup",
+            "cellValue": "SelectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "🔎 Quick Lookup",
+            "subTarget": "quick-lookup",
+            "style": "link"
+          },
+          {
+            "id": "tab-overview",
+            "cellValue": "SelectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "📊 Overview",
+            "subTarget": "overview",
+            "style": "link"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "PolicyScope",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "TabNavigation"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "## Detected Tuning Candidates\nThis view uses **anomaly scoring awareness** and an **evidence-based FP Confidence score**. It traces blocked transactions back to contributing `Matched` rules, groups candidates by (Rule, MatchVariable, Selector), then scores each pattern using transaction evidence, breadth, recurrence, source/URI concentration, selector quality, and mitigation safety.\n\nMandatory blocking-evaluation rules (949/959/980) are automatically filtered out since they cannot be excluded.\n\n> Select a row to see the impact preview, then click **Create Exclusion** or **Disable Rule** after reviewing the evidence."
+            },
+            "name": "AutoHeader"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type =~ 'microsoft.network/applicationgatewaywebapplicationfirewallpolicies'\r\n| where id =~ '{wafPolicyId}'\r\n| mv-expand exclusion = properties.managedRules.exclusions\r\n| extend MatchVariable = tostring(exclusion.matchVariable),\r\n    Operator = tostring(exclusion.selectorMatchOperator),\r\n    Selector = tostring(exclusion.selector),\r\n    Scope = iff(array_length(exclusion.exclusionManagedRuleSets) > 0, 'Per-Rule', 'Global')\r\n| mv-expand ruleSet = exclusion.exclusionManagedRuleSets\r\n| mv-expand ruleGroup = ruleSet.ruleGroups\r\n| mv-expand rule = ruleGroup.rules\r\n| project MatchVariable, Operator, Selector, Scope,\r\n    RuleSetType = tostring(ruleSet.ruleSetType),\r\n    RuleSetVersion = tostring(ruleSet.ruleSetVersion),\r\n    RuleGroupName = tostring(ruleGroup.ruleGroupName),\r\n    RuleId = tostring(rule.ruleId)",
+              "size": 1,
+              "title": "✅ Existing exclusions on this WAF policy (already configured)",
+              "noDataMessage": "No exclusions configured yet on this WAF policy.",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{subscription}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Scope",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Global",
+                          "representation": "warning",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "MatchVariable",
+                    "label": "Match Variable"
+                  },
+                  {
+                    "columnId": "Operator",
+                    "label": "Operator"
+                  },
+                  {
+                    "columnId": "Selector",
+                    "label": "Selector"
+                  },
+                  {
+                    "columnId": "Scope",
+                    "label": "Scope"
+                  },
+                  {
+                    "columnId": "RuleSetType",
+                    "label": "Rule Set"
+                  },
+                  {
+                    "columnId": "RuleGroupName",
+                    "label": "Rule Group"
+                  },
+                  {
+                    "columnId": "RuleId",
+                    "label": "Rule ID"
+                  }
+                ]
+              }
+            },
+            "name": "ExistingExclusions"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Evidence-based FP Confidence: trace blocked transactions to contributing Matched rules, then score breadth, recurrence, concentration, selector quality, and mitigation safety\nlet blockedTxns = AzureDiagnostics\n| where Category == \"ApplicationGatewayFirewallLog\"\n| where TimeGenerated {detectionTime}\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\n| extend TxnId = coalesce(tostring(column_ifexists(\"transactionId_g\", \"\")), tostring(column_ifexists(\"transactionId_s\", \"\")))\n| where action_s == \"Blocked\" and isnotempty(TxnId)\n| distinct TxnId;\nlet parsed = AzureDiagnostics\n| where Category == \"ApplicationGatewayFirewallLog\"\n| where TimeGenerated {detectionTime}\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\n| extend TxnId = coalesce(tostring(column_ifexists(\"transactionId_g\", \"\")), tostring(column_ifexists(\"transactionId_s\", \"\")))\n| where (action_s == \"Matched\" and TxnId in (blockedTxns))\n    or (action_s in ({actionFilter}) and ruleId_s != \"0\")\n// Filter out mandatory blocking-evaluation rules (949/959/980) — they cannot be excluded or disabled\n| where not(ruleId_s startswith \"949\") and not(ruleId_s startswith \"980\") and not(ruleId_s startswith \"959\")\n| where ruleId_s != \"0\"\n| where isnotempty(details_message_s) or isnotempty(details_data_s)\n// Parse match variable and selector from BOTH details_message_s and details_data_s\n| extend MatchInfo = coalesce(details_message_s, \"\")\n| extend DataInfo = coalesce(details_data_s, \"\")\n| extend LogMatchVariable = coalesce(extract(@'at\\s+(\\w+)[:\\.\\s]', 1, MatchInfo), extract(@'\\[(\\w+):', 1, DataInfo), \"\")\n| extend MatchVariable = case(\n    MatchInfo has \"ARGS_NAMES\", \"RequestArgKeys\",\n    MatchInfo has \"REQUEST_COOKIES_NAMES\", \"RequestCookieKeys\",\n    MatchInfo has \"REQUEST_HEADERS_NAMES\", \"RequestHeaderKeys\",\n    MatchInfo matches regex @'ARGS_GET[:\\.]', \"RequestArgValues\",\n    MatchInfo matches regex @'ARGS_POST[:\\.]', \"RequestArgValues\",\n    MatchInfo matches regex @'ARGS[:\\.]', \"RequestArgValues\",\n    MatchInfo matches regex @'REQUEST_HEADERS[:\\.]', \"RequestHeaderValues\",\n    MatchInfo matches regex @'REQUEST_COOKIES[:\\.]', \"RequestCookieValues\",\n    MatchInfo has \"REQUEST_BODY\", \"RequestArgValues\",\n    MatchInfo has \"REQUEST_URI\", \"DisableRule\",\n    MatchInfo has \"REQUEST_BASENAME\", \"DisableRule\",\n    MatchInfo has \"REQUEST_FILENAME\", \"DisableRule\",\n    MatchInfo has \"MULTIPART_STRICT_ERROR\", \"DisableRule\",\n    MatchInfo has \"REQUEST_METHOD\", \"DisableRule\",\n    MatchInfo has \"REQUEST_PROTOCOL\", \"DisableRule\",\n    MatchInfo has \"XML:\", \"DisableRule\",\n    DataInfo matches regex @'\\[ARGS_NAMES:', \"RequestArgKeys\",\n    DataInfo matches regex @'\\[REQUEST_COOKIES_NAMES:', \"RequestCookieKeys\",\n    DataInfo matches regex @'\\[REQUEST_HEADERS_NAMES:', \"RequestHeaderKeys\",\n    DataInfo matches regex @'\\[ARGS_GET:', \"RequestArgValues\",\n    DataInfo matches regex @'\\[ARGS_POST:', \"RequestArgValues\",\n    DataInfo matches regex @'\\[ARGS:', \"RequestArgValues\",\n    DataInfo matches regex @'\\[REQUEST_HEADERS:', \"RequestHeaderValues\",\n    DataInfo matches regex @'\\[REQUEST_COOKIES:', \"RequestCookieValues\",\n    DataInfo has \"REQUEST_BODY\", \"RequestArgValues\",\n    DataInfo has \"REQUEST_URI\", \"DisableRule\",\n    DataInfo has \"REQUEST_BASENAME\", \"DisableRule\",\n    DataInfo has \"REQUEST_FILENAME\", \"DisableRule\",\n    DataInfo has \"XML:\", \"DisableRule\",\n    \"\")\n| extend Selector = case(\n    isnotempty(extract(@'ARGS_NAMES:([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'ARGS_NAMES:([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'ARGS_GET:([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'ARGS_GET:([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'ARGS_POST:([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'ARGS_POST:([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'ARGS:([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'ARGS:([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'REQUEST_HEADERS_NAMES:([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'REQUEST_HEADERS_NAMES:([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'REQUEST_HEADERS:([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'REQUEST_HEADERS:([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'REQUEST_COOKIES_NAMES:([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'REQUEST_COOKIES_NAMES:([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'REQUEST_COOKIES:([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'REQUEST_COOKIES:([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'REQUEST_BODY:([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'REQUEST_BODY:([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'\\[ARGS_NAMES:([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[ARGS_NAMES:([^\\]:\\s\\]]+)', 1, DataInfo),\n    isnotempty(extract(@'\\[ARGS_GET:([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[ARGS_GET:([^\\]:\\s\\]]+)', 1, DataInfo),\n    isnotempty(extract(@'\\[ARGS_POST:([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[ARGS_POST:([^\\]:\\s\\]]+)', 1, DataInfo),\n    isnotempty(extract(@'\\[ARGS:([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[ARGS:([^\\]:\\s\\]]+)', 1, DataInfo),\n    isnotempty(extract(@'\\[REQUEST_HEADERS_NAMES:([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[REQUEST_HEADERS_NAMES:([^\\]:\\s\\]]+)', 1, DataInfo),\n    isnotempty(extract(@'\\[REQUEST_HEADERS:([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[REQUEST_HEADERS:([^\\]:\\s\\]]+)', 1, DataInfo),\n    isnotempty(extract(@'\\[REQUEST_COOKIES_NAMES:([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[REQUEST_COOKIES_NAMES:([^\\]:\\s\\]]+)', 1, DataInfo),\n    isnotempty(extract(@'\\[REQUEST_COOKIES:([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[REQUEST_COOKIES:([^\\]:\\s\\]]+)', 1, DataInfo),\n    isnotempty(extract(@'\\[REQUEST_BODY:([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[REQUEST_BODY:([^\\]:\\s\\]]+)', 1, DataInfo),\n    \"\")\n| extend ActionType = iff(MatchVariable == \"DisableRule\", \"disableRule\", \"createExclusion\")\n| where isnotempty(MatchVariable) and (MatchVariable == \"DisableRule\" or isnotempty(Selector))\n// Filter out selectors that are clearly attack payloads (XSS, injection)\n| where MatchVariable == \"DisableRule\" or (Selector !contains \"<\" and Selector !contains \">\" and Selector !contains \"script\" and Selector !contains \"alert(\" and Selector !contains \";\" and Selector !contains \"/\")\n| extend NormRuleSetType = case(ruleSetType_s has \"OWASP\", \"OWASP\", ruleSetType_s)\n| extend IsBlockedTxn = TxnId in (blockedTxns);\nlet base = parsed\n| summarize\n    HitCount = count(),\n    UniqueTransactions = dcount(TxnId),\n    BlockedTransactions = dcountif(TxnId, IsBlockedTxn),\n    MatchedTransactions = dcountif(TxnId, action_s == \"Matched\"),\n    DetectedTransactions = dcountif(TxnId, action_s == \"Detected\"),\n    URIs = dcount(requestUri_s),\n    IPs = dcount(clientIp_s),\n    Hosts = dcount(hostname_s),\n    ActiveHours = dcount(bin(TimeGenerated, 1h)),\n    ActiveDays = dcount(startofday(TimeGenerated)),\n    SampleURIs = make_set(requestUri_s, 5),\n    SampleData = make_set(details_data_s, 3),\n    WindowStart = min(TimeGenerated),\n    WindowEnd = max(TimeGenerated),\n    RuleGroup = take_any(ruleGroup_s),\n    RuleSetVersion = take_any(ruleSetVersion_s),\n    NormRuleSetType = take_any(NormRuleSetType),\n    SampleMsg = take_any(Message),\n    LogMatchVariable = take_any(LogMatchVariable),\n    ActionType = take_any(ActionType)\n    by ruleId_s, MatchVariable, Selector;\nlet ipConcentration = parsed\n| summarize IPHits = count() by ruleId_s, MatchVariable, Selector, clientIp_s\n| summarize TopIPHits = max(IPHits) by ruleId_s, MatchVariable, Selector;\nlet uriConcentration = parsed\n| summarize URIHits = count() by ruleId_s, MatchVariable, Selector, requestUri_s\n| summarize TopURIHits = max(URIHits) by ruleId_s, MatchVariable, Selector;\nbase\n| join kind=leftouter ipConcentration on ruleId_s, MatchVariable, Selector\n| join kind=leftouter uriConcentration on ruleId_s, MatchVariable, Selector\n| extend TopIPShare = iff(HitCount == 0, 0.0, round(todouble(TopIPHits) / todouble(HitCount), 2)),\n         TopURIShare = iff(HitCount == 0, 0.0, round(todouble(TopURIHits) / todouble(HitCount), 2))\n| extend WindowHours = max_of(1, datetime_diff('hour', WindowEnd, WindowStart)),\n         WindowDays = max_of(1, datetime_diff('day', WindowEnd, WindowStart))\n| extend HoursRatio = round(todouble(ActiveHours) / todouble(WindowHours), 2),\n         DaysRatio = round(todouble(ActiveDays) / todouble(WindowDays), 2),\n         DailyRate = round(todouble(UniqueTransactions) / todouble(max_of(1, ActiveDays)), 1)\n| extend TraceScore = case(BlockedTransactions > 0 and MatchedTransactions > 0, 15, BlockedTransactions > 0, 10, DetectedTransactions > 0, 5, 0)\n| extend DailyURIs = round(todouble(URIs) / todouble(max_of(1, ActiveDays)), 1),\n         DailyIPs = round(todouble(IPs) / todouble(max_of(1, ActiveDays)), 1)\n| extend BreadthScore = case(DailyURIs > 10 and DailyIPs > 3, 25, DailyURIs > 5 or DailyIPs > 2, 18, DailyURIs > 2, 10, DailyURIs > 1, 5, 0)\n| extend RecurrenceScore = case(HoursRatio > 0.50 and DaysRatio >= 0.50, 10, HoursRatio > 0.25, 7, HoursRatio > 0.10, 3, 0)\n| extend ConcentrationScore = case(TopIPShare <= 0.20 and TopURIShare <= 0.30, 20, TopIPShare <= 0.35 and TopURIShare <= 0.50, 14, TopIPShare <= 0.60 and TopURIShare <= 0.75, 7, 0)\n| extend SelectorScore = case(MatchVariable == \"DisableRule\", 1, isnotempty(Selector) and strlen(Selector) <= 80, 5, isnotempty(Selector), 3, 0)\n| extend MitigationScore = iff(ActionType == \"createExclusion\", 5, 1)\n| extend VolumeScore = case(DailyRate > 50, 20, DailyRate > 20, 15, DailyRate > 10, 10, DailyRate > 3, 5, 0)\n| extend ConfidenceScoreRaw = TraceScore + BreadthScore + RecurrenceScore + ConcentrationScore + SelectorScore + MitigationScore + VolumeScore\n| extend ConfidenceScore = iff(ActionType == \"disableRule\" and ConfidenceScoreRaw > 79, 79, ConfidenceScoreRaw)\n| extend Confidence = case(\n    ConfidenceScore >= 85, \"⭐ Very High\",\n    ConfidenceScore >= 70, \"🟠 High\",\n    ConfidenceScore >= 50, \"🟡 Medium\",\n    \"⚪ Low\")\n| extend ConfidenceReason = strcat(\n    \"Trace \", TraceScore, \"/15; Breadth \", BreadthScore, \"/25; Recurrence \", RecurrenceScore, \"/10; Concentration \", ConcentrationScore, \"/20; Selector \", SelectorScore, \"/5; Mitigation \", MitigationScore, \"/5; Volume \", VolumeScore, \"/20\")\n| extend Blocks = HitCount\n| extend Coverage = Confidence\n| extend CreateAction = iff(ActionType == \"disableRule\", \"🚫 Disable Rule\", \"➕ Create Exclusion\")\n| project ruleId_s, MatchVariable, Selector, RuleGroup, NormRuleSetType, RuleSetVersion, ActionType, CreateAction, Confidence, FPScore = ConfidenceScore, ScoreBreakdown = ConfidenceReason, HitCount, Blocks, UniqueTransactions, BlockedTransactions, MatchedTransactions, DetectedTransactions, UriCount = URIs, ClientIPCount = IPs, Hosts, ActiveHours, ActiveDays, TopClientIPShare = TopIPShare, TopRequestURIShare = TopURIShare, SampleMsg, SampleUrls = SampleURIs, SampleData, LogMatchVariable\n| order by FPScore desc, HitCount desc",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "Step 2 — Tuning candidates ranked by FP Confidence (click a row to preview/apply)",
+              "exportedParameters": [
+                {
+                  "fieldName": "ruleId_s",
+                  "parameterName": "SelectedRuleId",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "MatchVariable",
+                  "parameterName": "SelectedMatchVar",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "Selector",
+                  "parameterName": "SelectedSelector",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "RuleGroup",
+                  "parameterName": "SelectedRuleGroup",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "NormRuleSetType",
+                  "parameterName": "SelectedRuleSetType",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "RuleSetVersion",
+                  "parameterName": "SelectedRuleSetVersion",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "HitCount",
+                  "parameterName": "SelectedBlocks",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "UriCount",
+                  "parameterName": "SelectedURIs",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "SampleMsg",
+                  "parameterName": "SelectedMsg",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "LogMatchVariable",
+                  "parameterName": "SelectedLogMatchVar",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "ActionType",
+                  "parameterName": "SelectedActionType",
+                  "parameterType": 1
+                }
+              ],
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "ruleId_s",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "8ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Blocks",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    }
+                  },
+                  {
+                    "columnMatch": "UriCount",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "ClientIPCount",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "Hosts",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SampleUrls",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SampleData",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "RuleGroup",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "RuleSetVersion",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "NormRuleSetType",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SampleMsg",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Confidence",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "colors",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "contains",
+                          "thresholdValue": "Very High",
+                          "representation": "redBright",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "contains",
+                          "thresholdValue": "High",
+                          "representation": "orange",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "contains",
+                          "thresholdValue": "Medium",
+                          "representation": "yellow",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "representation": "green",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "CreateAction",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "ArmAction",
+                      "linkLabel": "",
+                      "linkIsContextBlade": true,
+                      "armActionContext": {
+                        "path": "{logicApp}/triggers/manual/run?api-version=2016-10-01",
+                        "headers": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          }
+                        ],
+                        "params": [],
+                        "body": "{\n  \"action\": \"{SelectedActionType}\",\n  \"resourceGroupName\": \"{wafPolicyRG}\",\n  \"wafPolicyName\": \"{wafPolicyName}\",\n  \"ruleId\": \"{SelectedRuleId}\",\n  \"ruleGroupName\": \"{SelectedRuleGroup}\",\n  \"ruleSetType\": \"{SelectedRuleSetType}\",\n  \"ruleSetVersion\": \"{SelectedRuleSetVersion}\",\n  \"matchVariable\": \"{SelectedMatchVar}\",\n  \"selectorMatchOperator\": \"Equals\",\n  \"selector\": \"{SelectedSelector}\",\n  \"description\": \"Auto-created from WAF Triage Workbook: Rule {SelectedRuleId} {SelectedActionType} ({SelectedBlocks} hits, {SelectedURIs} URIs)\"\n}",
+                        "httpMethod": "POST",
+                        "title": "WAF Policy Change",
+                        "description": "**Action:** {SelectedActionType}\n\nThis will apply a change to WAF policy **{wafPolicyName}**:\n\n| Setting | Value |\n|---------|-------|\n| Action | {SelectedActionType} |\n| Rule ID | {SelectedRuleId} |\n| Rule Group | {SelectedRuleGroup} |\n| Match Variable | {SelectedMatchVar} |\n| Selector | {SelectedSelector} |\n| Log Variable | {SelectedLogMatchVar} |\n\n**Impact:** Fixes {SelectedBlocks} hits across {SelectedURIs} URIs\n\n⚠️ This modifies your WAF policy. The change applies immediately.",
+                        "actionName": "CreateWafExclusion",
+                        "runLabel": "Confirm & Apply"
+                      }
+                    }
+                  }
+                ],
+                "filter": true,
+                "sortBy": [
+                  {
+                    "itemKey": "FPScore",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "ruleId_s",
+                    "label": "Rule ID"
+                  },
+                  {
+                    "columnId": "MatchVariable",
+                    "label": "Match Variable"
+                  },
+                  {
+                    "columnId": "Selector",
+                    "label": "Selector"
+                  },
+                  {
+                    "columnId": "Blocks",
+                    "label": "Hit Count"
+                  },
+                  {
+                    "columnId": "UriCount",
+                    "label": "Unique URIs"
+                  },
+                  {
+                    "columnId": "ClientIPCount",
+                    "label": "Unique IPs"
+                  },
+                  {
+                    "columnId": "CreateAction",
+                    "label": "Action"
+                  },
+                  {
+                    "columnId": "Confidence",
+                    "label": "FP Confidence"
+                  },
+                  {
+                    "columnId": "FPScore",
+                    "label": "Score"
+                  },
+                  {
+                    "columnId": "UniqueTransactions",
+                    "label": "Transactions"
+                  },
+                  {
+                    "columnId": "BlockedTransactions",
+                    "label": "Blocked Txns"
+                  },
+                  {
+                    "columnId": "MatchedTransactions",
+                    "label": "Matched Txns"
+                  },
+                  {
+                    "columnId": "ActiveHours",
+                    "label": "Active Hours"
+                  },
+                  {
+                    "columnId": "TopClientIPShare",
+                    "label": "Top IP Share"
+                  },
+                  {
+                    "columnId": "TopRequestURIShare",
+                    "label": "Top URI Share"
+                  },
+                  {
+                    "columnId": "ScoreBreakdown",
+                    "label": "Confidence Reason"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "FPScore",
+                  "sortOrder": 2
+                }
+              ]
+            },
+            "name": "ExclusionCandidates"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "---\n## 🔍 Impact Preview for Rule {SelectedRuleId}\n**Pattern:** `{SelectedMatchVar}` with selector `{SelectedSelector}`\n\n**Message:** {SelectedMsg}\n\nThe table below shows sample WAF events that match this candidate. Review before applying any change."
+            },
+            "conditionalVisibility": {
+              "parameterName": "SelectedRuleId",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "ImpactPreviewHeader"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| where ruleId_s == '{SelectedRuleId}'\r\n| where (\"{SelectedSelector}\" == \"\" or details_message_s contains \"{SelectedSelector}\" or details_data_s contains \"{SelectedSelector}\")\r\n| project TimeGenerated, hostname_s, requestUri_s, clientIp_s, action_s, details_data_s, details_message_s\r\n| order by TimeGenerated desc\r\n| take 30",
+              "size": 0,
+              "title": "Blocked requests that would be fixed by this change (sample of up to 30)",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "action_s",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Blocked",
+                          "representation": "4",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Matched",
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "more",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "TimeGenerated",
+                    "label": "Time"
+                  },
+                  {
+                    "columnId": "hostname_s",
+                    "label": "Host"
+                  },
+                  {
+                    "columnId": "requestUri_s",
+                    "label": "URI"
+                  },
+                  {
+                    "columnId": "clientIp_s",
+                    "label": "Client IP"
+                  },
+                  {
+                    "columnId": "action_s",
+                    "label": "Action"
+                  },
+                  {
+                    "columnId": "details_data_s",
+                    "label": "Matched Data"
+                  },
+                  {
+                    "columnId": "details_message_s",
+                    "label": "Details"
+                  }
+                ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "SelectedRuleId",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "ImpactPreviewGrid"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "---\n## ✅ Apply WAF Change\n\nReview the details below, then click the button to apply the change automatically.\n\n| Setting | Value |\n|---------|-------|\n| **Action** | `{SelectedActionType}` |\n| **WAF Policy** | `{wafPolicyName}` (RG: `{wafPolicyRG}`) |\n| **Rule ID** | `{SelectedRuleId}` |\n| **Rule Group** | `{SelectedRuleGroup}` |\n| **Rule Set** | `{SelectedRuleSetType}` v`{SelectedRuleSetVersion}` |\n| **Log Variable** | `{SelectedLogMatchVar}` |\n| **Match Variable** | `{SelectedMatchVar}` |\n| **Selector** | `{SelectedSelector}` |\n| **Evidence** | **{SelectedBlocks}** hits across **{SelectedURIs}** URIs |"
+            },
+            "conditionalVisibility": {
+              "parameterName": "SelectedRuleId",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "CreateExclusionReview"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "nav",
+              "links": [
+                {
+                  "id": "create-exclusion-btn",
+                  "linkTarget": "ArmAction",
+                  "linkLabel": "⚡ Apply Change for Rule {SelectedRuleId}",
+                  "style": "primary",
+                  "linkIsContextBlade": true,
+                  "armActionContext": {
+                    "path": "{logicApp}/triggers/manual/run?api-version=2016-10-01",
+                    "headers": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "params": [],
+                    "body": "{\n  \"action\": \"{SelectedActionType}\",\n  \"resourceGroupName\": \"{wafPolicyRG}\",\n  \"wafPolicyName\": \"{wafPolicyName}\",\n  \"ruleId\": \"{SelectedRuleId}\",\n  \"ruleGroupName\": \"{SelectedRuleGroup}\",\n  \"ruleSetType\": \"{SelectedRuleSetType}\",\n  \"ruleSetVersion\": \"{SelectedRuleSetVersion}\",\n  \"matchVariable\": \"{SelectedMatchVar}\",\n  \"selectorMatchOperator\": \"Equals\",\n  \"selector\": \"{SelectedSelector}\",\n  \"description\": \"Auto-created from WAF Triage Workbook: Rule {SelectedRuleId} {SelectedActionType} ({SelectedBlocks} hits, {SelectedURIs} URIs)\"\n}",
+                    "httpMethod": "POST",
+                    "title": "WAF Policy Change",
+                    "description": "**Action:** {SelectedActionType}\n\nThis will apply a change to WAF policy **{wafPolicyName}**:\n\n| Setting | Value |\n|---------|-------|\n| Action | {SelectedActionType} |\n| Rule | {SelectedRuleId} |\n| Log Variable | {SelectedLogMatchVar} |\n| Match Variable | {SelectedMatchVar} |\n| Selector | {SelectedSelector} |\n\n**Impact:** Fixes {SelectedBlocks} hits across {SelectedURIs} URIs\n\nThe Logic App will trigger a Runbook that applies the change to your WAF policy. This takes effect immediately.",
+                    "actionName": "CreateWafExclusion",
+                    "runLabel": "Confirm & Apply"
+                  }
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "SelectedRuleId",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "CreateExclusionButton"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "---\n### ℹ️ How it works\n1. Click **Create Exclusion** or **Disable Rule** on any pattern row (or select a row and use the button below)\n2. A confirmation dialog shows you exactly what will be changed\n3. Click **Confirm & Apply** to trigger the automation\n4. The Logic App starts a Runbook that applies the change to your WAF policy\n5. The change takes effect immediately — no App Gateway restart needed\n\n**Actions:**\n- **⊕ Create Exclusion** — adds a per-rule exclusion for the specific match variable and selector (e.g., exclude `Host` header from rule 920350)\n- **🚫 Disable Rule** — disables the entire rule when the match variable cannot be excluded (e.g., REQUEST_URI, REQUEST_BODY matches)\n\n**Check status:** Open the [Logic App](https://portal.azure.com/#resource{logicApp}/logicApp) to see execution history.\n\n---\n### 💡 Anomaly Scoring\nAzure WAF uses anomaly scoring: individual rules with `action=Matched` increment a score, and when the total exceeds the threshold, mandatory rules (949/980) issue the `Blocked` action. This workbook automatically traces blocked transactions back to the contributing Matched rules, so you see the **actual rules to exclude** rather than the un-excludable blocking rules.\n\n---\n### ⚙️ Global Parameters\nSome false positives can also be fixed by adjusting WAF policy settings:\n- **Disable request body inspection** — if request bodies are trusted\n- **Increase max request body limit** — for apps with large POST payloads\n- **Increase file upload limit** — for apps allowing large file uploads\n\nThese are set under WAF Policy → Policy Settings."
+            },
+            "name": "HowItWorks"
+          }
+        ],
+        "exportParameters": true
+      },
+      "conditionalVisibility": {
+        "parameterName": "SelectedTab",
+        "comparison": "isEqualTo",
+        "value": "auto-exclusion"
+      },
+      "name": "AutoExclusionTab"
+    },
+    {
+      "conditionalVisibility": {
+        "parameterName": "SelectedTab",
+        "value": "quick-lookup",
+        "comparison": "isEqualTo"
+      },
+      "type": 12,
+      "content": {
+        "groupType": "editable",
+        "version": "NotebookGroup/1.0",
+        "exportParameters": true,
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "style": "pills",
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "version": "KqlParameterItem/1.0",
+              "queryType": 0,
+              "parameters": [
+                {
+                  "type": 1,
+                  "description": "Paste a WAF transaction ID from logs or a support ticket to look up the exact request and create an exclusion.",
+                  "version": "KqlParameterItem/1.0",
+                  "value": "",
+                  "name": "LookupTxnId",
+                  "id": "p-txn-lookup",
+                  "label": "Transaction ID",
+                  "isRequired": false
+                }
+              ]
+            },
+            "name": "LookupParameters"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "## Quick Transaction Lookup\nPaste a **Transaction ID** from WAF logs or a support ticket above. This shows all WAF rule events for that specific request so you can review the match details and create an exclusion with one click.\\n\\n> **Important:** The exclusion will be applied to the WAF policy selected in **Step 1** above. Make sure you selected the correct Application Gateway and listener scope before applying a fix.\n\n> **Tip:** Find the transaction ID in WAF firewall logs (`transactionId` field) or in the Azure portal under Application Gateway > WAF logs."
+            },
+            "name": "LookupHeader"
+          },
+          {
+            "conditionalVisibility": {
+              "parameterName": "LookupTxnId",
+              "comparison": "isNotEqualTo"
+            },
+            "type": 3,
+            "content": {
+              "size": 0,
+              "query": "AzureDiagnostics\n| where Category == \"ApplicationGatewayFirewallLog\"\n| where TimeGenerated {detectionTime}\n| where \"{LookupTxnId}\" != \"\"\n| extend TxnId = coalesce(tostring(column_ifexists(\"transactionId_g\", \"\")), tostring(column_ifexists(\"transactionId_s\", \"\")))\n| where TxnId == \"{LookupTxnId}\"\n| where ruleId_s != \"0\"\n| where not(ruleId_s startswith \"949\") and not(ruleId_s startswith \"980\") and not(ruleId_s startswith \"959\")\n| extend MatchInfo = coalesce(details_message_s, \"\")\n| extend DataInfo = coalesce(details_data_s, \"\")\n| extend MatchVariable = case(\n    MatchInfo has \"ARGS_NAMES\", \"RequestArgKeys\",\n    MatchInfo has \"REQUEST_COOKIES_NAMES\", \"RequestCookieKeys\",\n    MatchInfo has \"REQUEST_HEADERS_NAMES\", \"RequestHeaderKeys\",\n    MatchInfo matches regex @'ARGS_GET[:\\.]', \"RequestArgValues\",\n    MatchInfo matches regex @'ARGS_POST[:\\.]', \"RequestArgValues\",\n    MatchInfo matches regex @'ARGS[:\\.]', \"RequestArgValues\",\n    MatchInfo matches regex @'REQUEST_HEADERS[:\\.]', \"RequestHeaderValues\",\n    MatchInfo matches regex @'REQUEST_COOKIES[:\\.]', \"RequestCookieValues\",\n    MatchInfo has \"REQUEST_BODY\", \"RequestArgValues\",\n    MatchInfo has \"REQUEST_URI\", \"DisableRule\",\n    MatchInfo has \"REQUEST_BASENAME\", \"DisableRule\",\n    MatchInfo has \"REQUEST_FILENAME\", \"DisableRule\",\n    MatchInfo has \"MULTIPART_STRICT_ERROR\", \"DisableRule\",\n    MatchInfo has \"REQUEST_METHOD\", \"DisableRule\",\n    MatchInfo has \"REQUEST_PROTOCOL\", \"DisableRule\",\n    MatchInfo has \"XML:\", \"DisableRule\",\n    DataInfo matches regex @'\\[ARGS:', \"RequestArgValues\",\n    DataInfo matches regex @'\\[REQUEST_HEADERS:', \"RequestHeaderValues\",\n    DataInfo matches regex @'\\[REQUEST_COOKIES:', \"RequestCookieValues\",\n    \"\")\n| extend Selector = case(\n    isnotempty(extract(@'(?:ARGS|ARGS_GET|ARGS_POST|ARGS_NAMES|REQUEST_HEADERS|REQUEST_HEADERS_NAMES|REQUEST_COOKIES|REQUEST_COOKIES_NAMES|REQUEST_BODY):([^\\s\\.\\):]+)', 1, MatchInfo)), extract(@'(?:ARGS|ARGS_GET|ARGS_POST|ARGS_NAMES|REQUEST_HEADERS|REQUEST_HEADERS_NAMES|REQUEST_COOKIES|REQUEST_COOKIES_NAMES|REQUEST_BODY):([^\\s\\.\\):]+)', 1, MatchInfo),\n    isnotempty(extract(@'\\[(?:ARGS|REQUEST_HEADERS|REQUEST_COOKIES):([^\\]:\\s\\]]+)', 1, DataInfo)), extract(@'\\[(?:ARGS|REQUEST_HEADERS|REQUEST_COOKIES):([^\\]:\\s\\]]+)', 1, DataInfo),\n    \"\")\n| extend ActionType = iff(MatchVariable == \"DisableRule\", \"disableRule\", \"createExclusion\")\n// Filter out selectors that are clearly attack payloads\n| where MatchVariable == \"DisableRule\" or isempty(Selector) or (Selector !contains \"<\" and Selector !contains \">\" and Selector !contains \"script\" and Selector !contains \"alert(\" and Selector !contains \";\" and Selector !contains \"/\")\n| extend NormRuleSetType = case(ruleSetType_s has \"OWASP\", \"OWASP\", ruleSetType_s)\n| extend LogMatchVariable = coalesce(extract(@'at\\s+(\\w+)[:\\.\\s]', 1, MatchInfo), extract(@'\\[(\\w+):', 1, DataInfo), \"\")\n| project TimeGenerated, ruleId_s, ruleGroup_s, ruleSetVersion_s, NormRuleSetType, action_s, MatchVariable, Selector, ActionType, LogMatchVariable, requestUri_s, clientIp_s, hostname_s, details_message_s, details_data_s\n| order by ruleId_s asc",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "representation": "4",
+                          "text": "{0}{1}",
+                          "thresholdValue": "Blocked"
+                        },
+                        {
+                          "operator": "==",
+                          "representation": "2",
+                          "text": "{0}{1}",
+                          "thresholdValue": "Matched"
+                        },
+                        {
+                          "operator": "Default",
+                          "representation": "more",
+                          "text": "{0}{1}"
+                        }
+                      ],
+                      "thresholdsOptions": "icons"
+                    },
+                    "columnMatch": "action_s"
+                  },
+                  {
+                    "columnMatch": "details_message_s",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "details_data_s",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "LogMatchVariable",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "NormRuleSetType",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ruleSetVersion_s",
+                    "formatter": 5
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "TimeGenerated",
+                    "label": "Time"
+                  },
+                  {
+                    "columnId": "ruleId_s",
+                    "label": "Rule ID"
+                  },
+                  {
+                    "columnId": "ruleGroup_s",
+                    "label": "Rule Group"
+                  },
+                  {
+                    "columnId": "action_s",
+                    "label": "Action"
+                  },
+                  {
+                    "columnId": "MatchVariable",
+                    "label": "Match Variable"
+                  },
+                  {
+                    "columnId": "Selector",
+                    "label": "Selector"
+                  },
+                  {
+                    "columnId": "ActionType",
+                    "label": "Remediation"
+                  },
+                  {
+                    "columnId": "requestUri_s",
+                    "label": "URI"
+                  },
+                  {
+                    "columnId": "clientIp_s",
+                    "label": "Client IP"
+                  },
+                  {
+                    "columnId": "hostname_s",
+                    "label": "Host"
+                  }
+                ],
+                "filter": true
+              },
+              "version": "KqlItem/1.0",
+              "queryType": 0,
+              "showAnalytics": true,
+              "noDataMessage": "No WAF events found for this transaction ID. Check the ID and time range.",
+              "exportedParameters": [
+                {
+                  "parameterName": "LookupRuleId",
+                  "fieldName": "ruleId_s",
+                  "parameterType": 1
+                },
+                {
+                  "parameterName": "LookupMatchVar",
+                  "fieldName": "MatchVariable",
+                  "parameterType": 1
+                },
+                {
+                  "parameterName": "LookupSelector",
+                  "fieldName": "Selector",
+                  "parameterType": 1
+                },
+                {
+                  "parameterName": "LookupRuleGroup",
+                  "fieldName": "ruleGroup_s",
+                  "parameterType": 1
+                },
+                {
+                  "parameterName": "LookupRuleSetType",
+                  "fieldName": "NormRuleSetType",
+                  "parameterType": 1
+                },
+                {
+                  "parameterName": "LookupRuleSetVersion",
+                  "fieldName": "ruleSetVersion_s",
+                  "parameterType": 1
+                },
+                {
+                  "parameterName": "LookupActionType",
+                  "fieldName": "ActionType",
+                  "parameterType": 1
+                },
+                {
+                  "parameterName": "LookupLogMatchVar",
+                  "fieldName": "LogMatchVariable",
+                  "parameterType": 1
+                }
+              ],
+              "title": "WAF events for transaction {LookupTxnId}"
+            },
+            "name": "LookupResults"
+          },
+          {
+            "conditionalVisibility": {
+              "parameterName": "LookupRuleId",
+              "comparison": "isNotEqualTo"
+            },
+            "type": 1,
+            "content": {
+              "json": "---\n## Apply Fix\nSelect a **Matched** rule row above (not the Blocked row — those are mandatory blocking rules that can't be excluded). The details below show what will be changed.\n\n| Setting | Value |\n|---------|-------|\n| **Action** | `{LookupActionType}` |\n| **Rule ID** | `{LookupRuleId}` |\n| **Rule Group** | `{LookupRuleGroup}` |\n| **Match Variable** | `{LookupMatchVar}` |\n| **Selector** | `{LookupSelector}` |\n| **Log Variable** | `{LookupLogMatchVar}` |"
+            },
+            "name": "LookupReview"
+          },
+          {
+            "conditionalVisibility": {
+              "parameterName": "LookupRuleId",
+              "comparison": "isNotEqualTo"
+            },
+            "type": 11,
+            "content": {
+              "style": "nav",
+              "version": "LinkItem/1.0",
+              "links": [
+                {
+                  "linkLabel": "⚡ Apply Fix for Rule {LookupRuleId}",
+                  "armActionContext": {
+                    "runLabel": "Confirm & Apply",
+                    "actionName": "CreateWafExclusion",
+                    "body": "{\n  \"action\": \"{LookupActionType}\",\n  \"resourceGroupName\": \"{wafPolicyRG}\",\n  \"wafPolicyName\": \"{wafPolicyName}\",\n  \"ruleId\": \"{LookupRuleId}\",\n  \"ruleGroupName\": \"{LookupRuleGroup}\",\n  \"ruleSetType\": \"{LookupRuleSetType}\",\n  \"ruleSetVersion\": \"{LookupRuleSetVersion}\",\n  \"matchVariable\": \"{LookupMatchVar}\",\n  \"selectorMatchOperator\": \"Equals\",\n  \"selector\": \"{LookupSelector}\",\n  \"description\": \"Created from Quick Lookup - Transaction {LookupTxnId}\"\n}",
+                    "headers": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "params": [],
+                    "path": "{logicApp}/triggers/manual/run?api-version=2016-10-01",
+                    "httpMethod": "POST",
+                    "description": "**Action:** {LookupActionType}\n\nThis will apply a change to WAF policy **{wafPolicyName}**:\n\n| Setting | Value |\n|---------|-------|\n| Action | {LookupActionType} |\n| Rule ID | {LookupRuleId} |\n| Rule Group | {LookupRuleGroup} |\n| Match Variable | {LookupMatchVar} |\n| Selector | {LookupSelector} |\n\n⚠️ This modifies your WAF policy. The change applies immediately.",
+                    "title": "WAF Policy Change"
+                  },
+                  "linkIsContextBlade": true,
+                  "id": "lookup-apply-btn",
+                  "linkTarget": "ArmAction",
+                  "style": "primary"
+                }
+              ]
+            },
+            "name": "LookupApplyButton"
+          }
+        ]
+      },
+      "name": "QuickLookupTab"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| summarize\r\n    Total = count(),\r\n    Blocked = countif(action_s == \"Blocked\"),\r\n    Matched = countif(action_s == \"Matched\"),\r\n    UniqueRules = dcount(ruleId_s),\r\n    UniqueURIs = dcount(requestUri_s),\r\n    UniqueIPs = dcount(clientIp_s)\r\n| extend metrics = pack_array(\r\n    pack(\"Label\", \"📊 Total Events\", \"Value\", Total, \"Order\", 1),\r\n    pack(\"Label\", \"🔴 Blocked\", \"Value\", Blocked, \"Order\", 2),\r\n    pack(\"Label\", \"🟡 Matched\", \"Value\", Matched, \"Order\", 3),\r\n    pack(\"Label\", \"📋 Unique Rules\", \"Value\", UniqueRules, \"Order\", 4),\r\n    pack(\"Label\", \"🌐 Unique URIs\", \"Value\", UniqueURIs, \"Order\", 5),\r\n    pack(\"Label\", \"👤 Unique IPs\", \"Value\", UniqueIPs, \"Order\", 6))\r\n| mv-expand metric = metrics\r\n| evaluate bag_unpack(metric)\r\n| sort by tolong(Order) asc",
+              "size": 4,
+              "title": "Summary",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "Label",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "style": "decimal",
+                      "maximumFractionDigits": 0
+                    }
+                  }
+                },
+                "showBorder": true,
+                "sortCriteriaField": "Order",
+                "sortOrderField": 1
+              }
+            },
+            "customWidth": "100",
+            "name": "SummaryTiles"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| summarize Count = count() by bin(TimeGenerated, 1h), action_s\r\n| render timechart",
+              "size": 0,
+              "title": "WAF events over time by action",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "timechart"
+            },
+            "customWidth": "50",
+            "name": "TimeChart"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| where action_s == \"Blocked\"\r\n| summarize Count = count() by ruleId_s, ruleGroup_s\r\n| order by Count desc\r\n| take 15",
+              "size": 0,
+              "title": "Top 15 blocking rules",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "ruleId_s",
+                "yAxis": [
+                  "Count"
+                ]
+              }
+            },
+            "customWidth": "50",
+            "name": "TopRulesChart"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| where action_s == \"Blocked\"\r\n| summarize Blocks = count(), UniqueRules = dcount(ruleId_s), UniqueURIs = dcount(requestUri_s) by clientIp_s\r\n| order by Blocks desc\r\n| take 20",
+              "size": 0,
+              "title": "Top blocked client IPs",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Blocks",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    }
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "clientIp_s",
+                    "label": "Client IP"
+                  },
+                  {
+                    "columnId": "Blocks",
+                    "label": "Block Count"
+                  },
+                  {
+                    "columnId": "UniqueRules",
+                    "label": "Unique Rules"
+                  },
+                  {
+                    "columnId": "UniqueURIs",
+                    "label": "Unique URIs"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "name": "TopIPs"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where TimeGenerated {detectionTime}\r\n| where ResourceId == '{ResourceId}' and policyScopeName_s == '{PolicyScope}'\r\n| where action_s == \"Blocked\"\r\n| summarize Blocks = count(), UniqueRules = dcount(ruleId_s), Rules = make_set(ruleId_s, 10) by requestUri_s\r\n| order by Blocks desc\r\n| take 20",
+              "size": 0,
+              "title": "Top blocked URIs",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{workspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Blocks",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    }
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "requestUri_s",
+                    "label": "URI"
+                  },
+                  {
+                    "columnId": "Blocks",
+                    "label": "Block Count"
+                  },
+                  {
+                    "columnId": "UniqueRules",
+                    "label": "Unique Rules"
+                  },
+                  {
+                    "columnId": "Rules",
+                    "label": "Rule IDs"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "name": "TopURIs"
+          }
+        ],
+        "exportParameters": true
+      },
+      "conditionalVisibility": {
+        "parameterName": "SelectedTab",
+        "comparison": "isEqualTo",
+        "value": "overview"
+      },
+      "name": "OverviewTab"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\n*WAF False Positive Auto-Triage vNext — Full match-variable coverage with automated exclusion creation & rule disabling via Logic App + Runbook*"
+      },
+      "name": "Footer"
+    }
+  ],
+  "fallbackResourceIds": [],
+  "defaultResourceIds": [
+    "value::all"
+  ],
+  "isLocked": false,
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+
+
