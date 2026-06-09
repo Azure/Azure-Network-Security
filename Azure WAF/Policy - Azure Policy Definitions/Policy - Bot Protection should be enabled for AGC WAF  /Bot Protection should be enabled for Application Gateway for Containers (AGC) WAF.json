@@ -1,0 +1,58 @@
+ {
+   "displayName": "Bot Protection Enabled WAF AGC",
+   "policyType": "Custom",
+   "mode": "All",
+   "description": "This policy ensures that the Microsoft Bot Manager rule set is enabled in all Web Application Firewall (WAF) policies attached to Application Gateway for Containers (AGC)",
+   "metadata": {
+     "category": "Network",
+     "version": "1.0.0"
+   },
+   "parameters": {
+     "effect": {
+       "type": "String",
+       "metadata": {
+         "displayName": "Effect",
+         "description": "Enable or disable the execution of the policy"
+       },
+       "allowedValues": [
+         "AuditIfNotExists",
+         "Disabled"
+       ],
+       "defaultValue": "AuditIfNotExists"
+     }
+   },
+   "policyRule": {
+     "if": {
+       "allOf": [
+         {
+           "field": "type",
+           "equals": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+         },
+         {
+           "count": {
+             "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/applicationGatewayForContainers[*]"
+           },
+           "greater": 0
+         }
+       ]
+     },
+     "then": {
+       "effect": "[parameters('effect')]",
+       "details": {
+         "type": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies",
+         "name": "[field('name')]",
+         "existenceCondition": {
+           "count": {
+             "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/managedRules.managedRuleSets[*]",
+             "where": {
+               "field": "Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/managedRules.managedRuleSets[*].ruleSetType",
+               "equals": "Microsoft_BotManagerRuleSet"
+             }
+           },
+           "greater": 0
+         }
+       }
+     }
+   }
+ }
+
