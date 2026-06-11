@@ -1,0 +1,53 @@
+{
+  "displayName": "Audit Diagnostic Logging for Azure Bastion",
+  "description": "Audits Azure Bastion hosts (Microsoft.Network/bastionHosts) to ensure diagnostic settings are configured to send the required logs (BastionAuditLogs, audit, allLogs) and metrics (AllMetrics) to a Log Analytics workspace.",
+  "policyType": "Custom",
+  "mode": "Indexed",
+  "metadata": {
+    "category": "Monitoring",
+    "version": "1.0.0"
+  },
+  "parameters": {
+    "effect": {
+     "type": "String",
+     "metadata": {
+      "displayName": "Effect",
+      "description": "Enable or disable the execution of the policy"
+    },
+    "allowedValues": [
+     "AuditIfNotExists",
+     "Deny",
+     "Disabled"
+    ],
+    "defaultValue": "AuditIfNotExists"
+    }  
+  },
+  "policyRule": {
+    "if": {
+      "field": "type",
+      "equals": "Microsoft.Network/bastionHosts"
+    },
+   "then": {
+    "effect": "[parameters('effect')]",
+    "details": {
+     "type": "Microsoft.Insights/diagnosticSettings",
+     "existenceCondition": {
+      "allOf": [
+       {
+        "field": "Microsoft.Insights/diagnosticSettings/logs.enabled",
+        "equals": "true"
+       },
+       {
+        "field": "Microsoft.Insights/diagnosticSettings/metrics.enabled",
+        "equals": "true"
+       },
+       {
+        "field": "Microsoft.Insights/diagnosticSettings/workspaceId",
+        "exists": "true"
+       }
+      ]
+     }
+    }
+   }
+  }
+ }
