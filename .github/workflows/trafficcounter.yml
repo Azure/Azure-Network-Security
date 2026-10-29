@@ -21,19 +21,19 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       with:
         ref: "traffic"
     
     # Calculates traffic and clones and stores in CSV file
     - name: Repository Traffic
-      uses: sangonzal/repository-traffic-action@v.0.1.6      
+      uses: sangonzal/repository-traffic-action@404df77a0bfb110f8977fe14ddba62451ec868b7 # v.0.1.6     
       env:
         TRAFFIC_ACTION_TOKEN: ${{secrets.TRAFFIC_ACTION_TOKEN}} 
      
     # Commits files to repository
     - name: Commit changes
-      uses: EndBug/add-and-commit@v4
+      uses: EndBug/add-and-commit@a988073222b8bd50f3ecfca9c0ab7dfbf0d08ceb # v4.4.0
       with:
         author_name: Tobi Otolorin
         message: "GitHub traffic"
